@@ -1,0 +1,88 @@
+spring-xml: classpath:spring.xml
+spring:
+    devtools:
+        restart:
+            enabled: true
+            #additional-paths: src/main/java
+            trigger-file: .restartTriggerFile
+        livereload:
+            port: 54567
+    thymeleaf:
+        cache: false
+    datasource:
+        username: xfl
+        password: amazingxfl666
+        url: jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        type: com.alibaba.druid.pool.DruidDataSource
+        # druid 其它配置
+        druid:
+            initialSize: 5
+            minIdle: 5
+            maxActive: 60
+            maxWait: 120000
+            defaultAutoCommit: true
+            poolPreparedStatements: true
+            maxPoolPreparedStatementPerConnectionSize: 50
+            aop-patterns: cc.xfl12345.mybigdata.*
+            use-global-data-source-stat: false
+            connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;
+            filters: config,stat,slf4j,wall # wall用于防火墙
+            filter:
+                wall:
+                    config:
+                        alter-table-allow: true
+                        # 允许一次执行多条语句
+                        multi-statement-allow: true
+                        # 允许非基本语句的其他语句
+                        none-base-statement-allow: true
+            #是否启用StatFilter默认值false，用于采集 web-jdbc 关联监控的数据。
+            web-stat-filter:
+                enabled: true
+                #排除一些静态资源，以提高效率
+                exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+                #需要监控的 url
+                url-pattern: "/*"
+    sql:
+        init:
+            encoding: UTF-8
+    jackson:
+        date-format: yyyy-MM-dd HH:mm:ss SSS
+        property-naming-strategy: LOWER_CAMEL_CASE
+        time-zone: GMT+8
+        default-property-inclusion: non_null
+    #web:
+    #    resources:
+    #        static-locations: classpath:/druid/, classpath:/static/
+    servlet:
+        multipart:
+            max-file-size: -1
+    mvc:
+        converters:
+            preferred-json-mapper: jackson
+        #static-path-pattern: /druid/**, /static/**
+        view:
+            prefix: /WEB-INF/views/
+            suffix: .jsp
+        contentnegotiation:
+            favor-parameter: true
+    data:
+        rest:
+            default-media-type: application/json
+
+
+server:
+    port: 8081
+    tomcat:
+        accesslog:
+            enabled: true
+            encoding: UTF-8
+            pattern: "%t [%I] %{X-Forwarded-For}i %a %r %q %s (%D ms)"
+            ipv6-canonical: true
+    servlet:
+        encoding:
+            enabled: true
+            charset: UTF-8
+
+debug: true
+

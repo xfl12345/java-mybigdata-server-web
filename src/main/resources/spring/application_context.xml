@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- 啦啦啦 -->
+    <!-- 开启注解驱动 -->
+    <context:annotation-config/>
+    <!-- 独立的单例对象（不需要依赖其它任何bean的单例） -->
+    <import resource="classpath:spring/component/independent_singleton.xml"/>
+    <!-- 无限套娃 之 加载Spring工具类 -->
+    <bean id="staticSpringApp" class="cc.xfl12345.mybigdata.StaticSpringApp" lazy-init="false"/>
+    <context:component-scan base-package="cc.xfl12345.mybigdata.initializer"/>
+    <context:component-scan base-package="cc.xfl12345.mybigdata.listener"/>
+</beans>
