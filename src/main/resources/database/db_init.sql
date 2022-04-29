@@ -334,7 +334,6 @@ CREATE TABLE label_record
     unique key boost_query_all (group_id) comment '加速查询全部数据'
 ) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
 
-
 CREATE OR REPLACE VIEW view_label_record AS
 SELECT g.global_id,
        g.uuid,

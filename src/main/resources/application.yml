@@ -1,4 +1,3 @@
-spring-xml: classpath:spring.xml
 spring:
     devtools:
         restart:
@@ -12,7 +11,7 @@ spring:
     datasource:
         username: xfl
         password: amazingxfl666
-        url: jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+        url: "jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true"
         driver-class-name: com.mysql.cj.jdbc.Driver
         type: com.alibaba.druid.pool.DruidDataSource
         # druid 其它配置
@@ -47,20 +46,16 @@ spring:
         init:
             encoding: UTF-8
     jackson:
-        date-format: yyyy-MM-dd HH:mm:ss SSS
+        date-format: yyyy-MM-dd HH:mm:ss.SSS
         property-naming-strategy: LOWER_CAMEL_CASE
         time-zone: GMT+8
         default-property-inclusion: non_null
-    #web:
-    #    resources:
-    #        static-locations: classpath:/druid/, classpath:/static/
     servlet:
         multipart:
             max-file-size: -1
     mvc:
         converters:
             preferred-json-mapper: jackson
-        #static-path-pattern: /druid/**, /static/**
         view:
             prefix: /WEB-INF/views/
             suffix: .jsp
@@ -71,18 +66,39 @@ spring:
             default-media-type: application/json
 
 
+# Sa-Token配置
+sa-token:
+    # token名称 (同时也是cookie名称)
+    token-name: mybigdata
+    # token有效期，单位s 默认30天, -1代表永不过期
+    timeout: 604800 # 一个星期
+    # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+    activity-timeout: 600
+    # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+    is-concurrent: true
+    # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+    is-share: false
+    # token风格
+    token-style: uuid
+    # 是否输出操作日志
+    is-log: true
+
+
 server:
     port: 8081
     tomcat:
         accesslog:
             enabled: true
             encoding: UTF-8
-            pattern: "%t [%I] %{X-Forwarded-For}i %a %r %q %s (%D ms)"
             ipv6-canonical: true
     servlet:
         encoding:
             enabled: true
             charset: UTF-8
 
+
 debug: true
+logging:
+    charset:
+        console: UTF-8
 

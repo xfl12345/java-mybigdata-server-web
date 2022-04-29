@@ -1,1 +1,0 @@
-org.springframework.context.ApplicationListener=cc.xfl12345.mybigdata.listener.AllEventListener
