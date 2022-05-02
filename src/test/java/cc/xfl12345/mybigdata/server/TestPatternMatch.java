@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server;
 
 
-import cc.xfl12345.mybigdata.server.model.utility.MyStrIsOK;
+import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
 import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;

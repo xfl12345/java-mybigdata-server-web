@@ -4,7 +4,6 @@ import cc.xfl12345.mybigdata.server.interceptor.ApiRequestInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.DruidStatInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.MySaRouteInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.UploadInterceptor;
-import cn.dev33.satoken.interceptor.SaRouteInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -20,8 +19,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import java.util.Objects;
 
 @Configuration
 public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvcConfigurer, ApplicationContextAware {
@@ -65,18 +63,14 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         registry.addResourceHandler("/static/**").addResourceLocations("/static/");
-        try {
-            String druidRootPathName = "druid";
-            registry.addResourceHandler(
-                String.format("/%s/**", druidRootPathName)
-            ).addResourceLocations(
-                new UrlResource(Thread.currentThread().getContextClassLoader()
-                    .getResource("support/http/resources/").toURI())
-            );
-        } catch (MalformedURLException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        String druidRootPathName = "druid";
+        registry.addResourceHandler(
+            String.format("/%s/**", druidRootPathName)
+        ).addResourceLocations(
+            new UrlResource(Objects.requireNonNull(classLoader.getResource("support/http/resources/")))
+        );
     }
 
     @Override

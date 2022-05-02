@@ -1,0 +1,19 @@
+{
+  "title": "json_api_request_format",
+  "description": "基本JSON请求格式",
+  "type": "object",
+  "properties": {
+    "operation": {
+      "description": "具体操作",
+      "type": "string"
+    },
+    "data": {
+      "description": "具体操作所需要的数据",
+      "type": "object"
+    }
+  },
+  "required": [
+    "operation",
+    "data"
+  ]
+}

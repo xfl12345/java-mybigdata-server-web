@@ -1,0 +1,14 @@
+{
+    "message": {
+        "helloWorld": "你好，世界"
+    },
+    "word": {
+        "id": "ID",
+        "minimum": "最小值",
+        "maximum": "最大值",
+        "volume": "体积",
+        "weight": "质量",
+        "density": "密度",
+        "color": "颜色"
+    }
+}

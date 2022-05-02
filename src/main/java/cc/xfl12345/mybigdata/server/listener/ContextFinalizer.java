@@ -8,6 +8,7 @@ import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -38,9 +39,9 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
     protected ApplicationContext applicationContext;
 
     public ContextFinalizer() {
-//        // 注册要监听的信号
-//        Signal.handle(new Signal("INT"), this);     // 2  : 中断（同 ctrl + c ）
-//        Signal.handle(new Signal("TERM"), this);    // 15 : 正常终止
+        // 注册要监听的信号
+        Signal.handle(new Signal("INT"), this);     // 2  : 中断（同 ctrl + c ）
+        Signal.handle(new Signal("TERM"), this);    // 15 : 正常终止
     }
 
     @Autowired
@@ -56,7 +57,10 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         String signalName = signal.getName();
         log.info(signalName+":"+signal.getNumber());
         if(signalName.equals("INT") || signalName.equals("TERM")) {
-            SpringApplication.exit(applicationContext, () -> 0);
+            SpringApplication.exit(
+                applicationContext,
+                applicationContext.getBean(ExitCodeGenerator.class)
+            );
         }
     }
 
@@ -154,7 +158,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
                     drivers = DriverManager.getDrivers();
                 }
             }
-            log.info("JDBC Driver clean.");
+            log.info("JDBC driver clean.");
         }
     }
 }

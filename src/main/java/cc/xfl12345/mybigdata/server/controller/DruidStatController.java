@@ -1,6 +1,5 @@
 package cc.xfl12345.mybigdata.server.controller;
 
-import cc.xfl12345.mybigdata.server.model.utility.MyStrIsOK;
 import com.alibaba.druid.stat.DruidStatService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -49,7 +48,7 @@ public class DruidStatController implements ApplicationContextAware {
     }
 
     @RequestMapping(value = {"weburi-/{partOne:.*}.json", "weburi-/*/{partOne:.*}.json", "weburi-/*/*/{partOne:.*}.json"})
-    public @ResponseBody String any(HttpServletRequest request, @PathVariable String partOne) {
+    public @ResponseBody String weburi(HttpServletRequest request, @PathVariable String partOne) {
         return root(request, partOne);
     }
 }

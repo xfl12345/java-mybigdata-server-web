@@ -24,6 +24,15 @@ repositories {
     maven {
         url "https://jitpack.io"
     }
+    maven {
+        url "https://maven.aliyun.com/repository/public/"
+    }
+    maven {
+        url "https://maven.aliyun.com/repository/spring/"
+    }
+    maven {
+        url "https://maven.aliyun.com/repository/spring-plugin"
+    }
 }
 
 dependencies {
@@ -33,9 +42,11 @@ dependencies {
     def lombokVersion = "1.18.22"
     def victools_jsonschema = "4.24.2"
     def saTokenVersion = "1.29.0"
+    def asmVersion = "9.3"
 
     def springBootDependencies = [
         "starter-log4j2",
+        //"starter-thymeleaf",
         "starter-web",
         "starter-aop",
         "starter-data-jdbc",
@@ -64,8 +75,8 @@ dependencies {
 
     // 国产ORM框架 bee
     // https://mvnrepository.com/artifact/org.teasoft/bee-spring-boot-starter
-    implementation group: 'org.teasoft', name: 'bee-spring-boot-starter', version: '1.9.8'
-    implementation group: 'org.teasoft', name: 'bee-spring-boot-starter', version: '1.9.8', ext: 'pom'
+    implementation group: "org.teasoft", name: "bee-spring-boot-starter", version: "1.9.8"
+    implementation group: "org.teasoft", name: "bee-spring-boot-starter", version: "1.9.8", ext: "pom"
 
     // Sa-Token 框架
     // https://mvnrepository.com/artifact/cn.dev33/sa-token-spring-boot-starter
@@ -95,6 +106,7 @@ dependencies {
 
 //    def javaMailVersion = "1.6.2"
 
+    // 字符串风格转换工具
     // https://mvnrepository.com/artifact/com.shekhargulati/strman
     implementation group: "com.shekhargulati", name: "strman", version: "0.4.0"
 
@@ -145,6 +157,16 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
     implementation group: "commons-fileupload", name: "commons-fileupload", version: "1.4"
 
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
+    implementation group: "org.apache.commons", name: "commons-vfs2", version: "2.9.0"
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore
+    implementation group: "org.apache.httpcomponents", name: "httpcore", version: "4.4.15"
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation group: "org.apache.httpcomponents", name: "httpclient", version: "4.5.13"
+
+
     // XML support
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     implementation group: "org.jsoup", name: "jsoup", version: "1.14.3"
@@ -178,11 +200,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core
     implementation group: "org.mybatis.generator", name: "mybatis-generator-core", version: mybatisGeneratorVersion
 
-    // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-maven-plugin
-    implementation group: 'org.mybatis.generator', name: 'mybatis-generator-maven-plugin', version: mybatisGeneratorVersion
-
-    // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator
-    implementation group: "org.mybatis.generator", name: "mybatis-generator", version: mybatisGeneratorVersion, ext: "pom"
+//    // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-maven-plugin
+//    implementation group: "org.mybatis.generator", name: "mybatis-generator-maven-plugin", version: mybatisGeneratorVersion
+//
+//    // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator
+//    implementation group: "org.mybatis.generator", name: "mybatis-generator", version: mybatisGeneratorVersion, ext: "pom"
 
     // tk.mybatis Dependence
     // https://mvnrepository.com/artifact/org.freemarker/freemarker
@@ -197,6 +219,28 @@ dependencies {
 //
 //    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
 //    implementation group: "javax.mail", name: "javax.mail-api", version: javaMailVersion
+
+//    // 大名鼎鼎的 Java字节码操作框架 ASM
+//    // https://mvnrepository.com/artifact/org.ow2.asm/asm
+//    implementation group: "org.ow2.asm", name: "asm", version: asmVersion
+//
+//    // https://mvnrepository.com/artifact/org.ow2.asm/asm-commons
+//    implementation group: "org.ow2.asm", name: "asm-commons", version: asmVersion
+//
+//    // https://mvnrepository.com/artifact/org.ow2.asm/asm-util
+//    implementation group: "org.ow2.asm", name: "asm-util", version: asmVersion
+//
+//    // 大名鼎鼎的 Java字节码工具 javassist
+//    // https://mvnrepository.com/artifact/org.javassist/javassist
+//    implementation group: "org.javassist", name: "javassist", version: "3.28.0-GA"
+
+
+    // https://mvnrepository.com/artifact/org.jsonschema2pojo/jsonschema2pojo
+    implementation group: "org.jsonschema2pojo", name: "jsonschema2pojo-core", version: "1.1.1"
+
+    // https://mvnrepository.com/artifact/com.google.jimfs/jimfs
+    implementation group: "com.google.jimfs", name: "jimfs", version: "1.2"
+
 
 
 //    implementation fileTree(dir:"src/main/webapp",includes:["**/*.*"])
