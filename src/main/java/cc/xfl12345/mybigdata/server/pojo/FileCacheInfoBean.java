@@ -7,6 +7,10 @@ public class FileCacheInfoBean {
     protected URL originURL;
     protected CopyOnWriteArraySet<URL> cacheURLs;
 
+    public FileCacheInfoBean() {
+        cacheURLs = new CopyOnWriteArraySet<>();
+    }
+
     public URL getOriginURL() {
         return originURL;
     }

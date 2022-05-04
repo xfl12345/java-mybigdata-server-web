@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.plugin;
+package cc.xfl12345.mybigdata.server.plugin.mybatis;
 
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;

@@ -19,7 +19,8 @@ public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
             Feature.OrderedField,
             true
         );
-        // 优先初始化 StaticSpringApp 工具类
+        // 优先初始化一些 Bean
         configurableListableBeanFactory.createBean(StaticSpringApp.class);
+//        configurableListableBeanFactory.createBean(ResourceCacheMapBean.class);
     }
 }

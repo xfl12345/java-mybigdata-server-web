@@ -3,6 +3,7 @@ package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +85,7 @@ public class TestPatternMatch {
             System.out.println(i + ":" + isMatched
                 + ", content:[" + content + "]"
                 + ", group count:" + resultGroupCount
-                + ", result:" + JSON.toJSONString(results, false));
+                + ", result:" + JSON.toJSONString(results, SerializerFeature.PrettyFormat));
         }
         if (title != null) {
             String stringBuilder = foxLine + foxLine +

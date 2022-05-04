@@ -3,6 +3,7 @@ package cc.xfl12345.mybigdata.server.model.checker;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.uuid.NoArgGenerator;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class OfflineJsonChecker {
             if (jsonObject.containsKey(KEY_WORD_SCHEMA)) {
                 fileURL = new URL(jsonObject.getString(KEY_WORD_SCHEMA));
             } else {
-                json = JSON.toJSONString(jsonObject, true);
+                json = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
                 Path rootPath = fileSystem.getPath("/ram");
                 if(!Files.exists(rootPath)) {
                     Files.createDirectory(rootPath);
@@ -74,7 +75,7 @@ public class OfflineJsonChecker {
                 log.info("Generate virtual path=" + generatePath + " <---> " + json);
             }
         } else {
-            json = JSON.toJSONString(jsonObject, true);
+            json = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
             Path rootPath = fileSystem.getPath("/ram");
             if(!Files.exists(rootPath)) {
                 Files.createDirectory(rootPath);
@@ -92,8 +93,7 @@ public class OfflineJsonChecker {
     public static JSONObject getJSONObjectFromFile(URL fileURL) throws IOException {
         InputStream inputStream = fileURL.openConnection().getInputStream();
         JSONObject jsonObject = JSONObject.parseObject(
-            inputStream,
-            StandardCharsets.UTF_8,
+            new String(inputStream.readAllBytes(), StandardCharsets.UTF_8),
             JSONObject.class,
             Feature.OrderedField
         );
@@ -115,7 +115,7 @@ public class OfflineJsonChecker {
     }
 
     public JSONObject getJsonObject() {
-        return jsonObject.clone();
+        return (JSONObject) jsonObject.clone();
     }
 
     public String getParentJsonSchema() {

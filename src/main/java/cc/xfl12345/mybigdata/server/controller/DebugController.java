@@ -4,6 +4,7 @@ import cn.dev33.satoken.secure.SaSecureUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.crypto.Crypto;
@@ -59,6 +60,6 @@ public class DebugController implements ApplicationContextAware {
         for (File subFile : subFiles) {
             jsonObject.put(subFile.getName(), subFile.getPath());
         }
-        return JSON.toJSONString(jsonObject, true);
+        return JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
     }
 }

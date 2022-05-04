@@ -1,17 +1,26 @@
 package cc.xfl12345.mybigdata.server.config;
 
+import cc.xfl12345.mybigdata.server.plugin.apache.vfs.SpringBootResourceFileProvider;
+import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.google.common.jimfs.Jimfs;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.VfsUtils;
 
 import java.nio.file.FileSystem;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.SimpleTimeZone;
 
 @Configuration
+@Slf4j
 public class AppConfig{
     @Bean("springbootExitCodeGenerator")
     public ExitCodeGenerator getSpringbootExitCodeGenerator() {
@@ -51,6 +60,29 @@ public class AppConfig{
     @Bean(name="jimFS")
     public FileSystem getJimFS() {
         return Jimfs.newFileSystem(com.google.common.jimfs.Configuration.unix());
+    }
+
+    @Bean(name="resourceCacheMapBean")
+    public ResourceCacheMapBean getResourceCacheBean() {
+        return new ResourceCacheMapBean();
+    }
+
+    @Bean(name="apacheVfsFileSystemManager")
+    public StandardFileSystemManager getStandardFileSystemManager() throws FileSystemException {
+        StandardFileSystemManager fileSystemManager = (StandardFileSystemManager) VFS.getManager();
+        fileSystemManager.removeProvider("res");
+        fileSystemManager.addProvider("res", new SpringBootResourceFileProvider());
+//        StandardFileSystemManager fileSystemManager = new StandardFileSystemManager();
+//        fileSystemManager.setConfiguration(Thread.currentThread().getContextClassLoader()
+//            .getResource("org/apache/commons/vfs2/impl/providers.xml"));
+//        fileSystemManager.setCacheStrategy(CacheStrategy.MANUAL);
+//        fileSystemManager.init();
+//        URLStreamHandlerFactory factory = fileSystemManager.getURLStreamHandlerFactory();
+//        URL.setURLStreamHandlerFactory(factory); // VM global
+        log.info(fileSystemManager.getClass().getCanonicalName()
+            + " is created.Support URL schema: "
+            + Arrays.toString(fileSystemManager.getSchemes()));
+        return fileSystemManager;
     }
 
 
