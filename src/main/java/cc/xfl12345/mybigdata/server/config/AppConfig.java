@@ -5,6 +5,7 @@ import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.google.common.jimfs.Jimfs;
+import com.google.common.jimfs.SystemJimfsFileSystemProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
@@ -14,9 +15,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.VfsUtils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
+import java.nio.file.spi.FileSystemProvider;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.ServiceLoader;
 import java.util.SimpleTimeZone;
 
 @Configuration
@@ -59,6 +65,10 @@ public class AppConfig{
 
     @Bean(name="jimFS")
     public FileSystem getJimFS() {
+//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        URL jimfsJarResourceURL = new URL("jar:file:/C:/Data/project/github/MyBigData_Java17/build/libs/mybigdata-0.0.1.jar!/BOOT-INF/lib/jimfs-1.2.jar");
+//        ServiceLoader<? extends FileSystemProvider> serviceLoader = ServiceLoader.load(SystemJimfsFileSystemProvider.class);
+//        serviceLoader.reload();
         return Jimfs.newFileSystem(com.google.common.jimfs.Configuration.unix());
     }
 
