@@ -1,13 +1,10 @@
 package cc.xfl12345.mybigdata.server.controller;
 
-import cn.dev33.satoken.secure.SaSecureUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.Crypt;
-import org.apache.commons.crypto.Crypto;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -21,8 +18,6 @@ import org.teasoft.honey.osql.core.BeeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @Slf4j
 @Controller

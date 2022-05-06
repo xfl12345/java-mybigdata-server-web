@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.uuid.NoArgGenerator;
-import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import net.jimblackler.jsonschemafriend.*;
 
@@ -16,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -47,7 +47,7 @@ public class OfflineJsonChecker {
     }
 
     public OfflineJsonChecker(
-        FileSystem fileSystem,
+        FileSystem ramFileSystem,
         NoArgGenerator uuidGenerator,
         SchemaStore schemaStore,
         Validator validator,
@@ -64,26 +64,24 @@ public class OfflineJsonChecker {
                 fileURL = new URL(jsonObject.getString(KEY_WORD_SCHEMA));
             } else {
                 json = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
-                Path rootPath = fileSystem.getPath("/ram");
+                Path rootPath = ramFileSystem.getPath("/ram");
                 if(!Files.exists(rootPath)) {
                     Files.createDirectory(rootPath);
                 }
                 Path generatePath = rootPath.resolve("root_json_schema.json");
-                Files.write(generatePath, ImmutableList.of(json), StandardCharsets.UTF_8);
+                Files.write(generatePath, Collections.singleton(json), StandardCharsets.UTF_8);
                 fileURL = generatePath.toUri().toURL();
-
                 log.info("Generate virtual path=" + generatePath + " <---> " + json);
             }
         } else {
             json = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
-            Path rootPath = fileSystem.getPath("/ram");
+            Path rootPath = ramFileSystem.getPath("/ram");
             if(!Files.exists(rootPath)) {
                 Files.createDirectory(rootPath);
             }
             Path generatePath = rootPath.resolve(uuidGenerator.generate().toString() + ".json");
-            Files.write(generatePath, ImmutableList.of(json), StandardCharsets.UTF_8);
+            Files.write(generatePath, Collections.singleton(json), StandardCharsets.UTF_8);
             fileURL = generatePath.toUri().toURL();
-
             log.info("Generate virtual path=" + generatePath + " <---> " + json);
         }
         modifyByFileURI(jsonObject, fileURL, rootSchemaFileURL);

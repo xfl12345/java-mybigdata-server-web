@@ -3,6 +3,7 @@ package cc.xfl12345.mybigdata.server.listener;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.springframework.beans.BeansException;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * 这是一个用来结束JDBC驱动的类，防止redeploy时被警告存在内存泄露风险
+ * 这是一个用来执行正常退出任务的类
  */
 @Component
 @WebListener
@@ -65,8 +66,6 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
-//        deregisterMybatisJdbcDriver(springAppContext);
-
         // AbandonedConnectionCleanupThread.shutdown();
         AbandonedConnectionCleanupThread.checkedShutdown();
         long checkPerMillionSecond = 200L;
@@ -93,9 +92,14 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         ApplicationContext applicationContext = event.getApplicationContext();
         if (applicationContext.getParent() == null) {
             deregisterMybatisJdbcDriver(applicationContext);
+            FileSystemManager fileSystemManager = applicationContext.getBean("apacheVfsFileSystemManager", FileSystemManager.class);
+            fileSystemManager.close();
         }
     }
 
+    /**
+     * 这是一个用来结束JDBC驱动的函数，防止redeploy时被警告存在内存泄露风险
+     */
     public void deregisterMybatisJdbcDriver(ApplicationContext springAppContext) {
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         TreeSet<String> dataSourceBeanNames = new TreeSet<>();

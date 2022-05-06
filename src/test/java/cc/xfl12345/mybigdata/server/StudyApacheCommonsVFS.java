@@ -1,6 +1,8 @@
 package cc.xfl12345.mybigdata.server;
 
-import org.apache.commons.vfs2.*;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.Selectors;
+import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 
 import java.io.IOException;
@@ -9,8 +11,6 @@ import java.net.URL;
 import java.net.URLStreamHandlerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.stream.Stream;
 
 public class StudyApacheCommonsVFS {
     public static void main(String[] args) throws IOException {

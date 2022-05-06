@@ -3,9 +3,9 @@ package cc.xfl12345.mybigdata.server.pojo;
 import cc.xfl12345.mybigdata.server.utility.MyReflectUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public class PackageInfo {
     protected final HashMap<String, Disassembly> subClassMap = new HashMap<>();
