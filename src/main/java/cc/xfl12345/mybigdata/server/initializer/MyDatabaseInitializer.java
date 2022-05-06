@@ -9,16 +9,18 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.conf.ConnectionUrl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.jdbc.ScriptRunner;
+import org.apache.tools.ant.taskdefs.SQLExec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.EncodedResource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -95,6 +97,7 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
 
     public void initMySQL() throws SQLException, IOException {
         MysqlJdbcUrlHelper mysqlJdbcUrlHelper = new MysqlJdbcUrlHelper(ConnectionUrl.getConnectionUrlInstance(url, null));
+        String targetDatabaseName = mysqlJdbcUrlHelper.getDatabaseName();
         mysqlJdbcUrlHelper.setDatabaseName("information_schema");
         url = mysqlJdbcUrlHelper.getSqlConnUrlWithConfigProp();
 
@@ -103,9 +106,6 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         mysqlTableSchemaDataSource.setPassword(password);
         mysqlTableSchemaDataSource.setDriverClassName(driverClassName);
         mysqlTableSchemaDataSource.setUrl(url);
-
-        URL dbInitSqlFileURL = Resources.getResourceURL("database/db_init.sql");
-        URL dbRestartInitSqlFileURL = Resources.getResourceURL("database/db_restart_init.sql");
 
         // 加载 sql URL附加属性
         Properties confProp = mysqlJdbcUrlHelper.getAdditionalParameters();
@@ -119,21 +119,21 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         log.info("Temporary JDBC URL=" + tmpJdbcConnectionURL);
         // 创建一个临时连接，用于试探MySQL数据库
         Connection conn2 = mysqlTableSchemaDataSource.getConnection();
+        conn2.setAutoCommit(false);
         log.info("Database server connected.Checking database.");
         // 检查 MySQL中 某个数据库是否存在（其它数据库暂未适配，所以这个 dataSource 并非万能）
         PreparedStatement ps = conn2.prepareStatement("select * from information_schema.SCHEMATA where SCHEMA_NAME = ?");
-        ps.setString(1, mysqlJdbcUrlHelper.getDatabaseName());
+        ps.setString(1, targetDatabaseName);
         log.info(MyBatisSqlUtils.getSql(ps));
         ResultSet rs = ps.executeQuery();
 
-        InputStream urlInputStream = null;
         if (rs.next()) {
             log.info("Database is exist!");
             try {
-                urlInputStream = dbRestartInitSqlFileURL.openConnection().getInputStream();
+                URL dbRestartInitSqlFileURL = Resources.getResourceURL("database/db_restart_init.sql");
                 log.info("Executing db_restart_init_sql_file: " + dbRestartInitSqlFileURL.toString());
                 try {
-                    executeSqlFile(conn2, urlInputStream);
+                    executeSqlFile(conn2, dbRestartInitSqlFileURL);
                     log.info("Database initiated!");
                 } catch (IOException exception) {
                     log.error(exception.getMessage());
@@ -144,10 +144,10 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         } else {
             log.info("Database is not exist!");
             try {
-                urlInputStream = dbInitSqlFileURL.openConnection().getInputStream();
+                URL dbInitSqlFileURL = Resources.getResourceURL("database/db_init.sql");
                 log.info("Executing db_init_sql_file: " + dbInitSqlFileURL.toString());
                 try {
-                    executeSqlFile(conn2, urlInputStream);
+                    executeSqlFile(conn2, dbInitSqlFileURL);
                     log.info("Database initiated!");
                 } catch (IOException exception) {
                     log.error(exception.getMessage());
@@ -156,21 +156,23 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
                 log.info("Initiation will not process.Because file not found");
             }
         }
-        if (urlInputStream != null) {
-            urlInputStream.close();
-        }
         conn2.close();
         mysqlTableSchemaDataSource.close();
     }
 
-    public static void executeSqlFile(Connection connection, InputStream sqlFileInputStream) throws IOException, SQLException {
+    public static void executeSqlFile(Connection connection, URL sqlFileURL) throws IOException, SQLException {
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        Resources.setCharset(StandardCharsets.UTF_8); //设置字符集,不然中文乱码插入错误
-        InputStreamReader read = new InputStreamReader(sqlFileInputStream, StandardCharsets.UTF_8);
-        ScriptRunner runner = new ScriptRunner(connection);
-        runner.setLogWriter(null);//设置是否输出日志
-        runner.runScript(read);
+        ScriptUtils.executeSqlScript(
+            connection,
+            new EncodedResource(new UrlResource(sqlFileURL), StandardCharsets.UTF_8),
+            false,
+            false,
+            new String[]{ScriptUtils.DEFAULT_COMMENT_PREFIX, "#"},
+            ScriptUtils.DEFAULT_STATEMENT_SEPARATOR,
+            ScriptUtils.DEFAULT_BLOCK_COMMENT_START_DELIMITER,
+            ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER
+        );
+        new SQLExec().setSrc(new File(sqlFileURL.getFile()));
         connection.commit();
-        read.close();
     }
 }
