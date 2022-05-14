@@ -6,6 +6,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.res.ResourceFileProvider;
 import org.apache.commons.vfs2.provider.res.ResourceFileSystemConfigBuilder;
+import org.springframework.lang.NonNull;
 
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -43,7 +44,7 @@ public class SpringBootResourceFileProvider extends ResourceFileProvider {
     }
 
     //See https://github.com/bedatadriven/renjin/blob/cac412d232ad66d4ee8e37cfc8cb70a45e676e19/core/src/main/java/org/renjin/util/ClasspathFileProvider.java#L88-L126
-    public String fixNestedURI(String uri) {
+    public String fixNestedURI(@NonNull String uri) {
         int bang = uri.indexOf('!');
         if(bang < 0 || !uri.startsWith("jar:file:")) {
             return uri;

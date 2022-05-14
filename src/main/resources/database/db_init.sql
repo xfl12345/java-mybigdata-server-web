@@ -38,7 +38,7 @@ CREATE TABLE string_content
 (
     `global_id`      bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     `data_format`    bigint unsigned comment '字符串结构格式',
-    `content_length` smallint        not null default -1 comment '字符串长度',
+    `content_length` smallint        default -1 comment '字符串长度',
     `content`        varchar(768)    not null comment '字符串内容，最大长度为 768 个字符',
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     index boost_query_id (data_format, content_length) comment '加速查询主键，避免全表扫描',
@@ -48,35 +48,43 @@ CREATE TABLE string_content
 
 INSERT INTO string_content (global_id, data_format, content)
     # 第一个字符串，关于数据格式——text
-values (1, 1, 'text'),
-       # 第二个字符串，是一个空字符串
-       (2, 1, ''),
+values (1, 1, 'text');
+
+# 设置字符串格式的默认值为 text
+ALTER TABLE string_content
+    ALTER COLUMN data_format SET DEFAULT 1;
+
+INSERT INTO string_content (global_id, content)
+    # 第二个字符串，是一个空字符串
+VALUES (2, ''),
        # 第三个字符串，关于 "描述" 本身
-       (3, 1, '说明、描述'),
+       (3, '说明、描述'),
        # 第四个字符串，关于 第一个字符串 的描述
-       (4, 1, '一种字符串内容格式'),
+       (4, '一种字符串内容格式'),
        # 第五个字符串，关于 字符串表 的名称
-       (5, 1, '字符串记录表的名称'),
+       (5, '字符串记录表的名称'),
        # 第六个字符串，关于 字符串表 的名称
-       (6, 1, 'string_content'),
+       (6, 'string_content'),
        # 第七个字符串，关于 全局ID记录表 的描述
-       (7, 1, '全局ID记录表的名称'),
+       (7, '全局ID记录表的名称'),
        # 第八个字符串，关于 全局ID记录表 的名称
-       (8, 1, 'global_data_record');
+       (8, 'global_data_record');
 
 
 /**
-  全局ID记录表，记录并关联当前数据库内所有表的每一行数据
+  全局ID记录表，记录并关联当前数据库内所有表的每一行数据。
+  如果 table_name 字段 是空值，则意味着它是未使用的记录（用以加速插入数据），
+  而且该行数据有可能会被定期删除。
  */
 CREATE TABLE global_data_record
 (
-    `id`             bigint unsigned not null PRIMARY KEY AUTO_INCREMENT comment '当前表所在数据库实例里的全局ID',
-    `uuid`           char(36)        not null comment '关于某行数据的，整个MySQL数据库乃至全球唯一的真正的全局ID',
-    `create_time`    datetime        not null DEFAULT CURRENT_TIMESTAMP comment '创建时间',
-    `update_time`    datetime        not null DEFAULT CURRENT_TIMESTAMP comment '修改时间',
-    `modified_count` bigint unsigned not null default 1 comment '修改次数（版本迭代）',
-    `table_name`     bigint unsigned not null comment '该行数据所在的表名',
-    `description`    bigint unsigned not null default 2 comment '该行数据的附加简述',
+    `id`             bigint unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT comment '当前表所在数据库实例里的全局ID',
+    `uuid`           char(36)        NOT NULL comment '关于某行数据的，整个MySQL数据库乃至全球唯一的真正的全局ID',
+    `create_time`    datetime        DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+    `update_time`    datetime        DEFAULT CURRENT_TIMESTAMP comment '修改时间',
+    `modified_count` bigint unsigned DEFAULT 1 comment '修改次数（版本迭代）',
+    `table_name`     bigint unsigned DEFAULT NULL comment '该行数据所在的表名',
+    `description`    bigint unsigned DEFAULT 2 comment '该行数据的附加简述',
     # 全局ID 记录表，删除乃大忌。拒绝一切外表级联删除行记录，只允许按 global_id 或 uuid 删除行记录
     # 遵循 一切普通文本 由 字符串记录表
     # TODO 这里有问题……………………
@@ -87,9 +95,6 @@ CREATE TABLE global_data_record
 ) ENGINE = InnoDB
   ROW_FORMAT = DYNAMIC;
 
-# 设置字符串格式的默认值为 text
-ALTER TABLE string_content
-    ALTER COLUMN data_format SET DEFAULT 1;
 
 INSERT INTO global_data_record (id, uuid, table_name, description)
     # 先斩后奏 之 关联已有的 字符串 数据
@@ -108,7 +113,7 @@ alter table string_content
 
 # 添加 字符串格式 引用出处（自环）
 alter table string_content
-    add foreign key (data_format) references string_content (global_id) on delete cascade on update cascade;
+    add foreign key (data_format) references string_content (global_id) on delete restrict on update cascade;
 
 /**
   因为自环引用会导致自锁，所以以下给出 将 string_content 表里的
@@ -399,23 +404,39 @@ VALUES (9, '00000030-cb7a-11eb-0000-f828196a1686', 6, 3),
        (23, '00000042-cb7a-11eb-0000-f828196a1686', 6, 4),
        (24, '00000050-cb7a-11eb-0000-f828196a1686', 6, 3);
 
-INSERT INTO `string_content` (`global_id`, `data_format`, `content_length`, `content`)
-VALUES (9, 1, 18, 'table-JSON模型记录表的名称'),
-       (10, 1, 19, 'table_schema_record'),
-       (11, 1, 13, '专门记录树状结构的表的名称'),
-       (12, 1, 18, 'tree_struct_record'),
-       (13, 1, 13, '专门记录二元关系的表的名称'),
-       (14, 1, 26, 'binary_relationship_record'),
-       (15, 1, 8, '组号记录表的名称'),
-       (16, 1, 12, 'group_record'),
-       (17, 1, 9, '组成员记录表的名称'),
-       (18, 1, 13, 'group_content'),
-       (19, 1, 8, '标签记录表的名称'),
-       (20, 1, 12, 'label_record'),
-       (21, 1, 4, 'JSON'),
-       (22, 1, 3, 'XML'),
-       (23, 1, 4, 'HTML'),
-       (24, 1, 6, '插表模型名称');
+INSERT INTO `string_content` (`global_id`, `content_length`, `content`)
+VALUES (9, 18, 'table-JSON模型记录表的名称'),
+       (10, 19, 'table_schema_record'),
+       (11, 13, '专门记录树状结构的表的名称'),
+       (12, 18, 'tree_struct_record'),
+       (13, 13, '专门记录二元关系的表的名称'),
+       (14, 26, 'binary_relationship_record'),
+       (15, 8, '组号记录表的名称'),
+       (16, 12, 'group_record'),
+       (17, 9, '组成员记录表的名称'),
+       (18, 13, 'group_content'),
+       (19, 8, '标签记录表的名称'),
+       (20, 12, 'label_record'),
+       (21, 4, 'JSON'),
+       (22, 3, 'XML'),
+       (23, 4, 'HTML'),
+       (24, 6, '插表模型名称');
+
+
+create table auth_account
+(
+    `id`            bigint          not null PRIMARY KEY AUTO_INCREMENT comment '账号ID',
+    `password_hash` char(128)       NOT NULL comment '账号密码的哈希值',
+    `password_salt` char(128)       NOT NULL comment '账号密码的哈希值计算的佐料',
+    `extra_info_id` bigint unsigned not null comment '账号额外信息',
+    unique key index_account_id (id),
+    index boost_query_all (id, password_hash, password_salt, extra_info_id),
+    foreign key (extra_info_id) references global_data_record (id) on delete restrict on update restrict
+) AUTO_INCREMENT = 10000
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = Dynamic;
 
 
 ALTER TABLE global_data_record

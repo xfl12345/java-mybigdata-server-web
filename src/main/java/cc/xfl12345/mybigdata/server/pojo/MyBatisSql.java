@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.pojo;
 
+import com.mysql.cj.PreparedQuery;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -75,7 +76,7 @@ public class MyBatisSql implements DisposableBean {
         String sql;
         if (preparedStatement instanceof com.mysql.cj.jdbc.ClientPreparedStatement) {
             try {
-                sql = preparedStatement.unwrap(com.mysql.cj.jdbc.ClientPreparedStatement.class).asSql();
+                sql = ((PreparedQuery) preparedStatement.unwrap(com.mysql.cj.jdbc.ClientPreparedStatement.class).getQuery()).asSql();
             } catch (SQLException e) {
                 sql = commonCompleteSqlGenerator();
             }

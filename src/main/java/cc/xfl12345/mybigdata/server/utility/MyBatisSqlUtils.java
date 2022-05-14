@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.utility;
 
+import com.mysql.cj.PreparedQuery;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -10,16 +11,15 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MyBatisSqlUtils {
-    public static String getSql(PreparedStatement preparedStatement) throws SQLException {
+    public static String getSql(PreparedStatement preparedStatement) {
         String sql;
         com.mysql.cj.jdbc.ClientPreparedStatement unwarpedPreparedStatement;
         try {
             unwarpedPreparedStatement = preparedStatement.unwrap(com.mysql.cj.jdbc.ClientPreparedStatement.class);
-            sql = unwarpedPreparedStatement.asSql();
+            sql = ((PreparedQuery) unwarpedPreparedStatement.getQuery()).asSql();
         } catch (Exception e) {
             try {
                 Method method = preparedStatement.getClass().getMethod("asSql");

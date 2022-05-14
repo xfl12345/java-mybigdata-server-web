@@ -18,7 +18,7 @@ public class ApacheURLBasedCacheLoader extends CacheLoader {
     }
 
     public String load(URI uri, boolean cacheSchema) throws IOException {
-        log.info("Loading :" + uri);
+        log.info("Loading JSON Schema file from: [" + uri + ']');
         FileObject fileObject = fileSystemManager.resolveFile(uri);
         if(cacheSchema) {
             fileSystemManager.getFilesCache().putFileIfAbsent(fileObject);

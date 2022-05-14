@@ -10,6 +10,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSelector;
+import org.apache.commons.vfs2.Selectors;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ram.RamFileObject;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,7 +63,7 @@ public class OfflineJsonSchemaURLInitializer implements InitializingBean {
         RamFileObject fileInRamFS = (RamFileObject) fileSystemManager.resolveFile("ram:/" + relativePath);
         if (src.isFolder()) {
             // 同步创建目录
-            fileInRamFS.createFolder();
+            fileInRamFS.copyFrom(src, Selectors.SELECT_SELF);
         } else {
             // 先创建目录，再拷贝文件
             fileInRamFS.getParent().createFolder();

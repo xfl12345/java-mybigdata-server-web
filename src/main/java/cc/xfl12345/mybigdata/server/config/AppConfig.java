@@ -2,6 +2,7 @@ package cc.xfl12345.mybigdata.server.config;
 
 import cc.xfl12345.mybigdata.server.plugin.apache.vfs.SpringBootResourceFileProvider;
 import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
+import cc.xfl12345.mybigdata.server.service.VfsWebDavService;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ram.RamFileObject;
 import org.apache.commons.vfs2.provider.ram.RamFileProvider;
 import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -104,6 +106,14 @@ public class AppConfig {
             + Arrays.toString(fileSystemManager.getSchemes()));
 //        tmpFileSystemManager.close();
         return fileSystemManager;
+    }
+
+    @Bean(name = "vfsWebDavService")
+    @ConfigurationProperties(prefix = "service.vfs-webdav")
+    public VfsWebDavService getVfsWebDavService() throws IOException {
+        VfsWebDavService vfsWebDavService = new VfsWebDavService();
+        vfsWebDavService.setFileSystemManager(getStandardFileSystemManager());
+        return vfsWebDavService;
     }
 
 

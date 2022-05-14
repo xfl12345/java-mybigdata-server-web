@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 
-@Component("staticSpringApp")
 public class StaticSpringApp implements ApplicationContextAware {
     public static ConfigurableApplicationContext springAppContext;
 

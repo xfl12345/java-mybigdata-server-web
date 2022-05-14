@@ -8,7 +8,6 @@ import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
-import lombok.extern.slf4j.Slf4j;
 import net.jimblackler.jsonschemafriend.GenerationException;
 import net.jimblackler.jsonschemafriend.SchemaStore;
 import net.jimblackler.jsonschemafriend.Validator;
@@ -21,11 +20,8 @@ import org.springframework.context.annotation.Scope;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.spi.FileSystemProvider;
-import java.util.Arrays;
 
 @Configuration
-@Slf4j
 public class JSONSchemaConfig {
 
     @Autowired
@@ -34,7 +30,6 @@ public class JSONSchemaConfig {
     @Bean(name = "offlineJsonSchemaURLInitializer")
     @Scope(value = "singleton")
     public OfflineJsonSchemaURLInitializer getOfflineJsonSchemaURLInitializer() throws IOException {
-        log.info(Arrays.toString(FileSystemProvider.installedProviders().toArray()));
         ResourceCacheMapBean cacheMapBean = appConfig.getResourceCacheBean();
         StandardFileSystemManager fileSystemManager = appConfig.getStandardFileSystemManager();
 

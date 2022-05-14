@@ -7,6 +7,10 @@ import cc.xfl12345.mybigdata.server.interceptor.UploadInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+//import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+//import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+//import org.springframework.boot.web.servlet.FilterRegistrationBean;
+//import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -35,8 +39,17 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
         super();
     }
 
-
-
+//    // source code URL=https://blog.csdn.net/fxz1535567862/article/details/88224242
+//    // 解决 中括号 等特殊符号 做文件名时， URL 不被 Tomcat 接受并报404 的 问题
+//    @Bean
+//    public TomcatServletWebServerFactory tomcatServletWebServerFactory (){
+//        // 修改内置的 tomcat 容器配置
+//        TomcatServletWebServerFactory tomcatServlet = new TomcatServletWebServerFactory();
+//        tomcatServlet.addConnectorCustomizers(
+//            connector -> connector.setProperty("relaxedQueryChars", "[]{}")
+//        );
+//        return tomcatServlet ;
+//    }
 
 
     @Bean("uploadInterceptor")
@@ -56,7 +69,6 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
     public DruidStatInterceptor getDruidStatInterceptor() {
         return new DruidStatInterceptor();
     }
-
 
 
 

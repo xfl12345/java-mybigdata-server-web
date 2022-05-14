@@ -10,13 +10,13 @@
 drop database if exists xfl_mybigdata;
 
 create
-database xfl_mybigdata DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    database xfl_mybigdata DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 use
-xfl_mybigdata;
+    xfl_mybigdata;
 
 SET
-FOREIGN_KEY_CHECKS = 0;
+    FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE `test_table`
 (
@@ -43,29 +43,38 @@ CREATE TABLE string_content
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     index boost_query_id (data_format, content_length) comment '加速查询主键，避免全表扫描',
     unique key boost_query_content (content(768)) comment '加速检索字符串内容'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 INSERT INTO string_content (global_id, data_format, content)
     # 第一个字符串，关于数据格式——text
-values (1, 1, 'text'),
+values (1, 1, 'text');
+
+# 设置字符串格式的默认值为 text
+ALTER TABLE string_content
+    ALTER COLUMN data_format SET DEFAULT 1;
+
+INSERT INTO string_content (global_id, content)
     # 第二个字符串，是一个空字符串
-       (2, 1, ''),
+VALUES (2, ''),
        # 第三个字符串，关于 "描述" 本身
-       (3, 1, '说明、描述'),
+       (3, '说明、描述'),
        # 第四个字符串，关于 第一个字符串 的描述
-       (4, 1, '一种字符串内容格式'),
+       (4, '一种字符串内容格式'),
        # 第五个字符串，关于 字符串表 的名称
-       (5, 1, '字符串记录表的名称'),
+       (5, '字符串记录表的名称'),
        # 第六个字符串，关于 字符串表 的名称
-       (6, 1, 'string_content'),
+       (6, 'string_content'),
        # 第七个字符串，关于 全局ID记录表 的描述
-       (7, 1, '全局ID记录表的名称'),
+       (7, '全局ID记录表的名称'),
        # 第八个字符串，关于 全局ID记录表 的名称
-       (8, 1, 'global_data_record');
+       (8, 'global_data_record');
 
 
 /**
-  全局ID记录表，记录并关联当前数据库内所有表的每一行数据
+  全局ID记录表，记录并关联当前数据库内所有表的每一行数据。
+  如果 table_name 字段 是空值，则意味着它是未使用的记录（用以加速插入数据），
+  而且该行数据有可能会被定期删除。
  */
 CREATE TABLE global_data_record
 (
@@ -74,31 +83,29 @@ CREATE TABLE global_data_record
     `create_time`    datetime        not null DEFAULT CURRENT_TIMESTAMP comment '创建时间',
     `update_time`    datetime        not null DEFAULT CURRENT_TIMESTAMP comment '修改时间',
     `modified_count` bigint unsigned not null default 1 comment '修改次数（版本迭代）',
-    `table_name`     bigint unsigned not null comment '该行数据所在的表名',
-    `description`    bigint unsigned not null default 2 comment '该行数据的附加简述',
+    `table_name`     bigint unsigned comment '该行数据所在的表名',
+    `description`    bigint unsigned          default 2 comment '该行数据的附加简述',
     # 全局ID 记录表，删除乃大忌。拒绝一切外表级联删除行记录，只允许按 global_id 或 uuid 删除行记录
-        # 遵循 一切普通文本 由 字符串记录表
-        # TODO 这里有问题……………………
-        #     foreign key (table_name) references string_content (global_id) on delete restrict on update cascade,
+    # 遵循 一切普通文本 由 字符串记录表
+    # TODO 这里有问题……………………
+    #     foreign key (table_name) references string_content (global_id) on delete restrict on update cascade,
     #     foreign key (description) references string_content (global_id) on delete restrict on update cascade,
     unique key index_uuid (uuid) comment '确保UUID的唯一性',
     index boost_query_all (uuid, create_time, update_time, modified_count, table_name, description)
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
-# 设置字符串格式的默认值为 text
-ALTER TABLE string_content
-    ALTER COLUMN data_format SET DEFAULT 1;
 
 INSERT INTO global_data_record (id, uuid, table_name, description)
     # 先斩后奏 之 关联已有的 字符串 数据
 VALUES (1, '00000000-cb7a-11eb-0000-f828196a1686', 6, 4),
-    (2, '00000001-cb7a-11eb-0000-f828196a1686', 6, 2),
-    (3, '00000002-cb7a-11eb-0000-f828196a1686', 6, 3),
-    (4, '00000003-cb7a-11eb-0000-f828196a1686', 6, 3),
-    (5, '00000004-cb7a-11eb-0000-f828196a1686', 6, 3),
-    (6, '00000005-cb7a-11eb-0000-f828196a1686', 6, 5),
-    (7, '00000006-cb7a-11eb-0000-f828196a1686', 6, 3),
-    (8, '00000007-cb7a-11eb-0000-f828196a1686', 6, 7);
+       (2, '00000001-cb7a-11eb-0000-f828196a1686', 6, 2),
+       (3, '00000002-cb7a-11eb-0000-f828196a1686', 6, 3),
+       (4, '00000003-cb7a-11eb-0000-f828196a1686', 6, 3),
+       (5, '00000004-cb7a-11eb-0000-f828196a1686', 6, 3),
+       (6, '00000005-cb7a-11eb-0000-f828196a1686', 6, 5),
+       (7, '00000006-cb7a-11eb-0000-f828196a1686', 6, 3),
+       (8, '00000007-cb7a-11eb-0000-f828196a1686', 6, 7);
 
 # 为 字符串表 添加 全局ID 约束
 alter table string_content
@@ -143,7 +150,7 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       data_src_table.content  AS `content`
+       data_src_table.content                                                      AS `content`
 FROM string_content AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
@@ -161,7 +168,8 @@ CREATE TABLE integer_content
     foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     unique key index_content (content) comment '加速查询全部数据'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 CREATE OR REPLACE VIEW view_integer_content AS
 SELECT g.id,
@@ -170,7 +178,7 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       data_src_table.content  AS content
+       data_src_table.content                                                      AS content
 FROM integer_content AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
@@ -186,15 +194,16 @@ CREATE TABLE table_schema_record
     `schema_name`    bigint unsigned not null comment '插表模型名称',
     `content_length` smallint        not null default -1 comment 'json_schema 字段的长度',
     # 这里不遵循 “一切普通文本 由 字符串记录表” 的原则
-        # 是因为json格式的字符串可以使用json格式存储，MySQL原生支持JSON格式
-        # 暂不考虑使用JSON格式存储JSON字符串，暂且先保留修改空间
-        `json_schema`    varchar(16000)  not null comment '插表模型',
+    # 是因为json格式的字符串可以使用json格式存储，MySQL原生支持JSON格式
+    # 暂不考虑使用JSON格式存储JSON字符串，暂且先保留修改空间
+    `json_schema`    varchar(16000)  not null comment '插表模型',
     foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
     foreign key (schema_name) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     unique key index_schema_name (schema_name) comment '确保插表模型名称的唯一性',
     index boost_query_id (global_id, schema_name, content_length) comment '加速查询主键，避免全表扫描'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 CREATE OR REPLACE VIEW view_table_schema_record AS
 SELECT g.id,
@@ -203,9 +212,9 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       data_src_table.schema_name  AS schema_name,
-       data_src_table.content_length  AS content_length,
-       data_src_table.json_schema  AS json_schema
+       data_src_table.schema_name                                                  AS schema_name,
+       data_src_table.content_length                                               AS content_length,
+       data_src_table.json_schema                                                  AS json_schema
 FROM table_schema_record AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
@@ -222,12 +231,13 @@ CREATE TABLE tree_struct_record
     `tree_deep`      int unsigned    not null comment '整个树的深度（有几层）',
     `content_length` smallint        not null default -1 comment 'JSON文本长度',
     # 暂不考虑使用JSON格式存储JSON字符串，且先保留修改空间
-        `struct_data`    varchar(16000)  not null comment '以JSON字符串形式记载树形结构',
+    `struct_data`    varchar(16000)  not null comment '以JSON字符串形式记载树形结构',
     foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     foreign key (root_id) references global_data_record (id) on delete cascade on update cascade,
     index boost_query_id (root_id, item_count, tree_deep, content_length) comment '加速查询主键，避免全表扫描'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 CREATE OR REPLACE VIEW view_tree_struct_record AS
 SELECT g.id,
@@ -236,11 +246,11 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       data_src_table.root_id  AS `root_id`,
-       data_src_table.item_count  AS `item_count`,
-       data_src_table.tree_deep  AS `tree_deep`,
-       data_src_table.content_length  AS `content_length`,
-       data_src_table.struct_data  AS `struct_data`
+       data_src_table.root_id                                                      AS `root_id`,
+       data_src_table.item_count                                                   AS `item_count`,
+       data_src_table.tree_deep                                                    AS `tree_deep`,
+       data_src_table.content_length                                               AS `content_length`,
+       data_src_table.struct_data                                                  AS `struct_data`
 FROM tree_struct_record AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
@@ -260,7 +270,8 @@ CREATE TABLE binary_relationship_record
     foreign key (item_b) references global_data_record (id) on delete cascade on update cascade,
     unique key unique_limit_ab (item_a, item_b) comment '不允许出现重复关系，以免浪费空间',
     index boost_query_all (item_b, item_a) comment '加速查询全部数据'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 CREATE OR REPLACE VIEW view_binary_relationship_record AS
 SELECT g.id,
@@ -269,10 +280,18 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       data_src_table.item_a  AS `item_a`,
-       (SELECT content FROM string_content AS s WHERE s.global_id = (SELECT description FROM global_data_record AS s WHERE s.id = data_src_table.item_a)) AS `item_a_description`,
-       data_src_table.item_b  AS `item_b`,
-       (SELECT content FROM string_content AS s WHERE s.global_id = (SELECT description FROM global_data_record AS s WHERE s.id = data_src_table.item_b)) AS `item_b_description`
+       data_src_table.item_a                                                       AS `item_a`,
+       (SELECT content
+        FROM string_content AS s
+        WHERE s.global_id = (SELECT description
+                             FROM global_data_record AS s
+                             WHERE s.id = data_src_table.item_a))                  AS `item_a_description`,
+       data_src_table.item_b                                                       AS `item_b`,
+       (SELECT content
+        FROM string_content AS s
+        WHERE s.global_id = (SELECT description
+                             FROM global_data_record AS s
+                             WHERE s.id = data_src_table.item_b))                  AS `item_b_description`
 FROM binary_relationship_record AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
@@ -289,21 +308,23 @@ CREATE TABLE group_record
     foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     index boost_query_all (group_name) comment '加速查询全部数据'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 /**
   专门记录 “组” 的表，所有关于“列表（一维数组）”、“集合”和“分组”等概念的数据的 关系 都记录于该表
  */
 CREATE TABLE group_content
 (
-    `group_id` bigint unsigned not null comment '组id',
-    `item_index`     bigint unsigned not null comment '组内对象的下标',
-    `item`     bigint unsigned not null comment '组内对象',
+    `group_id`   bigint unsigned not null comment '组id',
+    `item_index` bigint unsigned not null comment '组内对象的下标',
+    `item`       bigint unsigned not null comment '组内对象',
     # 关联 group_record 表。毕竟 “组” 这种概念，本就是一对多的关系。
-        foreign key (group_id) references group_record (global_id) on delete cascade on update cascade,
+    foreign key (group_id) references group_record (global_id) on delete cascade on update cascade,
     foreign key (item) references global_data_record (id) on delete cascade on update cascade,
     unique key boost_query_all (group_id, item_index, item) comment '加速查询全部数据'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 CREATE OR REPLACE VIEW view_group_content AS
 SELECT g.id,
@@ -312,9 +333,13 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       (SELECT content FROM string_content AS s WHERE s.global_id = (SELECT id FROM group_record AS s WHERE s.global_id = data_src_table.group_id)) AS `group_name`,
-       data_src_table.item_index  AS `item_index`,
-       data_src_table.item  AS `item`
+       (SELECT content
+        FROM string_content AS s
+        WHERE s.global_id = (SELECT id
+                             FROM group_record AS s
+                             WHERE s.global_id = data_src_table.group_id))         AS `group_name`,
+       data_src_table.item_index                                                   AS `item_index`,
+       data_src_table.item                                                         AS `item`
 FROM group_content AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.group_id = g.id
@@ -325,14 +350,15 @@ ORDER BY g.id;
  */
 CREATE TABLE label_record
 (
-    `global_id`  bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
-    group_id bigint unsigned not null comment '标签集合',
+    `global_id` bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
+    group_id    bigint unsigned not null comment '标签集合',
     foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     # 拒绝一切外表级联删除行记录，只允许按 主键id 删除行记录
-        foreign key (group_id) references group_record (global_id) on delete restrict on update cascade,
+    foreign key (group_id) references group_record (global_id) on delete restrict on update cascade,
     unique key boost_query_all (group_id) comment '加速查询全部数据'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 CREATE OR REPLACE VIEW view_label_record AS
 SELECT g.id,
@@ -341,7 +367,11 @@ SELECT g.id,
        g.update_time,
        g.modified_count,
        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       (SELECT content FROM string_content AS s WHERE s.global_id = (SELECT id FROM group_record AS s WHERE s.global_id = data_src_table.group_id)) AS `group_name`
+       (SELECT content
+        FROM string_content AS s
+        WHERE s.global_id = (SELECT id
+                             FROM group_record AS s
+                             WHERE s.global_id = data_src_table.group_id))         AS `group_name`
 FROM label_record AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
@@ -352,8 +382,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 # 大杀器，修改所有表的引擎为 InnoDB 。适用于对MySQL支持不太好的 ORM框架
 # SELECT CONCAT( 'ALTER TABLE ', TABLE_NAME, ' ENGINE=InnoDB;' )
-                                      # FROM information_schema.tables
-                                                 # WHERE table_schema = 'xfl_mybigdata';
+# FROM information_schema.tables
+# WHERE table_schema = 'xfl_mybigdata';
 
 # 准备插入一些初始信息
 # 来个插入数据的正规流程示范
@@ -374,7 +404,7 @@ BEGIN
     # 获取全局ID
     SET insert_row_gid = (SELECT id FROM global_data_record WHERE uuid = the_uuid);
 
-RETURN insert_row_gid;
+    RETURN insert_row_gid;
 END $$
 DELIMITER ;
 
@@ -393,14 +423,14 @@ BEGIN
     SET string_content_table_name_gid = (SELECT global_id FROM string_content WHERE content = 'string_content');
     # 获取全局ID
     SET insert_content_gid = insert_global_data_record(
-            description_uuid,
-            string_content_table_name_gid,
-            normal_text_description_gid);
+        description_uuid,
+        string_content_table_name_gid,
+        normal_text_description_gid);
     # 插入 内容 到 字符串表
     INSERT INTO string_content (global_id, content)
     VALUES (insert_content_gid, description);
 
-RETURN insert_content_gid;
+    RETURN insert_content_gid;
 END $$
 DELIMITER ;
 
@@ -418,14 +448,14 @@ BEGIN
     SET string_content_table_name_gid = (SELECT global_id FROM string_content WHERE content = 'string_content');
     # 获取全局ID
     SET insert_content_gid = insert_global_data_record(
-            insert_content_uuid,
-            string_content_table_name_gid,
-            description_gid);
+        insert_content_uuid,
+        string_content_table_name_gid,
+        description_gid);
     # 插入 内容 到 字符串表
     INSERT INTO string_content (global_id, content)
     VALUES (insert_content_gid, insert_content);
 
-RETURN insert_content_gid;
+    RETURN insert_content_gid;
 END $$
 DELIMITER ;
 
@@ -441,10 +471,10 @@ CREATE FUNCTION insert_string_content(
 BEGIN
     DECLARE description_gid bigint unsigned;
     SET description_gid = (SELECT insert_description_to_string_content(description_uuid, description));
-RETURN (SELECT insert_string_content_with_description_gid(
-                   insert_content_uuid,
-                   insert_content,
-                   description_gid));
+    RETURN (SELECT insert_string_content_with_description_gid(
+                       insert_content_uuid,
+                       insert_content,
+                       description_gid));
 END $$
 DELIMITER ;
 
@@ -467,27 +497,27 @@ BEGIN
     DECLARE description_gid bigint unsigned;
     SET normal_schema_description_gid = (SELECT global_id FROM string_content WHERE content = '插表模型名称');
     SET table_schema_record_table_name_gid =
-            (SELECT global_id FROM string_content WHERE content = 'table_schema_record');
+        (SELECT global_id FROM string_content WHERE content = 'table_schema_record');
     # 插入 插表模型 的 描述
     SET description_gid = (SELECT insert_string_content_with_description_gid(
-                                          description_uuid,
-                                          description,
-                                          normal_schema_description_gid));
+                                      description_uuid,
+                                      description,
+                                      normal_schema_description_gid));
     # 插入 插表模型 的 名称
     SET schema_name_gid = (SELECT insert_string_content_with_description_gid(
-                                          schema_name_uuid,
-                                          schema_name,
-                                          description_gid));
+                                      schema_name_uuid,
+                                      schema_name,
+                                      description_gid));
     # 新增 一行全局ID
     SET insert_row_gid = (SELECT insert_global_data_record(
-                                         json_schema_content_uuid,
-                                         table_schema_record_table_name_gid,
-                                         description_gid));
+                                     json_schema_content_uuid,
+                                     table_schema_record_table_name_gid,
+                                     description_gid));
     # table_schema_record 表 新增一行数据
     INSERT INTO table_schema_record (global_id, schema_name, json_schema)
     VALUES (insert_row_gid, schema_name_gid, json_schema_content);
 
-RETURN insert_row_gid;
+    RETURN insert_row_gid;
 END $$
 DELIMITER ;
 
@@ -556,12 +586,12 @@ SELECT insert_description_to_string_content(
 
 # # label_record 表的插表模型
 # SELECT insert_table_schema_record(
-               #                '00000056-cb7a-11eb-0000-f828196a1686',
-               #                'label_record 表的插表模型',
-               #                '00000057-cb7a-11eb-0000-f828196a1686',
-               #                '新增字符串',
-               #                '00000056-cb7a-11eb-0000-f828196a1686',
-               #                '{
+#                '00000056-cb7a-11eb-0000-f828196a1686',
+#                'label_record 表的插表模型',
+#                '00000057-cb7a-11eb-0000-f828196a1686',
+#                '新增字符串',
+#                '00000056-cb7a-11eb-0000-f828196a1686',
+#                '{
 #    "$schema": "https://json-schema.org/draft/2020-12/schema",
 #    "$id": "https://github.com/xfl12345/MyBigData_Python3/blob/main/mybigdata/src/main/resources/json/schema/string_content.json",
 #    "title": "string_content",
@@ -584,7 +614,20 @@ SELECT insert_description_to_string_content(
 #    ]
 # }');
 
-
+create table auth_account
+(
+    `id`            bigint          not null PRIMARY KEY AUTO_INCREMENT comment '账号ID',
+    `password_hash` char(128)       NOT NULL comment '账号密码的哈希值',
+    `password_salt` char(128)       NOT NULL comment '账号密码的哈希值计算的佐料',
+    `extra_info_id` bigint unsigned not null comment '账号额外信息',
+    unique key index_account_id (id),
+    index boost_query_all (id, password_hash, password_salt, extra_info_id),
+    foreign key (extra_info_id) references global_data_record (id) on delete restrict on update restrict
+) AUTO_INCREMENT = 10000
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = Dynamic;
 
 
 ALTER TABLE global_data_record
@@ -612,6 +655,7 @@ CREATE TABLE weather_coding_goal
     foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     # 拒绝一切外表级联删除行记录，只允许按 主键id 删除行记录
-        foreign key (weather_like) references string_content (global_id) on delete restrict on update cascade,
+    foreign key (weather_like) references string_content (global_id) on delete restrict on update cascade,
     index boost_query_all (weather_like, celsius_degree) comment '加速查询全部数据'
-) ENGINE = InnoDB ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
