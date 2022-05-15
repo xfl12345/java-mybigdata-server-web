@@ -35,9 +35,18 @@ repositories {
     }
 }
 
-dependencies {
 
+configurations {
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    all*.exclude group: "ch.qos.logback"
+}
+
+dependencies {
 //    compileOnly "org.jetbrains:annotations:23.0.0"
+
+    // https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api
+    implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+
 
     def springBootVersion = "2.6.7"
     def mybatisGeneratorVersion = "1.3.7"
@@ -53,18 +62,15 @@ dependencies {
         "starter-web",
         "starter-aop",
         "starter-data-jdbc",
-        "devtools",
+        //"devtools",
         "configuration-processor"
     ]
 
     springBootDependencies.each {
-        moduleName -> implementation(group: "org.springframework.boot", name: "spring-boot-" + moduleName, version: springBootVersion) {
-            exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
-        }
+        moduleName -> implementation group: "org.springframework.boot", name: "spring-boot-" + moduleName, version: springBootVersion
     }
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion") {
-        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
         exclude group: "com.vaadin.external.google", module: "android-json"
     }
     providedRuntime "org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion"
@@ -72,9 +78,7 @@ dependencies {
 
     // 阿里巴巴 Druid Datasource
     // https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter
-    implementation(group: "com.alibaba", name: "druid-spring-boot-starter", version: "1.2.9") {
-        exclude group: "org.springframework.boot", module: "spring-boot-autoconfigure"
-    }
+    implementation group: "com.alibaba", name: "druid-spring-boot-starter", version: "1.2.9"
 
     // 国产ORM框架 bee
     // https://mvnrepository.com/artifact/org.teasoft/bee-spring-boot-starter
@@ -83,10 +87,8 @@ dependencies {
 
     // Sa-Token 框架
     // https://mvnrepository.com/artifact/cn.dev33/sa-token-spring-boot-starter
-    implementation(group: "cn.dev33", name: "sa-token-spring-boot-starter", version: saTokenVersion) {
-        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
-    }
-    implementation(group: "cn.dev33", name: "sa-token-oauth2", version: saTokenVersion)
+    implementation group: "cn.dev33", name: "sa-token-spring-boot-starter", version: saTokenVersion
+    implementation group: "cn.dev33", name: "sa-token-oauth2", version: saTokenVersion
 
     // SpringDoc 框架
     // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
@@ -99,9 +101,7 @@ dependencies {
 //    }
 
     // https://mvnrepository.com/artifact/com.github.a-langer/webdav-vfs-gate
-    implementation (group: "com.github.a-langer", name: "webdav-vfs-gate", version: "1.0.0", classifier: "classes")  {
-        exclude group: "ch.qos.logback"
-    }
+    implementation group: "com.github.a-langer", name: "webdav-vfs-gate", version: "1.0.0", classifier: "classes"
 
 
 
@@ -222,32 +222,32 @@ dependencies {
     implementation group: "org.mybatis", name: "mybatis", version: "3.5.9"
 
     // https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
-    implementation group: "org.mybatis", name: "mybatis-spring", version: "2.0.7"
+    testImplementation group: "org.mybatis", name: "mybatis-spring", version: "2.0.7"
 
     // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core
-    implementation group: "org.mybatis.generator", name: "mybatis-generator-core", version: mybatisGeneratorVersion
+    testImplementation group: "org.mybatis.generator", name: "mybatis-generator-core", version: mybatisGeneratorVersion
 //
 //    // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator
 //    implementation group: "org.mybatis.generator", name: "mybatis-generator", version: mybatisGeneratorVersion, ext: "pom"
 
     // MyBatis nuclear bomb
     // https://mvnrepository.com/artifact/tk.mybatis/mapper
-    implementation group: "tk.mybatis", name: "mapper", version: tk_mybatis_version
+    testImplementation group: "tk.mybatis", name: "mapper", version: tk_mybatis_version
 
     // https://mvnrepository.com/artifact/tk.mybatis/mapper-core
-    implementation group: "tk.mybatis", name: "mapper-core", version: tk_mybatis_version
+    testImplementation group: "tk.mybatis", name: "mapper-core", version: tk_mybatis_version
 
     // https://mvnrepository.com/artifact/tk.mybatis/mapper-base
-    implementation group: "tk.mybatis", name: "mapper-base", version: tk_mybatis_version
+    testImplementation group: "tk.mybatis", name: "mapper-base", version: tk_mybatis_version
 
     // https://mvnrepository.com/artifact/tk.mybatis/mapper-extra
-    implementation group: "tk.mybatis", name: "mapper-extra", version: tk_mybatis_version
+    testImplementation group: "tk.mybatis", name: "mapper-extra", version: tk_mybatis_version
 
     // https://mvnrepository.com/artifact/tk.mybatis/mapper-weekend
-    implementation group: "tk.mybatis", name: "mapper-weekend", version: tk_mybatis_version
+    testImplementation group: "tk.mybatis", name: "mapper-weekend", version: tk_mybatis_version
 
     // https://mvnrepository.com/artifact/tk.mybatis/mapper-generator
-    implementation group: "tk.mybatis", name: "mapper-generator", version: tk_mybatis_version
+    testImplementation group: "tk.mybatis", name: "mapper-generator", version: tk_mybatis_version
 
     // tk.mybatis Dependence
     // https://mvnrepository.com/artifact/org.freemarker/freemarker

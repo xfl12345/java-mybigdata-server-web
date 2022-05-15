@@ -1,11 +1,11 @@
 spring:
-    devtools:
-        restart:
-            enabled: true
-            #additional-paths: src/main/java
-            trigger-file: .restartTriggerFile
-        livereload:
-            port: 54567
+    #devtools:
+    #    restart:
+    #        enabled: true
+    #        #additional-paths: src/main/java
+    #        trigger-file: .restartTriggerFile
+    #    livereload:
+    #        port: 54567
     thymeleaf:
         cache: false
     datasource:
@@ -24,7 +24,7 @@ spring:
             poolPreparedStatements: true
             maxPoolPreparedStatementPerConnectionSize: 50
             aop-patterns: cc.xfl12345.mybigdata.*
-            use-global-data-source-stat: false
+            use-global-data-source-stat: true
             connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;
             filters: config,stat,slf4j,wall # wall用于防火墙
             filter:

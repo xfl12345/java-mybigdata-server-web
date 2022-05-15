@@ -1,6 +1,5 @@
 package cc.xfl12345.mybigdata.server.plugin.apache.jackrabbit.webdav;
 
-import com.github.alanger.webdav.VfsDavResource;
 import com.github.alanger.webdav.VfsDavResourceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileObject;

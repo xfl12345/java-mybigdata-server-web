@@ -29,10 +29,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.VFS;
-import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
-import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
-import org.apache.commons.vfs2.provider.webdav4.Webdav4FileSystemConfigBuilder;
-import org.apache.commons.vfs2.provider.zip.ZipFileSystemConfigBuilder;
 import org.apache.jackrabbit.webdav.*;
 import org.apache.jackrabbit.webdav.bind.BindInfo;
 import org.apache.jackrabbit.webdav.bind.BindableResource;
@@ -74,13 +70,10 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
-import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-//import com.github.alanger.webdav.VfsDavResourceFactory;
 
 @Slf4j
 public class VfsWebDavService implements DisposableBean, InitializingBean, DavConstants, Serializable {
@@ -174,6 +167,10 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
             throw new IllegalArgumentException("The '"+ INIT_PARAM_ROOTPATH +"' param is required.");
         }
 
+        if (fileSystemOptions == null) {
+            throw new IllegalArgumentException("The 'fileSystemOptions' param is required.");
+        }
+
         if (davSessionProvider == null) {
             davSessionProvider = new VfsDavSessionProvider();
         }
@@ -187,35 +184,6 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
             lockManager = new SimpleLockManager();
         }
 
-        if (fileSystemOptions == null) {
-            fileSystemOptions = new FileSystemOptions();
-
-            ZipFileSystemConfigBuilder zipBuilder = ZipFileSystemConfigBuilder.getInstance();
-            zipBuilder.setCharset(fileSystemOptions, StandardCharsets.UTF_8);
-
-            FtpsFileSystemConfigBuilder ftpsBuilder = FtpsFileSystemConfigBuilder.getInstance();
-            ftpsBuilder.setConnectTimeout(fileSystemOptions, Duration.ofSeconds(5));
-            ftpsBuilder.setUserDirIsRoot(fileSystemOptions, false);
-            ftpsBuilder.setAutodetectUtf8(fileSystemOptions, true);
-            ftpsBuilder.setPassiveMode(fileSystemOptions, true);
-            ftpsBuilder.setControlEncoding(fileSystemOptions, StandardCharsets.UTF_8.name());
-
-            SftpFileSystemConfigBuilder sftpBuilder = SftpFileSystemConfigBuilder.getInstance();
-            sftpBuilder.setConnectTimeout(fileSystemOptions, Duration.ofSeconds(5));
-            sftpBuilder.setUserDirIsRoot(fileSystemOptions, false);
-            sftpBuilder.setStrictHostKeyChecking(fileSystemOptions, "no");
-
-            Webdav4FileSystemConfigBuilder webdavBuilder = Webdav4FileSystemConfigBuilder.getInstance();
-            webdavBuilder.setConnectionTimeout(fileSystemOptions, Duration.ofSeconds(50));
-            webdavBuilder.setSoTimeout(fileSystemOptions, Duration.ofSeconds(50));
-            webdavBuilder.setMaxConnectionsPerHost(fileSystemOptions, 1000);
-            webdavBuilder.setMaxTotalConnections(fileSystemOptions, 1000);
-            webdavBuilder.setHostnameVerificationEnabled(fileSystemOptions, false);
-            webdavBuilder.setPreemptiveAuth(fileSystemOptions, true);
-            webdavBuilder.setUrlCharset(fileSystemOptions, StandardCharsets.UTF_8.name());
-            webdavBuilder.setFollowRedirect(fileSystemOptions, true);
-            webdavBuilder.setKeepAlive(fileSystemOptions, true);
-        }
 
         if (fileSystemManager == null) {
             fileSystemManager = VFS.getManager();
@@ -265,18 +233,12 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
 
     @Override
     public void destroy() {
-        log.info("Destroy servlet: {}, rootpath: {}, listingsDirectory: {}, version: {}",
+        log.info("Destroy service: {}, rootpath: {}, listingsDirectory: {}, version: {}",
             this,
             rootPathFileObject != null ? rootPathFileObject.getPublicURIString() : rootPathFileObject,
             listingsDirectory,
             VERSION
         );
-        if (fileSystemManager != null) {
-            if (rootPathFileObject != null) {
-                fileSystemManager.closeFileSystem(rootPathFileObject.getFileSystem());
-            }
-            fileSystemManager.close();
-        }
     }
 
     protected String getProperty(String key) {

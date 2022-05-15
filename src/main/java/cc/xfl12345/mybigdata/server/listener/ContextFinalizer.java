@@ -4,8 +4,6 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileSystemManager;
-import org.apache.ibatis.datasource.pooled.PooledDataSource;
-import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -105,9 +103,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         TreeSet<String> dataSourceBeanNames = new TreeSet<>();
         if (drivers.hasMoreElements()) {
             if (springAppContext != null) {
-                dataSourceBeanNames = new TreeSet<>(List.of(springAppContext.getBeanNamesForType(PooledDataSource.class)));
-                dataSourceBeanNames.addAll(List.of(springAppContext.getBeanNamesForType(UnpooledDataSource.class)));
-                dataSourceBeanNames.addAll(List.of(springAppContext.getBeanNamesForType(DruidDataSource.class)));
+                dataSourceBeanNames = new TreeSet<>(List.of(springAppContext.getBeanNamesForType(DruidDataSource.class)));
             }
             Driver d = null;
             DataSource dataSource;
@@ -129,11 +125,6 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
                         for (String beanName : tmpCopy) {
                             dataSource = springAppContext.getBean(beanName, DataSource.class);
                             String dataSourceDriverName = "";
-                            if (dataSource instanceof PooledDataSource) {
-                                dataSourceDriverName = ((PooledDataSource) dataSource).getDriver();
-                            } else if (dataSource instanceof UnpooledDataSource) {
-                                dataSourceDriverName = ((UnpooledDataSource) dataSource).getDriver();
-                            }
                             if (d.getClass().getCanonicalName().equals(dataSourceDriverName)) {
                                 driverInstanceName = d.toString();
                                 ((BeanDefinitionRegistry) springAppContext.getAutowireCapableBeanFactory()).removeBeanDefinition(beanName);

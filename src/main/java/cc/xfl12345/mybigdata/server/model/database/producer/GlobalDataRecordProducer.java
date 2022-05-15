@@ -12,6 +12,7 @@ import org.teasoft.honey.osql.core.SessionFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataRecord> {
@@ -35,9 +36,13 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
                     // 先取出，投入到资源池里
                     List<GlobalDataRecord> items = suid.select(new GlobalDataRecord(), condition);
                     int itemsCount = items.size();
-                    for (int i = 0; i < itemsCount && keepProduce; i++) {
+                    for (int i = 0; keepProduce && i < itemsCount; i++) {
+                        GlobalDataRecord item = items.get(i);
                         try {
-                            resourcePool.putLast(items.get(i));
+                            boolean isPut = false;
+                            while (keepProduce && !isPut) {
+                                isPut = resourcePool.offerLast(item, 3, TimeUnit.SECONDS);
+                            }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                             log.error(e.getMessage());
@@ -49,7 +54,7 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
                         int produceCount = remainingCapacity + 1;
                         // 预分配至少 2倍 空间，防止触发扩容
                         ArrayList<GlobalDataRecord> records = new ArrayList<>((produceCount << 1));
-                        for (int i = 0; i < produceCount && keepProduce; i++) {
+                        for (int i = 0; keepProduce && i < produceCount; i++) {
                             GlobalDataRecord globalDataRecord = new GlobalDataRecord();
                             globalDataRecord.setUuid(myself.uuidGenerator.generate().toString());
                             records.add(globalDataRecord);

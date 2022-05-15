@@ -18,7 +18,7 @@ public class MySpringAppRefreshedListener implements ApplicationListener<Context
         if (applicationContext.getParent() != null) {
             webApplicationContext = (WebApplicationContext) applicationContext;
         }
-        log.info("我的父容器为：" + applicationContext.getParent() + "; 初始化完成之后，我被调用了。");
+        log.info("我的父容器为：" + applicationContext.getParent() + "; Context refreshed.");
     }
 }
 

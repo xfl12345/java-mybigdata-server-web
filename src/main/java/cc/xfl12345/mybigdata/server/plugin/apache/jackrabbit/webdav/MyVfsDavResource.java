@@ -32,17 +32,6 @@ import java.util.List;
  * See org.apache.jackrabbit.webdav.simple.DavResourceImpl
  */
 public class MyVfsDavResource extends VfsDavResource {
-//    private static Method vfsLocalFileGetLocalFile;
-//
-//    static {
-//        try {
-//            vfsLocalFileGetLocalFile = LocalFile.class.getDeclaredMethod("getLocalFile");
-//            vfsLocalFileGetLocalFile.setAccessible(true);
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     protected DavServletRequest davServletRequest;
     protected FileObject fileObject;
     //    protected List<HttpRange> ranges = new ArrayList<>();
@@ -224,16 +213,6 @@ public class MyVfsDavResource extends VfsDavResource {
                         HttpRange httpRange = ranges.get(0);
                         long rangeStart = httpRange.getRangeStart(fileSize);
                         long rangeEnd = httpRange.getRangeEnd(fileSize);
-//                        // 如果客户端没有指定范围终点，则默认不一次性发全部，尝试发一小部分。
-//                        // 诱引客户端支持断点续传、流媒体拖拽播放
-//                        if (httpRange.getRangeEnd() == null) {
-//                            long tmpRangeEnd = rangeStart + ((long) outputBufferSize << 10);
-//                            if(tmpRangeEnd > fileSize) {
-//                                tmpRangeEnd = fileSize;
-//                            }
-//                            rangeEnd = tmpRangeEnd;
-//                        }
-
                         long rangeSize = rangeEnd - rangeStart + 1;
                         response.setContentType(contentType);
                         response.setContentLengthLong(rangeSize);
@@ -248,19 +227,7 @@ public class MyVfsDavResource extends VfsDavResource {
                             "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize
                         );
                         if(localFile != null) {
-//                            File file = null;
-//                            file = new File(URI.create("file:" + EncodeUtils.encodeBracketsOnly4URL(localFile.getURL().getFile())));
                             sentRangeBytes(localFile, os, httpRange, fileSize);
-//                            if (vfsLocalFileGetLocalFile != null) {
-//                                try {
-//                                    file = (File) vfsLocalFileGetLocalFile.invoke(localFile);
-//                                    sentRangeBytes(file, os, httpRange, fileSize);
-//                                } catch (IllegalAccessException | InvocationTargetException e) {
-//                                    sentRangeBytes(is, os, httpRange, fileSize);
-//                                }
-//                            } else {
-//                                sentRangeBytes(is, os, httpRange, fileSize);
-//                            }
                         } else {
                             sentRangeBytes(is, os, httpRange, fileSize);
                         }

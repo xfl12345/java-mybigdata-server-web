@@ -16,7 +16,7 @@
         <property name="log_charset">UTF-8</property>
         <!--输出日志格式-->
         <property name="log_pattern">
-            %d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n
+            %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p %c{1}:%L - %msg%n
         </property>
     </Properties>
 
@@ -25,7 +25,7 @@
         <!--这个输出控制台的配置-->
         <console name="Console" target="SYSTEM_OUT" ignoreExceptions="false">
             <!--输出日志的格式 %l :表示某个类-->
-            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%t] %-5p %c{1}:%L - %msg%n"/>
+            <PatternLayout pattern="${log_pattern}"/>
         </console>
 
         <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->

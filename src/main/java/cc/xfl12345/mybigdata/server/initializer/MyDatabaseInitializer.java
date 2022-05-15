@@ -8,7 +8,7 @@ import cc.xfl12345.mybigdata.server.utility.MyBatisSqlUtils;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.conf.ConnectionUrl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.io.Resources;
+import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.taskdefs.SQLExec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,7 +130,7 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         if (rs.next()) {
             log.info("Database is exist!");
             try {
-                URL dbRestartInitSqlFileURL = Resources.getResourceURL("database/db_restart_init.sql");
+                URL dbRestartInitSqlFileURL = IOUtils.resourceToURL("database/db_restart_init.sql");
                 log.info("Executing db_restart_init_sql_file: " + dbRestartInitSqlFileURL.toString());
                 try {
                     executeSqlFile(conn2, dbRestartInitSqlFileURL);
@@ -144,7 +144,7 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         } else {
             log.info("Database is not exist!");
             try {
-                URL dbInitSqlFileURL = Resources.getResourceURL("database/db_init.sql");
+                URL dbInitSqlFileURL = IOUtils.resourceToURL("database/db_init.sql");
                 log.info("Executing db_init_sql_file: " + dbInitSqlFileURL.toString());
                 try {
                     executeSqlFile(conn2, dbInitSqlFileURL);

@@ -24,12 +24,6 @@ public class WebdavController {
     @RequestMapping("/**")
     public void vfsWebdav(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request) {
-//            @Override
-//            public String getContextPath() {
-//                return '/' + VIRTUAL_SERVLET_PATH;
-////                return "";
-//            }
-
             @Override
             public String getServletPath() {
                 return '/' + VIRTUAL_SERVLET_PATH;
