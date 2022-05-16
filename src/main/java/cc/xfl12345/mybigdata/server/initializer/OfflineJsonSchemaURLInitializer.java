@@ -10,7 +10,6 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.Selectors;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.ram.RamFileObject;

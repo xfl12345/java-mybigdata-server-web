@@ -13,17 +13,14 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.teasoft.bee.osql.BeeException;
-import org.teasoft.bee.osql.Suid;
 import org.teasoft.bee.osql.SuidRich;
 import org.teasoft.bee.osql.transaction.Transaction;
 import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 import org.teasoft.honey.osql.core.BeeFactory;
 import org.teasoft.honey.osql.core.SessionFactory;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j

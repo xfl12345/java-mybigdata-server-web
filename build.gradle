@@ -36,10 +36,6 @@ repositories {
 }
 
 
-configurations {
-    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    all*.exclude group: "ch.qos.logback"
-}
 
 dependencies {
 //    compileOnly "org.jetbrains:annotations:23.0.0"
@@ -57,7 +53,6 @@ dependencies {
     def tk_mybatis_version = "4.2.1"
 
     def springBootDependencies = [
-        "starter-log4j2",
         //"starter-thymeleaf",
         "starter-web",
         "starter-aop",
@@ -100,9 +95,10 @@ dependencies {
 //        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
 //    }
 
-    // https://mvnrepository.com/artifact/com.github.a-langer/webdav-vfs-gate
-    implementation group: "com.github.a-langer", name: "webdav-vfs-gate", version: "1.0.0", classifier: "classes"
-
+//    // https://mvnrepository.com/artifact/com.github.a-langer/webdav-vfs-gate
+//    implementation (group: "com.github.a-langer", name: "webdav-vfs-gate", version: "1.0.0", classifier: "classes") {
+//        exclude group: "ch.qos.logback"
+//    }
 
 
     project.ext.myDiyConf.dependencies.each {
@@ -177,6 +173,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2-jackrabbit2
     implementation group: "org.apache.commons", name: "commons-vfs2-jackrabbit2", version: "2.9.0"
+
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     implementation group: "org.apache.httpcomponents", name: "httpclient", version: "4.5.13"

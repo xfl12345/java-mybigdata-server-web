@@ -25,13 +25,13 @@ import java.net.URL;
 public class JSONSchemaConfig {
 
     @Autowired
-    protected AppConfig appConfig;
+    protected VFSConfig vfsConfig;
 
     @Bean(name = "offlineJsonSchemaURLInitializer")
     @Scope(value = "singleton")
     public OfflineJsonSchemaURLInitializer getOfflineJsonSchemaURLInitializer() throws IOException {
-        ResourceCacheMapBean cacheMapBean = appConfig.getResourceCacheBean();
-        StandardFileSystemManager fileSystemManager = appConfig.getStandardFileSystemManager();
+        ResourceCacheMapBean cacheMapBean = vfsConfig.getResourceCacheBean();
+        StandardFileSystemManager fileSystemManager = vfsConfig.getStandardFileSystemManager();
 
         OfflineJsonSchemaURLInitializer initializer = new OfflineJsonSchemaURLInitializer();
         initializer.setCacheMapBean(cacheMapBean);
@@ -43,7 +43,7 @@ public class JSONSchemaConfig {
     @Bean(name = "apacheURLBasedCacheLoader")
     @Scope(value = "singleton")
     public ApacheURLBasedCacheLoader getApacheURLBasedCacheLoader() throws IOException {
-        return new ApacheURLBasedCacheLoader(appConfig.getStandardFileSystemManager());
+        return new ApacheURLBasedCacheLoader(vfsConfig.getStandardFileSystemManager());
     }
 
 
@@ -70,7 +70,7 @@ public class JSONSchemaConfig {
 
     @Bean(name = "baseRequestObjectChecker")
     public OfflineJsonChecker getBaseRequestObjectChecker() throws GenerationException, IOException, URISyntaxException {
-        URL url = appConfig.getStandardFileSystemManager()
+        URL url = vfsConfig.getStandardFileSystemManager()
             .resolveFile("ram:/" + "json/schema/base_request_object.json").getURL();
         return new OfflineJsonChecker(
             getSchemaStore(),
@@ -82,7 +82,7 @@ public class JSONSchemaConfig {
 
     @Bean(name = "mybatisRowBoundsObjectChecker")
     public OfflineJsonChecker getMybatisRowBoundsObjectChecker() throws GenerationException, IOException, URISyntaxException {
-        URL url = appConfig.getStandardFileSystemManager()
+        URL url = vfsConfig.getStandardFileSystemManager()
             .resolveFile("ram:/" + "json/schema/mybatis_row_bounds_object.json").getURL();
         return new OfflineJsonChecker(
             getSchemaStore(),

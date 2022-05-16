@@ -1,29 +1,28 @@
-package cc.xfl12345.mybigdata.server.config;
+package cc.xfl12345.mybigdata.server.initializer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
-@Configuration
-public class EnvironmentOnCreated implements EnvironmentPostProcessor, Ordered {
+@Component
+public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor, Ordered {
 
     @SuppressWarnings("unchecked")
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         String classLoaderName = Thread.currentThread().getContextClassLoader().getClass().getCanonicalName();
-
         Properties properties = new Properties();
         // org.apache.catalina.loader.ParallelWebappClassLoader
         if(classLoaderName.startsWith("org.apache.catalina")) {
-            properties.setProperty("logging.config", "classpath:log/conf/tomcat/log4j2.xml");
+            properties.setProperty("logging.config", "classpath:log/conf/tomcat/logback-spring.xml");
         } else {
-            properties.setProperty("logging.config", "classpath:log/conf/normal/log4j2.xml");
+            properties.setProperty("logging.config", "classpath:log/conf/normal/logback-spring.xml");
         }
 
         MutablePropertySources propertySources = environment.getPropertySources();

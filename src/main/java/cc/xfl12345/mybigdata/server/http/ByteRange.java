@@ -20,8 +20,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-
 /**
  * Represents an HTTP/1.1 byte range, with a first and optional last position.
  *

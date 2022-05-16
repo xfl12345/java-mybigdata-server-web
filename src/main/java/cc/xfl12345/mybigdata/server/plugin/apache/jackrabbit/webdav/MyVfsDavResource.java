@@ -2,7 +2,6 @@ package cc.xfl12345.mybigdata.server.plugin.apache.jackrabbit.webdav;
 
 import cc.xfl12345.mybigdata.server.http.HttpRange;
 import cc.xfl12345.mybigdata.server.http.HttpRangeParser;
-import cc.xfl12345.mybigdata.server.utility.EncodeUtils;
 import com.github.alanger.webdav.VfsDavResource;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,9 +20,6 @@ import org.apache.tika.Tika;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;

@@ -29,6 +29,7 @@ public class StudyBeeOrm {
     public static void main(String[] args) throws IOException, SQLException {
         Yaml yaml = new Yaml();
         URL fileURL = ClassLoader.getSystemClassLoader().getResource("application.yml");
+        ClassLoader.getSystemClassLoader().getResource("org/springframework/boot/logging/logback/defaults.xml");
         InputStream inputStream = Objects.requireNonNull(fileURL).openStream();
         JSONObject jsonObject = yaml.loadAs(inputStream, JSONObject.class);
         inputStream.close();

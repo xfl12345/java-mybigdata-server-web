@@ -8,7 +8,6 @@ import cc.xfl12345.mybigdata.server.utility.MyBatisSqlUtils;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.conf.ConnectionUrl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.taskdefs.SQLExec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +95,7 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
     }
 
     public void initMySQL() throws SQLException, IOException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         MysqlJdbcUrlHelper mysqlJdbcUrlHelper = new MysqlJdbcUrlHelper(ConnectionUrl.getConnectionUrlInstance(url, null));
         String targetDatabaseName = mysqlJdbcUrlHelper.getDatabaseName();
         mysqlJdbcUrlHelper.setDatabaseName("information_schema");
@@ -129,8 +129,8 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
 
         if (rs.next()) {
             log.info("Database is exist!");
-            try {
-                URL dbRestartInitSqlFileURL = IOUtils.resourceToURL("database/db_restart_init.sql");
+            URL dbRestartInitSqlFileURL = classLoader.getResource("database/db_restart_init.sql");
+            if (dbRestartInitSqlFileURL != null) {
                 log.info("Executing db_restart_init_sql_file: " + dbRestartInitSqlFileURL.toString());
                 try {
                     executeSqlFile(conn2, dbRestartInitSqlFileURL);
@@ -138,13 +138,13 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
                 } catch (IOException exception) {
                     log.error(exception.getMessage());
                 }
-            } catch (IOException exception) {
+            } else {
                 log.info("Initiation will not process.Because file not found");
             }
         } else {
             log.info("Database is not exist!");
-            try {
-                URL dbInitSqlFileURL = IOUtils.resourceToURL("database/db_init.sql");
+            URL dbInitSqlFileURL = classLoader.getResource("database/db_init.sql");
+            if (dbInitSqlFileURL != null) {
                 log.info("Executing db_init_sql_file: " + dbInitSqlFileURL.toString());
                 try {
                     executeSqlFile(conn2, dbInitSqlFileURL);
@@ -152,7 +152,7 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
                 } catch (IOException exception) {
                     log.error(exception.getMessage());
                 }
-            } catch (IOException exception) {
+            } else  {
                 log.info("Initiation will not process.Because file not found");
             }
         }

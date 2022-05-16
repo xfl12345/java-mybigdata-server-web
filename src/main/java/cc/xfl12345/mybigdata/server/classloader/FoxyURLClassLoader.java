@@ -1,20 +1,13 @@
 package cc.xfl12345.mybigdata.server.classloader;
 
-import cc.xfl12345.mybigdata.server.utility.UnreentrantLock;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.Synchronized;
 import org.apache.commons.vfs2.FileSystem;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.ram.RamFileObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
 import java.security.SecureClassLoader;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class FoxyURLClassLoader extends SecureClassLoader {

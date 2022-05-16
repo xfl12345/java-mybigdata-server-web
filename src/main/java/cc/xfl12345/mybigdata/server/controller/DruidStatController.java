@@ -31,10 +31,11 @@ public class DruidStatController implements ApplicationContextAware {
     public static final String servletName = "druid";
     public static final String servletPathCache1 = "/" + servletName;
     public static final String servletPathCache2 = "/" + servletName + "/";
+    public static final String servletIndexPagePathCache = servletName + "/index.html";
 
     @RequestMapping(path = {"", "index"})
     public void indexView(HttpServletResponse response) throws IOException {
-        response.sendRedirect("index.html");
+        response.sendRedirect(servletIndexPagePathCache);
     }
 
     @RequestMapping("{partOne:^\\w+.+}.json")

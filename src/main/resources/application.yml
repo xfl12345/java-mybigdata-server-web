@@ -97,14 +97,16 @@ server:
             charset: UTF-8
 
 
-debug: true
+debug: false
 logging:
+    config: "classpath:log/conf/logback-spring.xml"
     charset:
         console: UTF-8
 
 
-service:
-    vfs-webdav:
-        root-path: "C:/bigtmp/"
+app:
+    service:
+        vfs-webdav:
+            root-path: "C:/bigtmp/"
 
 

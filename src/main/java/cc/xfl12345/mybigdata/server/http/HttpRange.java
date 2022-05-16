@@ -15,13 +15,7 @@
  */
 package cc.xfl12345.mybigdata.server.http;
 
-import lombok.Getter;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * Represents an HTTP (byte) range for use with the HTTP {@code "Range"} header.

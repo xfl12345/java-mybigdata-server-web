@@ -1,10 +1,8 @@
 package cc.xfl12345.mybigdata.server.model.database.result;
 
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.IntegerContent;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import lombok.Getter;
-import lombok.Setter;
 
 public class NumberTypeResult extends ExecuteResultBase {
     protected Object theNum;
