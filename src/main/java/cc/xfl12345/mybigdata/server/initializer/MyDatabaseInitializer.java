@@ -7,7 +7,11 @@ import cc.xfl12345.mybigdata.server.model.jdbc.MysqlJdbcUrlHelper;
 import cc.xfl12345.mybigdata.server.utility.MyBatisSqlUtils;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.conf.ConnectionUrl;
+import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.tools.ant.taskdefs.SQLExec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +22,7 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -31,15 +34,12 @@ import java.util.Properties;
 @Component("myDatabaseInitializer")
 @Slf4j
 public class MyDatabaseInitializer implements SpringBeanAPI {
+    @Getter
     protected ApplicationContext applicationContext;
-
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
 
     @Autowired
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -127,52 +127,55 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         log.info(MyBatisSqlUtils.getSql(ps));
         ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            log.info("Database is exist!");
-            URL dbRestartInitSqlFileURL = classLoader.getResource("database/db_restart_init.sql");
-            if (dbRestartInitSqlFileURL != null) {
-                log.info("Executing db_restart_init_sql_file: " + dbRestartInitSqlFileURL.toString());
-                try {
-                    executeSqlFile(conn2, dbRestartInitSqlFileURL);
-                    log.info("Database initiated!");
-                } catch (IOException exception) {
-                    log.error(exception.getMessage());
-                }
+
+        try {
+            if (rs.next()) {
+                log.info("Database is exist!");
+                tryExecuteResourceSqlFile(conn2, classLoader, "database/db_restart_init.sql", ";");
             } else {
-                log.info("Initiation will not process.Because file not found");
+                log.info("Database is not exist!");
+                tryExecuteResourceSqlFile(conn2, classLoader, "database/db_init_create_schema.sql", ";");
+                tryExecuteResourceSqlFile(conn2, classLoader, "database/db_init_create_procedure.sql", "$$");
+                tryExecuteResourceSqlFile(conn2, classLoader, "database/db_init_insert_pre_data.sql", ";");
             }
-        } else {
-            log.info("Database is not exist!");
-            URL dbInitSqlFileURL = classLoader.getResource("database/db_init.sql");
-            if (dbInitSqlFileURL != null) {
-                log.info("Executing db_init_sql_file: " + dbInitSqlFileURL.toString());
-                try {
-                    executeSqlFile(conn2, dbInitSqlFileURL);
-                    log.info("Database initiated!");
-                } catch (IOException exception) {
-                    log.error(exception.getMessage());
-                }
-            } else  {
-                log.info("Initiation will not process.Because file not found");
-            }
+            log.info("Database initiated!");
+        } catch (IOException exception) {
+            log.error(exception.getMessage());
+            log.error("Database initiation failed.");
         }
         conn2.close();
         mysqlTableSchemaDataSource.close();
     }
 
-    public static void executeSqlFile(Connection connection, URL sqlFileURL) throws IOException, SQLException {
+    protected boolean tryExecuteResourceSqlFile(Connection conn, ClassLoader classLoader, String fileResourcePath, String delimiter) throws SQLException, IOException {
+        URL fileURL = classLoader.getResource(fileResourcePath);
+        if (fileURL != null) {
+            log.info("Executing SQL file URL=" + fileURL.toString());
+            executeSqlFile(conn, fileURL, delimiter);
+            log.info("Execution done. SQL file path=" + fileURL.toString());
+            return true;
+        } else  {
+            log.info("Execution will not process. Because file is not found. SQL file resource path=" + fileResourcePath);
+        }
+        return false;
+    }
+
+    public static void executeSqlFile(Connection connection, URL sqlFileURL, String delimiter) throws IOException, SQLException {
         connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        ScriptUtils.executeSqlScript(
-            connection,
-            new EncodedResource(new UrlResource(sqlFileURL), StandardCharsets.UTF_8),
-            false,
-            false,
-            new String[]{ScriptUtils.DEFAULT_COMMENT_PREFIX, "#"},
-            ScriptUtils.DEFAULT_STATEMENT_SEPARATOR,
-            ScriptUtils.DEFAULT_BLOCK_COMMENT_START_DELIMITER,
-            ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER
-        );
-        new SQLExec().setSrc(new File(sqlFileURL.getFile()));
+        Resources.setCharset(StandardCharsets.UTF_8); //设置字符集,不然中文乱码插入错误
+
+
+        InputStream inputStream = sqlFileURL.openStream();
+        Reader read = new InputStreamReader(inputStream);
+        ScriptRunner scriptRunner = new ScriptRunner(connection);
+        // scriptRunner.setFullLineDelimiter(true);
+        scriptRunner.setDelimiter(delimiter);
+        scriptRunner.setLogWriter(null);//设置是否输出日志
+        scriptRunner.runScript(read);
+
         connection.commit();
+        read.close();
+        inputStream.close();
+        // connection.close();
     }
 }

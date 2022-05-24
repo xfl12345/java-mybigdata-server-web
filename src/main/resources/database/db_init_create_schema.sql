@@ -38,7 +38,7 @@ CREATE TABLE string_content
 (
     `global_id`      bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     `data_format`    bigint unsigned comment '字符串结构格式',
-    `content_length` smallint        default -1 comment '字符串长度',
+    `content_length` smallint        not null default -1 comment '字符串长度',
     `content`        varchar(768)    not null comment '字符串内容，最大长度为 768 个字符',
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     index boost_query_id (data_format, content_length) comment '加速查询主键，避免全表扫描',
@@ -82,13 +82,13 @@ VALUES (2, ''),
  */
 CREATE TABLE global_data_record
 (
-    `id`             bigint unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT comment '当前表所在数据库实例里的全局ID',
-    `uuid`           char(36)        NOT NULL comment '关于某行数据的，整个MySQL数据库乃至全球唯一的真正的全局ID',
-    `create_time`    datetime        DEFAULT CURRENT_TIMESTAMP comment '创建时间',
-    `update_time`    datetime        DEFAULT CURRENT_TIMESTAMP comment '修改时间',
-    `modified_count` bigint unsigned DEFAULT 1 comment '修改次数（版本迭代）',
-    `table_name`     bigint unsigned DEFAULT NULL comment '该行数据所在的表名',
-    `description`    bigint unsigned DEFAULT 2 comment '该行数据的附加简述',
+    `id`             bigint unsigned not null PRIMARY KEY AUTO_INCREMENT comment '当前表所在数据库实例里的全局ID',
+    `uuid`           char(36)        not null comment '关于某行数据的，整个MySQL数据库乃至全球唯一的真正的全局ID',
+    `create_time`    datetime        not null DEFAULT CURRENT_TIMESTAMP comment '创建时间',
+    `update_time`    datetime        not null DEFAULT CURRENT_TIMESTAMP comment '修改时间',
+    `modified_count` bigint unsigned not null default 1 comment '修改次数（版本迭代）',
+    `table_name`     bigint unsigned comment '该行数据所在的表名',
+    `description`    bigint unsigned          default 2 comment '该行数据的附加简述',
     # 全局ID 记录表，删除乃大忌。拒绝一切外表级联删除行记录，只允许按 global_id 或 uuid 删除行记录
     # 遵循 一切普通文本 由 字符串记录表
     # TODO 这里有问题……………………
@@ -118,11 +118,11 @@ UPDATE global_data_record SET description = 9 WHERE id = 9;
 UPDATE global_data_record SET description = 10 WHERE id = 10;
 
 # 为 字符串表 添加 全局ID 约束
-ALTER TABLE  string_content
-    add foreign key (global_id) references global_data_record (id) on delete cascade on update cascade;
+ALTER TABLE string_content
+    add foreign key (global_id) references global_data_record (id) on delete restrict on update cascade;
 
 # 添加 字符串格式 引用出处（自环）
-ALTER TABLE  string_content
+ALTER TABLE string_content
     add foreign key (data_format) references string_content (global_id) on delete restrict on update cascade;
 
 ALTER TABLE global_data_record AUTO_INCREMENT = 100;
@@ -131,15 +131,15 @@ ALTER TABLE global_data_record AUTO_INCREMENT = 100;
   因为自环引用会导致自锁，所以以下给出 将 string_content 表里的
   global_id 从 1 改成 1000 的方法：
 
-UPDATE string_content
-SET data_format = 2
-WHERE data_format = 1
+    UPDATE string_content
+    SET data_format = 2
+    WHERE data_format = 1
 
-UPDATE global_data_record SET global_id = 1000 WHERE global_id = 1
+    UPDATE global_data_record SET global_id = 1000 WHERE global_id = 1
 
-UPDATE string_content
-SET data_format = 1000
-WHERE data_format = 2
+    UPDATE string_content
+    SET data_format = 1000
+    WHERE data_format = 2
 
  */
 
@@ -177,7 +177,7 @@ CREATE TABLE integer_content
 (
     `global_id` bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     `content`   bigint          not null comment '64位带符号的整型数字',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     unique key index_content (content) comment '加速查询全部数据'
 ) ENGINE = InnoDB
@@ -209,7 +209,7 @@ CREATE TABLE table_schema_record
     # 是因为json格式的字符串可以使用json格式存储，MySQL原生支持JSON格式
     # 暂不考虑使用JSON格式存储JSON字符串，暂且先保留修改空间
     `json_schema`    varchar(16000)  not null comment '插表模型',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     foreign key (schema_name) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     unique key index_schema_name (schema_name) comment '确保插表模型名称的唯一性',
@@ -244,9 +244,9 @@ CREATE TABLE tree_struct_record
     `content_length` smallint        not null default -1 comment 'JSON文本长度',
     # 暂不考虑使用JSON格式存储JSON字符串，且先保留修改空间
     `struct_data`    varchar(16000)  not null comment '以JSON字符串形式记载树形结构',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
-    foreign key (root_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (root_id) references global_data_record (id) on delete restrict on update cascade,
     index boost_query_id (root_id, item_count, tree_deep, content_length) comment '加速查询主键，避免全表扫描'
 ) ENGINE = InnoDB
   ROW_FORMAT = DYNAMIC;
@@ -276,10 +276,10 @@ CREATE TABLE binary_relationship_record
     `global_id` bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     `item_a`    bigint unsigned not null comment '对象A',
     `item_b`    bigint unsigned not null comment '对象B',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
-    foreign key (item_a) references global_data_record (id) on delete cascade on update cascade,
-    foreign key (item_b) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (item_a) references global_data_record (id) on delete restrict on update cascade,
+    foreign key (item_b) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_limit_ab (item_a, item_b) comment '不允许出现重复关系，以免浪费空间',
     index boost_query_all (item_b, item_a) comment '加速查询全部数据'
 ) ENGINE = InnoDB
@@ -310,14 +310,14 @@ WHERE data_src_table.global_id = g.id
 ORDER BY g.id;
 
 /**
-  专门记录 “组” 的表。
-  不过这 group_record 表只记组号，group_name 因为有别称，所以不可唯一
+  专门记录 “组” 的表
+  不过这 group_record 表只记组号
  */
 CREATE TABLE group_record
 (
     `global_id`  bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     `group_name` bigint unsigned not null default 2 comment '组名',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     index boost_query_all (group_name) comment '加速查询全部数据'
 ) ENGINE = InnoDB
@@ -328,12 +328,12 @@ CREATE TABLE group_record
  */
 CREATE TABLE group_content
 (
-    `global_id`  bigint unsigned not null comment '组id',
+    `global_id`   bigint unsigned not null comment '组id',
     `item_index` bigint unsigned not null comment '组内对象的下标',
     `item`       bigint unsigned not null comment '组内对象',
     # 关联 group_record 表。毕竟 “组” 这种概念，本就是一对多的关系。
-    foreign key (global_id) references group_record (global_id) on delete cascade on update cascade,
-    foreign key (item) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references group_record (global_id) on delete restrict on update cascade,
+    foreign key (item) references global_data_record (id) on delete restrict on update cascade,
     unique key boost_query_all (global_id, item_index, item) comment '加速查询全部数据'
 ) ENGINE = InnoDB
   ROW_FORMAT = DYNAMIC;
@@ -356,6 +356,7 @@ FROM group_content AS data_src_table,
      global_data_record AS g
 WHERE data_src_table.global_id = g.id
 ORDER BY g.id;
+
 
 /**
   专门记录 “对象” 的表，所有关于“字典”概念的数据的 关系 都记录于该表
@@ -386,7 +387,7 @@ CREATE TABLE label_record
 (
     `global_id` bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     group_id    bigint unsigned not null comment '标签集合',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     # 拒绝一切外表级联删除行记录，只允许按 主键id 删除行记录
     foreign key (group_id) references group_record (global_id) on delete restrict on update cascade,
@@ -419,52 +420,13 @@ SET FOREIGN_KEY_CHECKS = 1;
 # FROM information_schema.tables
 # WHERE table_schema = 'xfl_mybigdata';
 
-
-INSERT INTO `global_data_record` (`id`, `uuid`, `table_name`, `description`)
-VALUES (9, '00000030-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (10, '00000031-cb7a-11eb-0000-f828196a1686', 6, 9),
-       (11, '00000032-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (12, '00000033-cb7a-11eb-0000-f828196a1686', 6, 11),
-       (13, '00000034-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (14, '00000035-cb7a-11eb-0000-f828196a1686', 6, 13),
-       (15, '00000036-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (16, '00000037-cb7a-11eb-0000-f828196a1686', 6, 15),
-       (17, '00000038-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (18, '00000039-cb7a-11eb-0000-f828196a1686', 6, 17),
-       (19, '0000003a-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (20, '0000003b-cb7a-11eb-0000-f828196a1686', 6, 19),
-       (21, '00000040-cb7a-11eb-0000-f828196a1686', 6, 4),
-       (22, '00000041-cb7a-11eb-0000-f828196a1686', 6, 4),
-       (23, '00000042-cb7a-11eb-0000-f828196a1686', 6, 4),
-       (24, '00000050-cb7a-11eb-0000-f828196a1686', 6, 3);
-
-INSERT INTO `string_content` (`global_id`, `content_length`, `content`)
-VALUES (9, 18, 'table-JSON模型记录表的名称'),
-       (10, 19, 'table_schema_record'),
-       (11, 13, '专门记录树状结构的表的名称'),
-       (12, 18, 'tree_struct_record'),
-       (13, 13, '专门记录二元关系的表的名称'),
-       (14, 26, 'binary_relationship_record'),
-       (15, 8, '组号记录表的名称'),
-       (16, 12, 'group_record'),
-       (17, 9, '组成员记录表的名称'),
-       (18, 13, 'group_content'),
-       (19, 8, '标签记录表的名称'),
-       (20, 12, 'label_record'),
-       (21, 4, 'JSON'),
-       (22, 3, 'XML'),
-       (23, 4, 'HTML'),
-       (24, 6, '插表模型名称');
-
-
-CREATE TABLE  auth_account
+CREATE TABLE auth_account
 (
-    `global_id`     bigint          not null comment '账号ID',
+    `global_id`     bigint          not null PRIMARY KEY AUTO_INCREMENT comment '账号ID',
     `password_hash` char(128)       NOT NULL comment '账号密码的哈希值',
     `password_salt` char(128)       NOT NULL comment '账号密码的哈希值计算的佐料',
     `extra_info_id` bigint unsigned not null comment '账号额外信息',
-    unique key unique_id (global_id),
-    index boost_query_all (password_hash, password_salt, extra_info_id),
+    index boost_query_all (global_id, password_hash, password_salt, extra_info_id),
     foreign key (global_id) references integer_content (content) on delete restrict on update restrict,
     foreign key (extra_info_id) references global_data_record (id) on delete restrict on update restrict
 ) AUTO_INCREMENT = 10000
@@ -472,10 +434,6 @@ CREATE TABLE  auth_account
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = Dynamic;
-
-
-ALTER TABLE global_data_record
-    AUTO_INCREMENT = 65536;
 
 # 补完字符串长度
 UPDATE string_content
@@ -487,7 +445,6 @@ WHERE content_length = default(content_length);
   暂时还没写完，因为发现了很多问题欠缺考虑
  */
 
-
 /**
   天气数据MySQL表设计目标（检验编程结果是否OK的表）
  */
@@ -496,7 +453,7 @@ CREATE TABLE weather_coding_goal
     `global_id`      bigint unsigned not null comment '当前表所在数据库实例里的全局ID',
     `weather_like`   bigint unsigned not null comment '天气状况',
     `celsius_degree` int unsigned    not null comment '摄氏度',
-    foreign key (global_id) references global_data_record (id) on delete cascade on update cascade,
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
     # 拒绝一切外表级联删除行记录，只允许按 主键id 删除行记录
     foreign key (weather_like) references string_content (global_id) on delete restrict on update cascade,

@@ -13,6 +13,8 @@ import java.util.List;
 
 public class TestTkMybatisMapperGenerator {
     public static void main(String[] args) throws Exception {
+        // String s = System.getProperty("line.separator");
+        System.setProperty("line.separator", "\n");
         generate(Resources.getResourceAsStream("mybatis/tk_generator_config.xml"), true);
     }
 
