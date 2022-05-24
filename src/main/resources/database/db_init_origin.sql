@@ -68,7 +68,11 @@ VALUES (2, ''),
        # 第七个字符串，关于 全局ID记录表 的描述
        (7, '全局ID记录表的名称'),
        # 第八个字符串，关于 全局ID记录表 的名称
-       (8, 'global_data_record');
+       (8, 'global_data_record'),
+       # 第九个字符串，关于 常量 true
+       (9, 'true'),
+       # 第十个字符串，关于 常量 false
+       (10, 'false');
 
 
 /**
@@ -105,29 +109,37 @@ VALUES (1, '00000000-cb7a-11eb-0000-f828196a1686', 6, 4),
        (5, '00000004-cb7a-11eb-0000-f828196a1686', 6, 3),
        (6, '00000005-cb7a-11eb-0000-f828196a1686', 6, 5),
        (7, '00000006-cb7a-11eb-0000-f828196a1686', 6, 3),
-       (8, '00000007-cb7a-11eb-0000-f828196a1686', 6, 7);
+       (8, '00000007-cb7a-11eb-0000-f828196a1686', 6, 7),
+       (9, '00000008-cb7a-11eb-0000-f828196a1686', 6, 2),
+       (10, '00000009-cb7a-11eb-0000-f828196a1686', 6, 2);
+
+# 常量，自己解释自己
+UPDATE global_data_record SET description = 9 WHERE id = 9;
+UPDATE global_data_record SET description = 10 WHERE id = 10;
 
 # 为 字符串表 添加 全局ID 约束
-alter table string_content
+ALTER TABLE string_content
     add foreign key (global_id) references global_data_record (id) on delete cascade on update cascade;
 
 # 添加 字符串格式 引用出处（自环）
-alter table string_content
+ALTER TABLE string_content
     add foreign key (data_format) references string_content (global_id) on delete cascade on update cascade;
+
+ALTER TABLE global_data_record AUTO_INCREMENT = 100;
 
 /**
   因为自环引用会导致自锁，所以以下给出 将 string_content 表里的
   global_id 从 1 改成 1000 的方法：
 
-UPDATE string_content
-SET data_format = 2
-WHERE data_format = 1;
+    UPDATE string_content
+    SET data_format = 2
+    WHERE data_format = 1
 
-UPDATE global_data_record SET global_id = 1000 WHERE global_id = 1;
+    UPDATE global_data_record SET global_id = 1000 WHERE global_id = 1
 
-UPDATE string_content
-SET data_format = 1000
-WHERE data_format = 2;
+    UPDATE string_content
+    SET data_format = 1000
+    WHERE data_format = 2
 
  */
 
@@ -316,13 +328,13 @@ CREATE TABLE group_record
  */
 CREATE TABLE group_content
 (
-    `group_id`   bigint unsigned not null comment '组id',
+    `global_id`   bigint unsigned not null comment '组id',
     `item_index` bigint unsigned not null comment '组内对象的下标',
     `item`       bigint unsigned not null comment '组内对象',
     # 关联 group_record 表。毕竟 “组” 这种概念，本就是一对多的关系。
-    foreign key (group_id) references group_record (global_id) on delete cascade on update cascade,
+    foreign key (global_id) references group_record (global_id) on delete cascade on update cascade,
     foreign key (item) references global_data_record (id) on delete cascade on update cascade,
-    unique key boost_query_all (group_id, item_index, item) comment '加速查询全部数据'
+    unique key boost_query_all (global_id, item_index, item) comment '加速查询全部数据'
 ) ENGINE = InnoDB
   ROW_FORMAT = DYNAMIC;
 
@@ -337,13 +349,36 @@ SELECT g.id,
         FROM string_content AS s
         WHERE s.global_id = (SELECT id
                              FROM group_record AS s
-                             WHERE s.global_id = data_src_table.group_id))         AS `group_name`,
+                             WHERE s.global_id = data_src_table.global_id))         AS `group_name`,
        data_src_table.item_index                                                   AS `item_index`,
        data_src_table.item                                                         AS `item`
 FROM group_content AS data_src_table,
      global_data_record AS g
-WHERE data_src_table.group_id = g.id
+WHERE data_src_table.global_id = g.id
 ORDER BY g.id;
+
+
+/**
+  专门记录 “对象” 的表，所有关于“字典”概念的数据的 关系 都记录于该表
+ */
+CREATE TABLE object_content
+(
+    `global_id`     bigint unsigned not null comment '对象id',
+    `object_schema` bigint unsigned comment '用于检验该对象的JSON Schema',
+    `object_name`   bigint unsigned not null comment '对象名称',
+    `the_key`       bigint unsigned not null comment '属性名称',
+    `the_value`     bigint unsigned not null comment '属性值',
+    foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
+    foreign key (object_schema) references table_schema_record (global_id) on delete restrict on update cascade,
+    foreign key (object_name) references string_content (global_id) on delete restrict on update cascade,
+    foreign key (the_key) references string_content (global_id) on delete restrict on update cascade,
+    foreign key (the_value) references global_data_record (id) on delete restrict on update cascade,
+    unique unique_schema (global_id, object_schema),
+    unique unique_name (global_id, object_name),
+    unique unique_object_key (global_id, the_key),
+    unique key boost_query_all (global_id, object_schema, object_name, the_key, the_value) comment '加速查询全部数据'
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
 
 /**
   专门记录 “标签” 的表——标签记录表
@@ -614,14 +649,14 @@ SELECT insert_description_to_string_content(
 #    ]
 # }');
 
-create table auth_account
+CREATE TABLE auth_account
 (
-    `id`            bigint          not null PRIMARY KEY AUTO_INCREMENT comment '账号ID',
+    `global_id`     bigint          not null PRIMARY KEY AUTO_INCREMENT comment '账号ID',
     `password_hash` char(128)       NOT NULL comment '账号密码的哈希值',
     `password_salt` char(128)       NOT NULL comment '账号密码的哈希值计算的佐料',
     `extra_info_id` bigint unsigned not null comment '账号额外信息',
-    unique key index_account_id (id),
-    index boost_query_all (id, password_hash, password_salt, extra_info_id),
+    index boost_query_all (global_id, password_hash, password_salt, extra_info_id),
+    foreign key (global_id) references integer_content (content) on delete restrict on update restrict,
     foreign key (extra_info_id) references global_data_record (id) on delete restrict on update restrict
 ) AUTO_INCREMENT = 10000
   ENGINE = InnoDB
