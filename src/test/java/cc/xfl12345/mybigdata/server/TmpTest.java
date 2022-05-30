@@ -7,5 +7,6 @@ public class TmpTest {
         String content = "[君の名は。Fans] スパークル (original ver.) -Your name. Music Video edition- [DVDRip x264 N.mp4";
         System.out.println(EncodeUtils.encodeBracketsOnly4URL(content));
 
+        System.out.println();
     }
 }

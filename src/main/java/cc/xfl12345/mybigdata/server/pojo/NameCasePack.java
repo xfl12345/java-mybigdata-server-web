@@ -23,7 +23,22 @@ public class NameCasePack {
 
     public final HashSet<String> allNameCase = new HashSet<>();
 
+    private static Field[] fields = null;
+
+    public NameCasePack() {}
+
     public NameCasePack(String name) {
+        resetName(name);
+    }
+
+    protected Field[] getFields() {
+        if(fields == null) {
+            fields = this.getClass().getFields();
+        }
+        return fields;
+    }
+
+    public void resetName(String name) {
         originCase = name;
         camelCase = Strman.toCamelCase(name);
         studlyCase = Strman.toStudlyCase(camelCase);
@@ -31,7 +46,7 @@ public class NameCasePack {
         snakeCase = Strman.toSnakeCase(camelCase);
         swapCase = Strman.swapCase(name);
 
-        Field[] fields = this.getClass().getFields();
+        Field[] fields = getFields();
         for (Field field : fields) {
             if (field.getType().equals(String.class)) {
                 String fieldName = field.getName();

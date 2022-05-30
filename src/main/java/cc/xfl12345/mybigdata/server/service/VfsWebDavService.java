@@ -60,7 +60,7 @@ import org.apache.jackrabbit.webdav.version.report.ReportInfo;
 import org.apache.jackrabbit.webdav.xml.DomUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

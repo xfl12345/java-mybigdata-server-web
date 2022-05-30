@@ -15,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataRecord> {
-
-
     public GlobalDataRecordProducer(NoArgGenerator uuidGenerator) {
         super();
         this.uuidGenerator = uuidGenerator;

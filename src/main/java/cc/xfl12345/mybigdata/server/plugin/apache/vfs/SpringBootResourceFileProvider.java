@@ -6,7 +6,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.res.ResourceFileProvider;
 import org.apache.commons.vfs2.provider.res.ResourceFileSystemConfigBuilder;
-import org.springframework.lang.NonNull;
+import lombok.NonNull;
 
 import java.net.URL;
 import java.util.regex.Matcher;

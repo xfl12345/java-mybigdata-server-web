@@ -1,12 +1,12 @@
 package cc.xfl12345.mybigdata.server.initializer;
 
-import cc.xfl12345.mybigdata.server.model.FileURIRelativizeURIUtil;
-import cc.xfl12345.mybigdata.server.model.IRelativizeURIUtil;
-import cc.xfl12345.mybigdata.server.model.JarFileURIRelativizeURIUtil;
+import cc.xfl12345.mybigdata.server.model.uri.FileURIRelativizeURIUtil;
+import cc.xfl12345.mybigdata.server.model.uri.IRelativizeURIUtil;
+import cc.xfl12345.mybigdata.server.model.uri.JarFileURIRelativizeURIUtil;
 import cc.xfl12345.mybigdata.server.model.checker.OfflineJsonChecker;
 import cc.xfl12345.mybigdata.server.pojo.FileCacheInfoBean;
 import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.vfs2.FileObject;
@@ -71,7 +71,7 @@ public class OfflineJsonSchemaURLInitializer implements InitializingBean {
             String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
             inputStream.close();
             // 修改 JSON
-            JSONObject jsonObject = JSONObject.parseObject(jsonString);
+            JSONObject jsonObject = JSONObject.parseObject(jsonString, JSONObject.class);
             jsonObject.putAll(injectValues);
             // 写文件
             OutputStream outputStream = fileInRamFS.getOutputStream();

@@ -5,7 +5,8 @@
  */
 package cc.xfl12345.mybigdata.server.utility;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -42,14 +43,14 @@ public class ResolveRequestUtils {
     }
 
     /**
-     * 这是一个从http请求里获取 com.alibaba.fastjson.JSONObject 的main方法
+     * 这是一个从http请求里获取 com.alibaba.fastjson2.JSONObject 的main方法
      */
     public static JSONObject getJsonObject(HttpServletRequest request) throws IOException {
         return getJsonObject(getRequestString(request));
     }
 
-    public static JSONObject getJsonObject(String jsonString) throws IOException {
-        return JSONObject.parseObject(jsonString);
+    public static JSONObject getJsonObject(String jsonString) {
+        return JSONObject.parseObject(jsonString, JSONObject.class);
     }
 
     /**
@@ -163,7 +164,7 @@ public class ResolveRequestUtils {
         if (response != null) {
             response.setContentType("application/json;charset=utf-8");
             try (PrintWriter out = response.getWriter()) {
-                out.append(((JSONObject) JSONObject.toJSON(object)).toJSONString());
+                out.append(((JSONObject) JSON.toJSON(object)).toJSONString());
             } catch (Exception e) {
                 e.printStackTrace();
             }

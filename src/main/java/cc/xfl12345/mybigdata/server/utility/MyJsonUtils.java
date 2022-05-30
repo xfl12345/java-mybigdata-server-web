@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.utility;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 
 public class MyJsonUtils {
 
@@ -37,7 +37,7 @@ public class MyJsonUtils {
      * Java对象 转 JSON对象
      */
     public static JSONObject javaObject2jsonObject(Object object) {
-        return (JSONObject) JSONObject.toJSON(object);
+        return (JSONObject) JSON.toJSON(object);
     }
 
     /**

@@ -1,9 +1,10 @@
 package cc.xfl12345.mybigdata.server.controller;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class DebugController implements ApplicationContextAware {
 
     @Autowired
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -55,6 +56,6 @@ public class DebugController implements ApplicationContextAware {
         for (File subFile : subFiles) {
             jsonObject.put(subFile.getName(), subFile.getPath());
         }
-        return JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
+        return JSON.toJSONString(jsonObject, JSONWriter.Feature.PrettyFormat);
     }
 }

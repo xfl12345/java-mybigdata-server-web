@@ -35,12 +35,12 @@ SELECT insert_string_content(
            '00000039-cb7a-11eb-0000-f828196a1686',
            'group_content');
 
-# 注册 label_record 表
-SELECT insert_string_content(
-           '0000003a-cb7a-11eb-0000-f828196a1686',
-           '标签记录表的名称',
-           '0000003b-cb7a-11eb-0000-f828196a1686',
-           'label_record');
+# # 注册 label_record 表
+# SELECT insert_string_content(
+#            '0000003a-cb7a-11eb-0000-f828196a1686',
+#            '标签记录表的名称',
+#            '0000003b-cb7a-11eb-0000-f828196a1686',
+#            'label_record');
 
 
 SELECT insert_string_content_with_description_gid(
@@ -94,3 +94,8 @@ SELECT insert_description_to_string_content(
 
 ALTER TABLE global_data_record
     AUTO_INCREMENT = 65536;
+
+# 补完字符串长度
+UPDATE string_content
+SET content_length = CHAR_LENGTH(content)
+WHERE content_length = default(content_length);

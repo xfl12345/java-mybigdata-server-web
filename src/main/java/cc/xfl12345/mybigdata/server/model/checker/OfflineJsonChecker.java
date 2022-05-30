@@ -1,9 +1,8 @@
 package cc.xfl12345.mybigdata.server.model.checker;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.parser.Feature;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 import com.fasterxml.uuid.NoArgGenerator;
 import lombok.extern.slf4j.Slf4j;
 import net.jimblackler.jsonschemafriend.*;
@@ -55,7 +54,7 @@ public class OfflineJsonChecker {
         OfflineJsonChecker parent) throws GenerationException, IOException {
         this.validator = validator;
         // Load the schema.
-        jsonObject = JSONObject.parseObject(json, Feature.OrderedField);
+        jsonObject = JSONObject.parseObject(json, JSONObject.class);
         URL rootSchemaFileURL = parent == null ? null : parent.getFileURL();
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -63,7 +62,7 @@ public class OfflineJsonChecker {
             if (jsonObject.containsKey(KEY_WORD_SCHEMA)) {
                 fileURL = new URL(jsonObject.getString(KEY_WORD_SCHEMA));
             } else {
-                json = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
+                json = JSON.toJSONString(jsonObject, JSONWriter.Feature.PrettyFormat);
                 Path rootPath = ramFileSystem.getPath("/ram");
                 if(!Files.exists(rootPath)) {
                     Files.createDirectory(rootPath);
@@ -74,7 +73,7 @@ public class OfflineJsonChecker {
                 log.info("Generate virtual path=" + generatePath + " <---> " + json);
             }
         } else {
-            json = JSON.toJSONString(jsonObject, SerializerFeature.PrettyFormat);
+            json = JSON.toJSONString(jsonObject, JSONWriter.Feature.PrettyFormat);
             Path rootPath = ramFileSystem.getPath("/ram");
             if(!Files.exists(rootPath)) {
                 Files.createDirectory(rootPath);
@@ -92,8 +91,7 @@ public class OfflineJsonChecker {
         InputStream inputStream = fileURL.openConnection().getInputStream();
         JSONObject jsonObject = JSONObject.parseObject(
             new String(inputStream.readAllBytes(), StandardCharsets.UTF_8),
-            JSONObject.class,
-            Feature.OrderedField
+            JSONObject.class
         );
         inputStream.close();
         return jsonObject;
@@ -151,7 +149,7 @@ public class OfflineJsonChecker {
 
     public void setJsonObjectPropertiesOrder(List<String> list) {
         JSONObject properties = jsonObject.getJSONObject(KEY_WORD_PROPERTIES);
-        JSONObject orderedProperties = new JSONObject(true);
+        JSONObject orderedProperties = new JSONObject();
         for (String item : list) {
             JSONObject property = properties.getJSONObject(item);
             if (property != null) {

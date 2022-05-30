@@ -17,6 +17,8 @@ public class MyStrIsOK {
     public static final Pattern matchLetterAndDigitOnly = Pattern.compile("^[a-z0-9A-Z]+$");
     public static final Pattern matchLetterOnly = Pattern.compile("^[a-zA-Z]+$");
     public static final Pattern matchDigitOnly = Pattern.compile("^[0-9]+$");
+    // public static final Pattern matchIntegerWithSignOnly = Pattern.compile("^[0-9]+$");
+
     // "^[+-]?(?:[1-9]\\d+|\\d)(\\.\\d+)?$"
     // "(?:\\.\\d+|)"  解释：要么匹配一个小数点顺带多个数字，要么不匹配任何东西
     // "(?:[1-9]\\d+|\\d)"   解释：要么匹配不以零开头的多个位的数字，要么只匹配只有个位的数字

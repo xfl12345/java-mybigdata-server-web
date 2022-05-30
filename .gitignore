@@ -4,6 +4,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+
+/src/test/java/cc/xfl12345/a_generate_test/
+
+
 ### STS ###
 .apt_generated
 .classpath

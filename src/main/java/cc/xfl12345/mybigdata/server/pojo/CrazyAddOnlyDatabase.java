@@ -81,6 +81,7 @@ public class CrazyAddOnlyDatabase<T> {
 
         for (int j = 0; j < fields.length; j++, column++) {
             Field field = fields[j];
+            field.setAccessible(true);
             fieldList.add(field);
             myColumnTypeList.add(field.getType());
             myColumnNameList.add(field.getName());
@@ -90,15 +91,15 @@ public class CrazyAddOnlyDatabase<T> {
         }
     }
 
-    public int GetColumnIndexByFieldName(String fieldName) {
+    public int getColumnIndexByFieldName(String fieldName) {
         return columnNameListCache.get(fieldName);
     }
 
-    public int GetColumnIndexByFieldType(Type type) {
+    public int getColumnIndexByFieldType(Type type) {
         return columnTypeListCache.get(type);
     }
 
-    public ArrayList<?> GetListByColumnIndex(int column) {
+    public ArrayList<?> getListByColumnIndex(int column) {
         Field field = fieldList.get(column);
         ArrayList<? super Object> result = new ArrayList<>();
         for (T item : rowList) {
@@ -113,7 +114,7 @@ public class CrazyAddOnlyDatabase<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public <T2> ArrayList<T2> GetListByColumnIndex(int column, Class<T2> cls) {
+    public <T2> ArrayList<T2> getListByColumnIndex(int column, Class<T2> cls) {
         Field field = fieldList.get(column);
         ArrayList<T2> result = new ArrayList<>();
         for (T item : rowList) {
@@ -132,8 +133,8 @@ public class CrazyAddOnlyDatabase<T> {
      * （注意！这只会引索到同类型的其中一个！
      * 最好是在类型不重复的情况下使用）
      */
-    public <T2> ArrayList<T2> GetListByFieldType(Class<T2> cls) {
-        return GetListByColumnIndex(GetColumnIndexByFieldType(cls), cls);
+    public <T2> ArrayList<T2> getListByFieldType(Class<T2> cls) {
+        return getListByColumnIndex(getColumnIndexByFieldType(cls), cls);
     }
 
     protected List<T> queryRowByIndex(Object value, int column) {
@@ -154,7 +155,7 @@ public class CrazyAddOnlyDatabase<T> {
      * （注意！这只会引索到同类型的其中一个！
      * 最好是在类型不重复的情况下使用）
      */
-    public List<T> QueryRow(Type fieldType, Object value) {
+    public List<T> queryRow(Type fieldType, Object value) {
         if (!columnTypeListCache.containsKey(fieldType))
             return new ArrayList<T>();
 
@@ -165,7 +166,7 @@ public class CrazyAddOnlyDatabase<T> {
     /**
      * 按 字段名称 和 确切值 查询行记录。
      */
-    public List<T> QueryRow(String fieldName, Object value) {
+    public List<T> queryRow(String fieldName, Object value) {
         if (!columnNameListCache.containsKey(fieldName))
             return new ArrayList<T>();
 
@@ -179,8 +180,8 @@ public class CrazyAddOnlyDatabase<T> {
      * 最好是在类型不重复的情况下使用。
      * 自动判断值的类型，其中不包括空值，如遇空值，将会直接返回 null）
      */
-    public List<T> QueryRow(Object value) {
-        return value == null ? null : QueryRow(value.getClass(), value);
+    public List<T> queryRow(Object value) {
+        return value == null ? null : queryRow(value.getClass(), value);
     }
 
     /**
@@ -189,7 +190,7 @@ public class CrazyAddOnlyDatabase<T> {
      * 最好是在类型不重复的情况下使用。
      * 自动判断值的类型，其中不包括空值，如遇空值，将会直接返回 null）
      */
-    public T QueryFirstRow(Object value) {
+    public T queryFirstRow(Object value) {
         if (value == null) {
             return null;
         }
@@ -216,7 +217,7 @@ public class CrazyAddOnlyDatabase<T> {
      * （注意！这只会引索到同列同值中一个！
      * 最好是在 该列的值 不重复的情况下使用。）
      */
-    public T QueryFirstRow(Object value, int column) {
+    public T queryFirstRow(Object value, int column) {
         if (value == null) {
             return null;
         }

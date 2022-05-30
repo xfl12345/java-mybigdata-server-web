@@ -41,7 +41,7 @@ dependencies {
 //    compileOnly "org.jetbrains:annotations:23.0.0"
 
     // https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api
-    implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+    implementation group: "javax.persistence", name: "javax.persistence-api", version: "2.2"
 
 
     def springBootVersion = "2.6.7"
@@ -129,8 +129,11 @@ dependencies {
     testImplementation group: "org.projectlombok", name: "lombok", version: lombokVersion
 
     // JSON support
-    // https://mvnrepository.com/artifact/com.alibaba/fastjson
-    implementation group: "com.alibaba", name: "fastjson", version: "2.0.2.graal"
+//    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+//    implementation group: 'com.alibaba', name: 'fastjson', version: '2.0.3'
+    // https://mvnrepository.com/artifact/com.alibaba.fastjson22/fastjson2
+    implementation group: 'com.alibaba.fastjson2', name: 'fastjson2', version: '2.0.3'
+
 
     // https://mvnrepository.com/artifact/org.json/json
     implementation group: "org.json", name: "json", version: "20220320"
@@ -175,13 +178,13 @@ dependencies {
     implementation group: "org.apache.commons", name: "commons-vfs2-jackrabbit2", version: "2.9.0"
 
     // https://mvnrepository.com/artifact/commons-net/commons-net
-    implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
+    implementation group: "commons-net", name: "commons-net", version: "3.8.0"
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     implementation group: "org.apache.httpcomponents", name: "httpclient", version: "4.5.13"
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime
-    implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
+    implementation group: "org.apache.httpcomponents", name: "httpmime", version: "4.5.13"
 
     // https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
     implementation group: "commons-fileupload", name: "commons-fileupload", version: "1.4"
@@ -189,8 +192,11 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient
     implementation group: "commons-httpclient", name: "commons-httpclient", version: "3.1"
 
+//    // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
+//    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+
     // https://mvnrepository.com/artifact/org.apache.tika/tika-core
-    implementation group: 'org.apache.tika', name: 'tika-core', version: '2.4.0'
+    implementation group: "org.apache.tika", name: "tika-core", version: "2.4.0"
 
 
     // XML support
@@ -221,13 +227,21 @@ dependencies {
     implementation group: "org.mybatis", name: "mybatis", version: "3.5.9"
 
     // https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
-    testImplementation group: "org.mybatis", name: "mybatis-spring", version: "2.0.7"
+    implementation group: "org.mybatis", name: "mybatis-spring", version: "2.0.7"
 
     // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core
-    testImplementation group: "org.mybatis.generator", name: "mybatis-generator-core", version: mybatisGeneratorVersion
+    implementation group: "org.mybatis.generator", name: "mybatis-generator-core", version: mybatisGeneratorVersion
+
+//    // MyBatis-Plus
+//    // https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter
+//    testImplementation group: 'com.baomidou', name: 'mybatis-plus-boot-starter', version: '3.5.1'
 //
-//    // https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator
-//    implementation group: "org.mybatis.generator", name: "mybatis-generator", version: mybatisGeneratorVersion, ext: "pom"
+//    // https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-generator
+//    testImplementation group: 'com.baomidou', name: 'mybatis-plus-generator', version: '3.5.1'
+
+    // https://mvnrepository.com/artifact/org.mybatis.scripting/mybatis-velocity
+    testImplementation group: 'org.mybatis.scripting', name: 'mybatis-velocity', version: '2.1.1'
+
 
     // MyBatis nuclear bomb
     // https://mvnrepository.com/artifact/tk.mybatis/mapper
@@ -251,6 +265,9 @@ dependencies {
     // tk.mybatis Dependence
     // https://mvnrepository.com/artifact/org.freemarker/freemarker
     implementation group: "org.freemarker", name: "freemarker", version: "2.3.31"
+
+    // https://mvnrepository.com/artifact/io.swagger/swagger-annotations
+    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.6'
 
 
 //    // Java Email support
@@ -277,7 +294,6 @@ dependencies {
     // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
     implementation group: "net.bytebuddy", name: "byte-buddy", version: "1.12.10"
 
-
     // https://mvnrepository.com/artifact/org.jsonschema2pojo/jsonschema2pojo
     implementation group: "org.jsonschema2pojo", name: "jsonschema2pojo-core", version: "1.1.2"
 
@@ -285,6 +301,23 @@ dependencies {
     // Google Open Source Library
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation group: "com.google.code.gson", name: "gson", version: "2.9.0"
+
+
+    // 各种 ORM
+    // jsqlbox
+    // https://mvnrepository.com/artifact/com.github.drinkjava2/jsqlbox
+    implementation group: "com.github.drinkjava2", name: "jsqlbox", version: "5.0.13.jre8"
+
+//    // https://mvnrepository.com/artifact/org.nutz/nutzboot-starter
+//    implementation group: 'org.nutz', name: 'nutzboot-starter', version: '2.5.1.v20220215'
+
+    // nutz
+    // https://mvnrepository.com/artifact/org.nutz/nutz
+    implementation group: 'org.nutz', name: 'nutz', version: '1.r.69.v20220215'
+
+
+
+
 
 
 //    implementation fileTree(dir:"src/main/webapp",includes:["**/*.*"])
