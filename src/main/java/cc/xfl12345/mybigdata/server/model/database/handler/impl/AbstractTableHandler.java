@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 
-import cc.xfl12345.mybigdata.server.model.database.handler.GlobalDataRecordHandler;
+import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.DisposableBean;
@@ -13,7 +13,7 @@ public abstract class AbstractTableHandler implements DisposableBean, Initializi
 
     @Getter
     @Setter
-    protected volatile GlobalDataRecordHandler globalDataRecordHandler = null;
+    protected volatile GlobalDataRecordProducer globalDataRecordProducer = null;
 
     @Override
     public void afterPropertiesSet() throws Exception {

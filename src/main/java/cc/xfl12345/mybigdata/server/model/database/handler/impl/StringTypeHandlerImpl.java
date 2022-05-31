@@ -45,7 +45,7 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
 
-            GlobalDataRecord globalDataRecord = globalDataRecordHandler.getProducer().poll(5, TimeUnit.SECONDS);
+            GlobalDataRecord globalDataRecord = globalDataRecordProducer.poll(5, TimeUnit.SECONDS);
             if (globalDataRecord == null) {
                 transaction.rollback();
                 result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_GET_GID_TIMEOUT);

@@ -11,13 +11,11 @@ import cc.xfl12345.mybigdata.server.model.database.result.NumberTypeResult;
 import cc.xfl12345.mybigdata.server.model.database.result.StringTypeResult;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.IntegerContent;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.MoreTable;
 import org.teasoft.bee.osql.SuidRich;
@@ -56,7 +54,7 @@ public class NumberTypeHandlerImpl extends AbstractTableHandler implements Numbe
                 HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
                 SuidRich suid = honeyFactory.getSuidRich();
 
-                GlobalDataRecord globalDataRecord = globalDataRecordHandler.getProducer().poll(5, TimeUnit.SECONDS);
+                GlobalDataRecord globalDataRecord = globalDataRecordProducer.poll(5, TimeUnit.SECONDS);
                 if (globalDataRecord == null) {
                     transaction.rollback();
                     result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_GET_GID_TIMEOUT);
