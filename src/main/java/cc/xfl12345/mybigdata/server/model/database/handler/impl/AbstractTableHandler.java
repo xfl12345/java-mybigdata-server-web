@@ -17,9 +17,16 @@ public abstract class AbstractTableHandler implements DisposableBean, Initializi
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        if (globalDataRecordProducer == null) {
+            throw new IllegalArgumentException("Property [globalDataRecordProducer] can not be null!");
+        }
+        if (coreTableCache == null) {
+            throw new IllegalArgumentException("Property [coreTableCache] can not be null!");
+        }
     }
 
     @Override
     public void destroy() throws Exception {
+        globalDataRecordProducer.destroy();
     }
 }

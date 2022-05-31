@@ -36,8 +36,6 @@ public class NumberTypeHandlerImpl extends AbstractTableHandler implements Numbe
     @Setter
     protected volatile StringTypeHandler stringTypeHandler = null;
 
-    protected final BigDecimal LONG_MAX = new BigDecimal(Long.toUnsignedString(-1L));
-
     @Override
     public NumberTypeResult insertNumber(BigDecimal number) {
         Date date = new Date();

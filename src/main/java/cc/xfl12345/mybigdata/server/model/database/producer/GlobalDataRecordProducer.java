@@ -2,6 +2,8 @@ package cc.xfl12345.mybigdata.server.model.database.producer;
 
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import com.fasterxml.uuid.NoArgGenerator;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.teasoft.bee.osql.Condition;
 import org.teasoft.bee.osql.Op;
@@ -11,10 +13,19 @@ import org.teasoft.honey.osql.core.ConditionImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataRecord> {
+    @Getter
+    @Setter
+    protected volatile NoArgGenerator uuidGenerator;
+
+    public UUID getNewUUID() {
+        return uuidGenerator.generate();
+    }
+
     public GlobalDataRecordProducer(NoArgGenerator uuidGenerator) {
         super();
         this.uuidGenerator = uuidGenerator;

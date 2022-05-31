@@ -3,21 +3,19 @@ package cc.xfl12345.mybigdata.server.model.database.producer;
 import com.fasterxml.uuid.NoArgGenerator;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public abstract class AbstractPooledProducer <T> implements DisposableBean {
     protected LinkedBlockingDeque<T> resourcePool;
 
     protected volatile boolean keepProduce = true;
     protected Thread preProduceThread;
     protected Thread producingThread;
-
-    @Getter
-    @Setter
-    protected volatile NoArgGenerator uuidGenerator;
 
     public AbstractPooledProducer() {
         resourcePool = new LinkedBlockingDeque<>(200);
@@ -28,7 +26,13 @@ public abstract class AbstractPooledProducer <T> implements DisposableBean {
     public void destroy() throws Exception {
         keepProduce = false;
         resourcePool.clear();
-        producingThread.join(2000);
+        try {
+            if (producingThread.isAlive()) {
+                producingThread.join(2000);
+            }
+        } catch (Exception exceptione) {
+            log.error(exceptione.getMessage());
+        }
         resourcePool.clear();
     }
 

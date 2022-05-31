@@ -1,7 +1,8 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
 import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
-import cc.xfl12345.mybigdata.server.model.database.result.*;
+import cc.xfl12345.mybigdata.server.model.database.result.ExecuteResultBase;
+import cc.xfl12345.mybigdata.server.model.database.result.SingleDataResultBase;
 import com.alibaba.fastjson2.JSONObject;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,11 +10,8 @@ import org.springframework.beans.factory.InitializingBean;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 public interface CoreTableHandler extends DisposableBean, InitializingBean {
-    UUID getNewUUID();
-
     GlobalDataRecordProducer getGlobalDataRecordProducer();
 
     void setGlobalDataRecordProducer(GlobalDataRecordProducer globalDataRecordProducer);

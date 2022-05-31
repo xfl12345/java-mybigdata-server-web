@@ -2,13 +2,9 @@ package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 
 import cc.xfl12345.mybigdata.server.model.database.handler.CoreTableHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
-import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
 import cc.xfl12345.mybigdata.server.model.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.database.result.SingleDataResultBase;
 import com.alibaba.fastjson2.JSONObject;
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.NoArgGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,40 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Slf4j
 public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTableHandler {
     @Getter
     @Setter
     protected volatile StringTypeHandler stringTypeHandler;
-
-    @Getter
-    @Setter
-    protected volatile NoArgGenerator uuidGenerator;
-
-    protected boolean keepGoing = true;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (uuidGenerator == null) {
-            uuidGenerator = Generators.timeBasedGenerator();
-        }
-
-        globalDataRecordProducer = new GlobalDataRecordProducer(uuidGenerator);
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        keepGoing = false;
-    }
-
-    @Override
-    public UUID getNewUUID() {
-        return uuidGenerator.generate();
-    }
-
-
 
     @Override
     public SingleDataResultBase selectById(Long globalId) {
@@ -66,6 +34,7 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
         return null;
     }
 
+
     @Override
     public SingleDataResultBase addNumber(BigDecimal value) {
         return null;
@@ -80,6 +49,7 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
     public ExecuteResultBase updateNumberById(Long globalId, BigDecimal value) {
         return null;
     }
+
 
     @Override
     public SingleDataResultBase addString(String value) {
@@ -96,6 +66,7 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
         return null;
     }
 
+
     @Override
     public SingleDataResultBase addBoolean(Boolean value) {
         return null;
@@ -110,6 +81,7 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
     public ExecuteResultBase updateBooleanById(Long globalId, Boolean value) {
         return null;
     }
+
 
     @Override
     public SingleDataResultBase addArray(List<Long> value) {
@@ -131,6 +103,7 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
         return null;
     }
 
+
     @Override
     public SingleDataResultBase addSet(Set<Long> value) {
         return null;
@@ -150,6 +123,7 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
     public ExecuteResultBase updateSetById(Long globalId, Set<Long> items) {
         return null;
     }
+
 
     @Override
     public SingleDataResultBase addObject(Long schemaId, JSONObject value) {
