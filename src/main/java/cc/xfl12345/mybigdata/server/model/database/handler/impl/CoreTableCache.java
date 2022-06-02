@@ -5,7 +5,14 @@ import cc.xfl12345.mybigdata.server.appconst.KeyWords;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import cc.xfl12345.mybigdata.server.pojo.StringIdCache;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.SuidRich;
 import org.teasoft.bee.osql.transaction.Transaction;
@@ -15,7 +22,11 @@ import org.teasoft.honey.osql.core.HoneyFactory;
 import org.teasoft.honey.osql.core.SessionFactory;
 
 @Slf4j
-public class CoreTableCache {
+public class CoreTableCache implements InitializingBean {
+    // @Getter
+    // @Setter
+    // protected BeeFactory beeFactory;
+
     @Getter
     protected StringIdCache tableNameCache;
 
@@ -25,25 +36,29 @@ public class CoreTableCache {
     public CoreTableCache() throws Exception {
         tableNameCache = new StringIdCache(6);
         jsonContants = new StringIdCache(2);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         refreshJsonContants();
         refreshCoreTableNameCache();
     }
 
-    public Long selectStringByFullText(String content) throws BeeException {
+    public Long selectStringByFullText(String value) throws BeeException {
         // 预备一个 StringContent对象 空间
-        StringContent searchStringContent = new StringContent();
-        searchStringContent.setContent(content);
+        StringContent content = new StringContent();
+        content.setContent(value);
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
 
             // 查询数据
-            searchStringContent = suid.selectOne(searchStringContent);
+            content = suid.selectOne(content);
             transaction.commit();
         } catch (BeeException e) {
             log.error(e.getMessage());
@@ -51,7 +66,7 @@ public class CoreTableCache {
             throw e;
         }
 
-        return searchStringContent.getGlobalId();
+        return content.getGlobalId();
     }
 
     protected void refreshMapByName(StringIdCache cache, String name) throws Exception {

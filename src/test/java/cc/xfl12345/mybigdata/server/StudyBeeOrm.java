@@ -37,7 +37,6 @@ public class StudyBeeOrm {
         TimeBasedGenerator uuidGenerator = Generators.timeBasedGenerator();
 
         SuidRich suid = honeyFactory.getSuidRich();
-        Class<?> originStringContentClass = cc.xfl12345.mybigdata.server.model.database.table.StringContent.class;
 
         ArrayList<GlobalDataRecord> records = new ArrayList<>();
         GlobalDataRecord globalDataRecord = new GlobalDataRecord();

@@ -5,7 +5,7 @@ package cc.xfl12345.mybigdata.server.model.database.constant;
 */
 @lombok.Data
 @javax.persistence.Table(name = "string_content")
-public class StringContent {
+public class StringContentConstant {
     /**
      * 当前表所在数据库实例里的全局ID
      */

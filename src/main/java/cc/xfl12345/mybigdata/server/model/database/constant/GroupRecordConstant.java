@@ -1,11 +1,11 @@
 package cc.xfl12345.mybigdata.server.model.database.constant;
 
 /**
- * 表名：integer_content
+ * 表名：group_record
 */
 @lombok.Data
-@javax.persistence.Table(name = "integer_content")
-public class IntegerContent {
+@javax.persistence.Table(name = "group_record")
+public class GroupRecordConstant {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -14,15 +14,16 @@ public class IntegerContent {
     private Long globalId;
 
     /**
-     * 64位带符号的整型数字
+     * 组名
      */
-    private Long content;
+    @javax.persistence.Column(name = "group_name", nullable = false)
+    private Long groupName;
 
     public static final String GLOBAL_ID = "globalId";
 
     public static final String DB_GLOBAL_ID = "global_id";
 
-    public static final String CONTENT = "content";
+    public static final String GROUP_NAME = "groupName";
 
-    public static final String DB_CONTENT = "content";
+    public static final String DB_GROUP_NAME = "group_name";
 }

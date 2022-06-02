@@ -8,22 +8,22 @@ import java.util.Set;
 public interface GroupTypeHandler {
     GroupTypeResult insertNewGroup(List<Long> groupItems);
 
-    GroupTypeResult insertExistGroupByGlobalId(List<Long> groupItems, Long globalId);
+    GroupTypeResult insertExistGroupByGlobalId(Long globalId, List<Long> groupItems);
 
-    GroupTypeResult deleteGroupItemByGlobalId(List<Long> groupItems, Long globalId);
+    GroupTypeResult deleteGroupItemByGlobalId(Long globalId, List<Long> groupItems);
 
-    GroupTypeResult replaceAllGroupItemByGlobalId(List<Long> groupItems, Long globalId);
+    GroupTypeResult replaceAllGroupItemByGlobalId(Long globalId, List<Long> groupItems);
 
-    GroupTypeResult replaceGroupItemByGlobalId(List<Long> groupOldItems, List<Long> groupNewItems, Long globalId);
+    GroupTypeResult replaceGroupItemByGlobalId(Long globalId, List<Long> groupOldItems, List<Long> groupNewItems);
 
 
     GroupTypeResult insertNewGroup(Set<Long> groupItems);
 
-    GroupTypeResult insertExistGroupByGlobalId(Set<Long> groupItems, Long globalId);
+    GroupTypeResult insertExistGroupByGlobalId(Long globalId, Set<Long> groupItems);
 
-    GroupTypeResult deleteGroupItemByGlobalId(Set<Long> groupItems, Long globalId);
+    GroupTypeResult deleteGroupItemByGlobalId(Long globalId, Set<Long> groupItems);
 
-    GroupTypeResult replaceAllGroupItemByGlobalId(Set<Long> groupItems, Long globalId);
+    GroupTypeResult replaceAllGroupItemByGlobalId(Long globalId, Set<Long> groupItems);
 
-    GroupTypeResult replaceGroupItemByGlobalId(Set<Long> groupOldItems, Set<Long> groupNewItems, Long globalId);
+    GroupTypeResult replaceGroupItemByGlobalId(Long globalId, Set<Long> groupOldItems, Set<Long> groupNewItems);
 }

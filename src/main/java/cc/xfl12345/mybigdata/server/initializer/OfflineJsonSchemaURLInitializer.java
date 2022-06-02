@@ -1,8 +1,8 @@
 package cc.xfl12345.mybigdata.server.initializer;
 
-import cc.xfl12345.mybigdata.server.model.uri.FileURIRelativizeURIUtil;
-import cc.xfl12345.mybigdata.server.model.uri.IRelativizeURIUtil;
-import cc.xfl12345.mybigdata.server.model.uri.JarFileURIRelativizeURIUtil;
+import cc.xfl12345.mybigdata.server.model.uri.FileURIRelativizeImpl;
+import cc.xfl12345.mybigdata.server.model.uri.URIRelativize;
+import cc.xfl12345.mybigdata.server.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.model.checker.OfflineJsonChecker;
 import cc.xfl12345.mybigdata.server.pojo.FileCacheInfoBean;
 import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
@@ -52,12 +52,13 @@ public class OfflineJsonSchemaURLInitializer implements InitializingBean {
     @Setter
     protected String jsonSchemaRootFileRelativePath = "json/schema/spec/2020-12/schema.json";
 
-    protected void copyAndModify(FileObject src, IRelativizeURIUtil relativizeURIUtil, Map<String, String> injectValues) throws IOException, URISyntaxException {
+    // @SuppressWarnings("unchecked")
+    protected void copyAndModify(FileObject src, URIRelativize uriRelativize, Map<String, String> injectValues) throws IOException, URISyntaxException {
         URI currFileURI = src.getURI();
         URL currFileURL = src.getURL();
         String currFileUrlInString = currFileURL.toString();
         String relativePath = '/' + jsonSchemaResourceDirectoryRelativePath
-            + relativizeURIUtil.getRelativizeURI(jsonSchemaResourceDirectoryURI, currFileURI);
+            + uriRelativize.getRelativizeURI(jsonSchemaResourceDirectoryURI, currFileURI);
 
         RamFileObject fileInRamFS = (RamFileObject) fileSystemManager.resolveFile("ram:/" + relativePath);
         if (src.isFolder()) {
@@ -72,6 +73,7 @@ public class OfflineJsonSchemaURLInitializer implements InitializingBean {
             inputStream.close();
             // 修改 JSON
             JSONObject jsonObject = JSONObject.parseObject(jsonString, JSONObject.class);
+            //noinspection unchecked
             jsonObject.putAll(injectValues);
             // 写文件
             OutputStream outputStream = fileInRamFS.getOutputStream();
@@ -99,11 +101,11 @@ public class OfflineJsonSchemaURLInitializer implements InitializingBean {
             "res:/" + jsonSchemaRootFileRelativePath
         );
 
-        IRelativizeURIUtil relativizeURIUtil;
+        URIRelativize relativizeURIUtil;
         if ("jar".equals(jsonSchemaResourceDirectory.getURL().getProtocol())) {
-            relativizeURIUtil = new JarFileURIRelativizeURIUtil();
+            relativizeURIUtil = new JarFileURIRelativizeImpl();
         } else {
-            relativizeURIUtil = new FileURIRelativizeURIUtil();
+            relativizeURIUtil = new FileURIRelativizeImpl();
         }
 
         // 创建 根 JSON Schema 文件 URL

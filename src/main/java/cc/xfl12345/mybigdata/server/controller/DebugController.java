@@ -1,6 +1,8 @@
 package cc.xfl12345.mybigdata.server.controller;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
+import cc.xfl12345.mybigdata.server.model.database.constant.GlobalDataRecordConstant;
+import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
@@ -14,8 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.teasoft.bee.osql.PreparedSql;
-import org.teasoft.honey.osql.core.BeeFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -34,11 +34,13 @@ public class DebugController implements ApplicationContextAware {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String debugView() {
-        DruidDataSource dataSource = applicationContext.getBean(DruidDataSource.class);
         try {
-            PreparedSql preparedSql = BeeFactory.getHoneyFactory().getPreparedSql();
+            StringTypeHandler stringTypeHandler = applicationContext.getBean(
+                "stringTypeHandler",
+                StringTypeHandler.class
+            );
+            log.debug(JSON.toJSONString(stringTypeHandler.selectStringByFullText("text", new String[]{CoreTableNames.TABLE_NAME_GLOBAL_DATA_RECORD + "." + GlobalDataRecordConstant.DB_ID})));
 
-            log.info(String.valueOf(preparedSql.select("select count(global_id) from xfl_mybigdata.global_data_record").get(0)));
         } catch (Exception e) {
             log.error(e.getMessage());
         }

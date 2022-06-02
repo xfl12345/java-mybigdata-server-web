@@ -1,7 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 
-import cc.xfl12345.mybigdata.server.model.database.handler.CoreTableHandler;
-import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
+import cc.xfl12345.mybigdata.server.model.database.handler.*;
 import cc.xfl12345.mybigdata.server.model.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.database.result.SingleDataResultBase;
 import com.alibaba.fastjson2.JSONObject;
@@ -18,6 +17,31 @@ public class CoreTableHandlerImpl extends AbstractTableHandler implements CoreTa
     @Getter
     @Setter
     protected volatile StringTypeHandler stringTypeHandler;
+
+    @Getter
+    @Setter
+    protected volatile NumberTypeHandler numberTypeHandler;
+
+    @Getter
+    @Setter
+    protected volatile BooleanTypeHandler booleanTypeHandler;
+
+    @Getter
+    @Setter
+    protected volatile GroupTypeHandler groupTypeHandler;
+
+    @Getter
+    @Setter
+    protected volatile ObjectTypeHandler objectTypeHandler;
+
+    @Getter
+    @Setter
+    protected volatile GlobalDataRecordHandler globalDataRecordHandler;
+
+    @Getter
+    @Setter
+    protected volatile JsonSchemaHandler jsonSchemaHandler;
+
 
     @Override
     public SingleDataResultBase selectById(Long globalId) {

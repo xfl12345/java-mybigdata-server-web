@@ -8,6 +8,8 @@ import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
+import lombok.Getter;
+import lombok.Setter;
 import net.jimblackler.jsonschemafriend.GenerationException;
 import net.jimblackler.jsonschemafriend.SchemaStore;
 import net.jimblackler.jsonschemafriend.Validator;
@@ -23,9 +25,13 @@ import java.net.URL;
 
 @Configuration
 public class JSONSchemaConfig {
+    @Getter
+    protected VFSConfig vfsConfig;
 
     @Autowired
-    protected VFSConfig vfsConfig;
+    public void setVfsConfig(VFSConfig vfsConfig) {
+        this.vfsConfig = vfsConfig;
+    }
 
     @Bean(name = "offlineJsonSchemaURLInitializer")
     @Scope(value = "singleton")

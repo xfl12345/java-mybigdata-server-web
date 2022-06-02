@@ -4,6 +4,8 @@ import cc.xfl12345.mybigdata.server.model.database.result.MultipleResultBase;
 import cc.xfl12345.mybigdata.server.model.database.result.StringTypeResult;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 
+import java.util.List;
+
 public interface StringTypeHandler {
     /**
      * 插入字符串
@@ -25,14 +27,15 @@ public interface StringTypeHandler {
      * @param value 新内容
      * @return 返回结果只包含是否执行成功
      */
-    StringTypeResult updateStringByGlobalId(String oldValue, String value);
+    StringTypeResult updateStringByFullText(String oldValue, String value);
 
     /**
      * 按 全文匹配 获取关于该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
      * @param value 待查找字符串
+     * @param fields 查询字段控制
      * @return 返回结果包含 该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
      */
-    StringTypeResult selectStringByFullText(String value);
+    StringTypeResult selectStringByFullText(String value, String[] fields);
 
     /**
      * 删除字符串（完整匹配）
@@ -44,7 +47,8 @@ public interface StringTypeHandler {
     /**
      * 按 前缀匹配 获取关于该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
      * @param prefix 待查找字符串
+     * @param fields 查询字段控制
      * @return 返回结果包含 该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
      */
-    MultipleResultBase<StringContent> selectStringByPrefix(String prefix);
+    MultipleResultBase<StringContent> selectStringByPrefix(String prefix, String[] fields);
 }

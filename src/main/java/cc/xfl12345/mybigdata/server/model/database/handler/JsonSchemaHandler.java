@@ -2,17 +2,21 @@ package cc.xfl12345.mybigdata.server.model.database.handler;
 
 import cc.xfl12345.mybigdata.server.model.database.result.JsonTypeResult;
 import com.alibaba.fastjson2.JSONObject;
+import net.jimblackler.jsonschemafriend.Schema;
+import org.teasoft.bee.osql.Condition;
 
 public interface JsonSchemaHandler {
-    JsonTypeResult insertJsonSchema(JSONObject jsonObject, String userDefineName);
+    JsonTypeResult insertJsonSchema(String userDefineName, Schema jsonSchema);
 
     JsonTypeResult selectJsonSchemaByName(String userDefineName);
 
-    JsonTypeResult updateJsonSchemaByName(JSONObject jsonObject, String userDefineName);
+    JsonTypeResult updateJsonSchema(Condition condition, Schema jsonSchema);
 
-    JsonTypeResult updateJsonSchemaByGlobalId(JSONObject jsonObject, Long globalId);
+    JsonTypeResult updateJsonSchemaByName(String userDefineName, Schema jsonSchema);
 
-    JsonTypeResult updateJsonSchemaNameByGlobalId(String userDefineName, Long globalId);
+    JsonTypeResult updateJsonSchemaByGlobalId(Long globalId, Schema jsonSchema);
+
+    JsonTypeResult updateJsonSchemaNameByGlobalId(Long globalId, String userDefineName);
 
     JsonTypeResult deleteJsonSchemaByName(String userDefineName);
 }

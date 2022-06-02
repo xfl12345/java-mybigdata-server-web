@@ -13,16 +13,19 @@ import com.alibaba.druid.DbType;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.teasoft.bee.osql.BeeException;
+import org.teasoft.bee.osql.Condition;
 import org.teasoft.bee.osql.MoreTable;
 import org.teasoft.bee.osql.SuidRich;
 import org.teasoft.bee.osql.transaction.Transaction;
 import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 import org.teasoft.honey.osql.core.BeeFactory;
+import org.teasoft.honey.osql.core.ConditionImpl;
 import org.teasoft.honey.osql.core.HoneyFactory;
 import org.teasoft.honey.osql.core.SessionFactory;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -39,9 +42,9 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
 
@@ -99,7 +102,8 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
                             case 1062 -> {//ER_DUP_ENTRY -- Duplicate entry '%s' for key %d
                                 result.setSimpleResult(SimpleCoreTableCurdResult.DUPLICATE);
                                 // 既然重复了，那就把它查出来。
-                                StringTypeResult query = selectStringByFullText(value);
+                                // TODO 完善接口定义
+                                StringTypeResult query = selectStringByFullText(value, null);
                                 if (query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
                                     result.setGlobalDataRecord(query.getGlobalDataRecord());
                                     result.setStringContent(query.getStringContent());
@@ -129,9 +133,9 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
 
@@ -178,20 +182,20 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
         return result;
     }
 
-    @Override
-    public StringTypeResult updateStringByGlobalId(String oldValue, String value) {
+    public StringTypeResult updateStringByFullText(String oldValue, String value) {
         Date nowTime = new Date();
         StringTypeResult result = new StringTypeResult();
-        StringTypeResult query = selectStringByFullText(oldValue);
+        // TODO 完善接口定义
+        StringTypeResult query = selectStringByFullText(oldValue, null);
         if (!query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
             return query;
         }
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
 
@@ -234,22 +238,27 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
     }
 
     @Override
-    public StringTypeResult selectStringByFullText(String value) {
+    public StringTypeResult selectStringByFullText(String value, String[] fields) {
         StringTypeResult result = new StringTypeResult();
 
         StringContentAssociation association = new StringContentAssociation();
         association.setContent(value);
 
+        Condition condition = new ConditionImpl();
+        if (fields != null) {
+            condition.selectField(fields);
+        }
+
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             MoreTable moreTable = honeyFactory.getMoreTable();
 
             // 查询数据
-            association = moreTable.select(association).get(0);
+            association = moreTable.select(association, condition).get(0);
             result.setGlobalDataRecord(association.getGlobalDataRecords().get(0));
 
             transaction.commit();
@@ -279,9 +288,9 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
 
@@ -303,7 +312,7 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
     }
 
     @Override
-    public MultipleResultBase<StringContent> selectStringByPrefix(String prefix) {
+    public MultipleResultBase<StringContent> selectStringByPrefix(String prefix, String[] fields) {
         // TODO 实现前缀匹配
         return null;
     }

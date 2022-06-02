@@ -7,7 +7,7 @@ import java.util.Date;
 */
 @lombok.Data
 @javax.persistence.Table(name = "global_data_record")
-public class GlobalDataRecord {
+public class GlobalDataRecordConstant {
     /**
      * 当前表所在数据库实例里的全局ID
      */

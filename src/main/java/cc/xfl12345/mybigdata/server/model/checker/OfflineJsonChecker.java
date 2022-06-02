@@ -110,6 +110,10 @@ public class OfflineJsonChecker {
         return fileURL;
     }
 
+    public Schema getSchema() {
+        return schema;
+    }
+
     public JSONObject getJsonObject() {
         return (JSONObject) jsonObject.clone();
     }

@@ -1,50 +1,87 @@
 package cc.xfl12345.mybigdata.server.config;
 
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.TimeBasedGenerator;
-import org.springframework.boot.ExitCodeGenerator;
+import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
+import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
+import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
+import lombok.Getter;
+import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.teasoft.honey.osql.core.BeeFactory;
+import org.teasoft.honey.osql.core.SessionFactory;
+import org.teasoft.spring.boot.config.BeeAutoConfiguration;
+import org.teasoft.spring.boot.config.BeeManageConfig;
+import org.teasoft.spring.boot.config.BeeXmlConfiguration;
 
-import java.text.SimpleDateFormat;
-import java.util.SimpleTimeZone;
+import javax.sql.DataSource;
 
 @Configuration
+@AutoConfigureAfter({ IndependenceBeansConfig.class, JdbcConfig.class, BeeAutoConfiguration.class })
 public class AppConfig {
-    @Bean("springbootExitCodeGenerator")
-    public ExitCodeGenerator getSpringbootExitCodeGenerator() {
-        return new ExitCodeGenerator() {
-            @Override
-            public int getExitCode() {
-                return 0;
-            }
-        };
+    // @Getter
+    // protected ApplicationContext applicationContext;
+    //
+    // @Autowired
+    // public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
+    //     this.applicationContext = applicationContext;
+    // }
+
+    @Getter
+    protected IndependenceBeansConfig independenceBeansConfig;
+
+    @Autowired
+    public void setIndependenceBeansConfig(IndependenceBeansConfig independenceBeansConfig) {
+        this.independenceBeansConfig = independenceBeansConfig;
     }
 
-    @Bean(name = "defaultTimeZone")
-    public SimpleTimeZone getDefaultTimeZone() {
-        return new SimpleTimeZone(28800000, "China Standard Time");
+    @Getter
+    protected JdbcConfig jdbcConfig;
+
+    @Autowired
+    public void setJdbcConfig(JdbcConfig jdbcConfig) {
+        this.jdbcConfig = jdbcConfig;
     }
 
-    @Bean(name = "defaultDateFormat")
-    public SimpleDateFormat getDefaultDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    @Bean("beeFactory")
+    public BeeFactory getBeeFactory() {
+        BeeFactory beeFactory = BeeFactory.getInstance();
+        beeFactory.setDataSource(jdbcConfig.getDruidDataSource());
+        return beeFactory;
     }
 
-    @Bean(name = "millisecondFormatter")
-    public SimpleDateFormat getMillisecondFormatter() {
-        return new SimpleDateFormat("SSS");
+    @Bean("sessionFactory")
+    public SessionFactory getSessionFactory() {
+        SessionFactory factory = new SessionFactory();
+        factory.setBeeFactory(getBeeFactory());
+        return factory;
     }
 
-    @Bean(name = "fullDateFormat")
-    public SimpleDateFormat getFullDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    }
-
-    @Bean(name = "uuidGenerator")
-    public TimeBasedGenerator getTimeBasedGenerator() {
-        return Generators.timeBasedGenerator();
+    @Bean(name = "coreTableCache")
+    @DependsOn("sessionFactory")
+    public CoreTableCache getCoreTableCache() throws Exception {
+        return new CoreTableCache();
     }
 
 
+    @Bean("globalDataRecordProducer")
+    public GlobalDataRecordProducer getGlobalDataRecordProducer() {
+        return new GlobalDataRecordProducer(independenceBeansConfig.getTimeBasedGenerator());
+    }
+
+    @Bean("stringTypeHandler")
+    public StringTypeHandler getStringTypeHandler() throws Exception {
+        StringTypeHandlerImpl stringTypeHandler = new StringTypeHandlerImpl();
+        stringTypeHandler.setCoreTableCache(getCoreTableCache());
+        stringTypeHandler.setGlobalDataRecordProducer(getGlobalDataRecordProducer());
+        return stringTypeHandler;
+    }
 }

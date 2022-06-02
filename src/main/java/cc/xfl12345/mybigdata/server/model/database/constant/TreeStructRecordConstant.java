@@ -5,7 +5,7 @@ package cc.xfl12345.mybigdata.server.model.database.constant;
 */
 @lombok.Data
 @javax.persistence.Table(name = "tree_struct_record")
-public class TreeStructRecord {
+public class TreeStructRecordConstant {
     /**
      * 当前表所在数据库实例里的全局ID
      */

@@ -2,64 +2,117 @@ use xfl_mybigdata;
 
 # 注册 table_schema_record 表
 SELECT insert_string_content(
-           '00000030-cb7a-11eb-0000-f828196a1686',
+           '00003000-cb7a-11eb-0000-f828196a1686',
            'table-JSON模型记录表的名称',
-           '00000031-cb7a-11eb-0000-f828196a1686',
+           '00003001-cb7a-11eb-0000-f828196a1686',
            'table_schema_record');
 
 # 注册 tree_struct_record 表
 SELECT insert_string_content(
-           '00000032-cb7a-11eb-0000-f828196a1686',
+           '00003002-cb7a-11eb-0000-f828196a1686',
            '专门记录树状结构的表的名称',
-           '00000033-cb7a-11eb-0000-f828196a1686',
+           '00003003-cb7a-11eb-0000-f828196a1686',
            'tree_struct_record');
 
 # 注册 binary_relationship_record 表
 SELECT insert_string_content(
-           '00000034-cb7a-11eb-0000-f828196a1686',
+           '00003004-cb7a-11eb-0000-f828196a1686',
            '专门记录二元关系的表的名称',
-           '00000035-cb7a-11eb-0000-f828196a1686',
+           '00003005-cb7a-11eb-0000-f828196a1686',
            'binary_relationship_record');
 
 # 注册 group_record 表
 SELECT insert_string_content(
-           '00000036-cb7a-11eb-0000-f828196a1686',
+           '00003006-cb7a-11eb-0000-f828196a1686',
            '组号记录表的名称',
-           '00000037-cb7a-11eb-0000-f828196a1686',
+           '00003007-cb7a-11eb-0000-f828196a1686',
            'group_record');
 
 # 注册 group_content 表
 SELECT insert_string_content(
-           '00000038-cb7a-11eb-0000-f828196a1686',
+           '00003008-cb7a-11eb-0000-f828196a1686',
            '组成员记录表的名称',
-           '00000039-cb7a-11eb-0000-f828196a1686',
+           '00003009-cb7a-11eb-0000-f828196a1686',
            'group_content');
+
+# 注册 object_record 表
+SELECT insert_string_content(
+           '0000300a-cb7a-11eb-0000-f828196a1686',
+           '对象记录表的名称',
+           '0000300b-cb7a-11eb-0000-f828196a1686',
+           'object_record');
+
+# 注册 object_content 表
+SELECT insert_string_content(
+           '0000300c-cb7a-11eb-0000-f828196a1686',
+           '对象成员记录表的名称',
+           '0000300d-cb7a-11eb-0000-f828196a1686',
+           'object_content');
+
+# 注册 integer_content 表
+SELECT insert_string_content(
+           '0000300e-cb7a-11eb-0000-f828196a1686',
+           '整数记录表的名称',
+           '0000300f-cb7a-11eb-0000-f828196a1686',
+           'integer_content');
 
 # # 注册 label_record 表
 # SELECT insert_string_content(
-#            '0000003a-cb7a-11eb-0000-f828196a1686',
+#            '0000300a-cb7a-11eb-0000-f828196a1686',
 #            '标签记录表的名称',
-#            '0000003b-cb7a-11eb-0000-f828196a1686',
+#            '0000300b-cb7a-11eb-0000-f828196a1686',
 #            'label_record');
 
 
+# SELECT insert_string_content(
+#            '00004000-cb7a-11eb-0000-f828196a1686',
+#            '布尔值true组的名称',
+#            '00004001-cb7a-11eb-0000-f828196a1686',
+#            '布尔值true组');
+# SELECT insert_string_content(
+#            '00004002-cb7a-11eb-0000-f828196a1686',
+#            '布尔值false组的名称',
+#            '00004003-cb7a-11eb-0000-f828196a1686',
+#            '布尔值false组');
+
+INSERT INTO global_data_record (uuid, table_name, description)
+VALUES ('00004004-cb7a-11eb-0000-f828196a1686',
+        (SELECT global_id FROM string_content WHERE content = 'group_record'),
+        (SELECT global_id FROM string_content WHERE content = 'true'));
+INSERT INTO group_record (global_id, group_name)
+VALUES ((SELECT id FROM global_data_record WHERE uuid = '00004004-cb7a-11eb-0000-f828196a1686'),
+        (SELECT global_id FROM string_content WHERE content = 'true'));
+
+
+INSERT INTO global_data_record (uuid, table_name, description)
+VALUES ('00004005-cb7a-11eb-0000-f828196a1686',
+        (SELECT global_id FROM string_content WHERE content = 'group_record'),
+        (SELECT global_id FROM string_content WHERE content = 'false'));
+INSERT INTO group_record (global_id, group_name)
+VALUES ((SELECT id FROM global_data_record WHERE uuid = '00004005-cb7a-11eb-0000-f828196a1686'),
+        (SELECT global_id FROM string_content WHERE content = 'false'));
+
+
+
 SELECT insert_string_content_with_description_gid(
-           '00000040-cb7a-11eb-0000-f828196a1686',
+           '00005000-cb7a-11eb-0000-f828196a1686',
            'JSON',
            4);
 
 SELECT insert_string_content_with_description_gid(
-           '00000041-cb7a-11eb-0000-f828196a1686',
+           '00005001-cb7a-11eb-0000-f828196a1686',
            'XML',
            4);
 
 SELECT insert_string_content_with_description_gid(
-           '00000042-cb7a-11eb-0000-f828196a1686',
+           '00005002-cb7a-11eb-0000-f828196a1686',
            'HTML',
            4);
 
+
+
 SELECT insert_description_to_string_content(
-           '00000050-cb7a-11eb-0000-f828196a1686',
+           '00006000-cb7a-11eb-0000-f828196a1686',
            '插表模型名称');
 
 # # label_record 表的插表模型

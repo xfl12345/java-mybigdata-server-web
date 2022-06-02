@@ -169,7 +169,7 @@
 
 
 
-    <context id="ThConstant" targetRuntime="MyBatis3" defaultModelType="flat">
+    <context id="TheConstant" targetRuntime="MyBatis3" defaultModelType="flat">
         <property name="javaFileEncoding" value="UTF-8"/>
         <!--配置是否使用通用 Mapper 自带的注释扩展，默认 true-->
         <!--<property name="useMapperCommentGenerator" value="false"/>-->
@@ -182,6 +182,10 @@
             <!--<property name="endingDelimiter" value="`"/>-->
             <property name="generateColumnConsts" value="true"/>
             <property name="lombok" value="Data"/>
+        </plugin>
+
+        <plugin type="cc.xfl12345.mybigdata.server.plugin.mybatis.org.RenameClassSuffixPlugin">
+            <property name="suffixString" value="Constant"/>
         </plugin>
 
         <!--数据库连接信息-->

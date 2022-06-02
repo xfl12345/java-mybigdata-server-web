@@ -46,9 +46,9 @@ public class NumberTypeHandlerImpl extends AbstractTableHandler implements Numbe
             content.setContent(number.longValue());
 
             Transaction transaction = SessionFactory.getTransaction();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             try {
                 transaction.begin();
+                transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
                 HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
                 SuidRich suid = honeyFactory.getSuidRich();
 
@@ -144,9 +144,9 @@ public class NumberTypeHandlerImpl extends AbstractTableHandler implements Numbe
 
         if (isLongInteger(number)) {
             Transaction transaction = SessionFactory.getTransaction();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             try {
                 transaction.begin();
+                transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
                 HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
                 MoreTable moreTable = honeyFactory.getMoreTable();
 
@@ -166,7 +166,8 @@ public class NumberTypeHandlerImpl extends AbstractTableHandler implements Numbe
                 defaultErrorHandler(e, transaction, result);
             }
         } else {
-            StringTypeResult stringTypeResult = stringTypeHandler.selectStringByFullText(number.toPlainString());
+            // 完善接口定义
+            StringTypeResult stringTypeResult = stringTypeHandler.selectStringByFullText(number.toPlainString(), null);
             result.setSimpleResult(stringTypeResult.getSimpleResult());
             if (stringTypeResult.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
                 result.setStringContent(stringTypeResult.getStringContent());
@@ -184,9 +185,9 @@ public class NumberTypeHandlerImpl extends AbstractTableHandler implements Numbe
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
-        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
         try {
             transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             MoreTable moreTable = honeyFactory.getMoreTable();
             SuidRich suid = honeyFactory.getSuidRich();

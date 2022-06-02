@@ -5,7 +5,7 @@ package cc.xfl12345.mybigdata.server.model.database.constant;
 */
 @lombok.Data
 @javax.persistence.Table(name = "object_content")
-public class ObjectContent {
+public class ObjectContentConstant {
     /**
      * 对象id
      */

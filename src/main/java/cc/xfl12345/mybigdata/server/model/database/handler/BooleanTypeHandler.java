@@ -7,5 +7,5 @@ public interface BooleanTypeHandler {
 
     BooleanTypeResult selectBooleanByGlobalId(Long globalId);
 
-    BooleanTypeResult updateBooleanByGlobalId(Boolean theBoolean, Long globalId);
+    BooleanTypeResult updateBooleanByGlobalId(Long globalId, Boolean theBoolean);
 }

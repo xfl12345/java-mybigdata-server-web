@@ -2,13 +2,14 @@ package cc.xfl12345.mybigdata.server.model.database.handler;
 
 import cc.xfl12345.mybigdata.server.model.database.result.SingleDataResultBase;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
+import org.teasoft.bee.osql.Condition;
 
 public interface GlobalDataRecordHandler {
     SingleDataResultBase insert(GlobalDataRecord value);
 
-    SingleDataResultBase select(GlobalDataRecord value);
+    SingleDataResultBase select(Condition condition);
 
-    SingleDataResultBase update(GlobalDataRecord value);
+    SingleDataResultBase update(Condition condition);
 
-    SingleDataResultBase delete(GlobalDataRecord value);
+    SingleDataResultBase delete(Condition condition);
 }
