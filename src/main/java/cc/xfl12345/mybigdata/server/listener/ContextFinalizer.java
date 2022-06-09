@@ -56,10 +56,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         String signalName = signal.getName();
         log.info(signalName+":"+signal.getNumber());
         if(signalName.equals("INT") || signalName.equals("TERM")) {
-            SpringApplication.exit(
-                applicationContext,
-                applicationContext.getBean(ExitCodeGenerator.class)
-            );
+            SpringApplication.exit(applicationContext);
         }
     }
 
