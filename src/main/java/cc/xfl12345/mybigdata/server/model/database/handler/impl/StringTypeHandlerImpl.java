@@ -3,27 +3,25 @@ package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
 import cc.xfl12345.mybigdata.server.model.database.association.StringContentAssociation;
+import cc.xfl12345.mybigdata.server.model.database.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.database.result.MultipleResultBase;
+import cc.xfl12345.mybigdata.server.model.database.result.PackedData;
 import cc.xfl12345.mybigdata.server.model.database.result.StringTypeResult;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.teasoft.bee.osql.BeeException;
-import org.teasoft.bee.osql.Condition;
-import org.teasoft.bee.osql.MoreTable;
-import org.teasoft.bee.osql.SuidRich;
+import org.teasoft.bee.osql.*;
 import org.teasoft.bee.osql.transaction.Transaction;
 import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
-import org.teasoft.honey.osql.core.BeeFactory;
-import org.teasoft.honey.osql.core.ConditionImpl;
-import org.teasoft.honey.osql.core.HoneyFactory;
-import org.teasoft.honey.osql.core.SessionFactory;
+import org.teasoft.honey.osql.core.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -313,8 +311,62 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
 
     @Override
     public MultipleResultBase<StringContent> selectStringByPrefix(String prefix, String[] fields) {
-        // TODO 实现前缀匹配
-        return null;
+        MultipleResultBase<StringContent> result = null;
+        try {
+            result = new MultipleResultBase<>(StringContent.class);
+        } catch (ClassNotFoundException | NoSuchFieldException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return null;
+        }
+
+        StringContentAssociation associationQuery = new StringContentAssociation();
+
+        Condition condition = new ConditionImpl();
+        condition.op(
+            StringContentConstant.DB_CONTENT,
+            Op.like,
+            StringEscapeUtils.escapeSql4Like("mysql", prefix) + "%"
+        );
+
+        if (fields != null) {
+            condition.selectField(fields);
+        }
+
+
+        // 开启事务，防止 global_id 冲突
+        Transaction transaction = SessionFactory.getTransaction();
+        try {
+            transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+
+            MoreTable moreTable = honeyFactory.getMoreTable();
+            // String sql = ((MoreObjSQL) moreTable).getMoreObjToSQL().toSelectSQL(association, condition);
+            // log.info(sql);
+
+            // 查询数据
+            List<StringContentAssociation> associations = moreTable.select(associationQuery, condition);
+            transaction.commit();
+
+            for (StringContentAssociation association : associations) {
+                PackedData<StringContent> packedData = new PackedData<>();
+                packedData.globalDataRecord = association.getGlobalDataRecords().get(0);
+                StringContent stringContent = new StringContent();
+                stringContent.setGlobalId(association.getGlobalId());
+                stringContent.setDataFormat(association.getDataFormat());
+                stringContent.setContentLength(association.getContentLength());
+                stringContent.setContent(association.getContent());
+                packedData.content = stringContent;
+                result.add(packedData);
+            }
+
+            result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
+        } catch (Exception e) {
+            defaultErrorHandler(e, transaction, result);
+        }
+
+        return result;
     }
 
     protected void defaultErrorHandler(Exception e, Transaction transaction, ExecuteResultBase result) {

@@ -1,16 +1,14 @@
 package cc.xfl12345.mybigdata.server.model.database.producer;
 
-import com.fasterxml.uuid.NoArgGenerator;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public abstract class AbstractPooledProducer <T> implements DisposableBean {
+public abstract class AbstractPooledProducer <T> implements DisposableBean, InitializingBean {
     protected LinkedBlockingDeque<T> resourcePool;
 
     protected volatile boolean keepProduce = true;

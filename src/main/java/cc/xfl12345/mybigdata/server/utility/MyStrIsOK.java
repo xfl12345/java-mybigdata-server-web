@@ -20,7 +20,7 @@ public class MyStrIsOK {
     // public static final Pattern matchIntegerWithSignOnly = Pattern.compile("^[0-9]+$");
 
     // "^[+-]?(?:[1-9]\\d+|\\d)(\\.\\d+)?$"
-    // "(?:\\.\\d+|)"  解释：要么匹配一个小数点顺带多个数字，要么不匹配任何东西
+    // "(?:\\.\\d+|)"   解释：要么匹配一个小数点顺带多个数字，要么不匹配任何东西
     // "(?:[1-9]\\d+|\\d)"   解释：要么匹配不以零开头的多个位的数字，要么只匹配只有个位的数字
     public static final Pattern matchNumWithSignOnly = Pattern.compile("^(?:[-](?:[1-9]\\d+|[1-9])(?:\\.\\d+|)|(?:[1-9]\\d+|\\d)(?:\\.\\d+|))$");
     public static final Pattern matchEmailAddressOnly = Pattern.compile("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+$");
@@ -30,7 +30,7 @@ public class MyStrIsOK {
     public static final Pattern containLowercaseLetter = Pattern.compile("[a-z]");
     public static final Pattern containLetter = Pattern.compile("[a-zA-Z]");
     public static final Pattern containNum = Pattern.compile("\\d");
-    public static final Pattern containLetterAndDigit = Pattern.compile("[a-z0-9A-Z]");
+    public static final Pattern containLetterAndDigit = Pattern.compile("[a-zA-Z0-9]");
 
     /**
      * 匹配如下特殊符号

@@ -18,7 +18,7 @@ package cc.xfl12345.mybigdata.server.service;
 
 import cc.xfl12345.mybigdata.server.plugin.apache.jackrabbit.webdav.MyOutputContextImpl;
 import cc.xfl12345.mybigdata.server.plugin.apache.jackrabbit.webdav.MyVfsDavResourceFactory;
-import cc.xfl12345.mybigdata.server.utility.EncodeUtils;
+import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
 import com.github.alanger.webdav.Text;
 import com.github.alanger.webdav.VfsDavLocatorFactory;
 import com.github.alanger.webdav.VfsDavSessionProvider;
@@ -330,7 +330,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
 
             // Name column
             sb.append("<td>").append("<a href=\"");
-            sb.append(EncodeUtils.encodeBracketsOnly4URL(baseDir + name));
+            sb.append(StringEscapeUtils.escapeBracketsOnly4URL(baseDir + name));
             sb.append("\"><tt>");
             sb.append(name);
             sb.append("</tt></a></td>");

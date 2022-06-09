@@ -74,7 +74,9 @@ public class AppConfig {
 
     @Bean("globalDataRecordProducer")
     public GlobalDataRecordProducer getGlobalDataRecordProducer() {
-        return new GlobalDataRecordProducer(independenceBeansConfig.getTimeBasedGenerator());
+        GlobalDataRecordProducer producer = new GlobalDataRecordProducer();
+        producer.setUuidGenerator(independenceBeansConfig.getTimeBasedGenerator());
+        return producer;
     }
 
     @Bean("stringTypeHandler")

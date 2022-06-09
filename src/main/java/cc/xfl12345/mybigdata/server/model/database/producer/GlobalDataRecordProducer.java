@@ -29,9 +29,8 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
         return uuidGenerator.generate();
     }
 
-    public GlobalDataRecordProducer(NoArgGenerator uuidGenerator) {
-        super();
-        this.uuidGenerator = uuidGenerator;
+    @Override
+    public void afterPropertiesSet() throws Exception {
         GlobalDataRecordProducer myself = this;
         producingThread = new Thread() {
             @Override

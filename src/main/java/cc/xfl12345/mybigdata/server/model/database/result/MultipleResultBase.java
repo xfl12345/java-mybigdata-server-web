@@ -2,7 +2,6 @@ package cc.xfl12345.mybigdata.server.model.database.result;
 
 import lombok.Getter;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,10 +14,14 @@ import java.util.stream.Stream;
 
 public class MultipleResultBase<DataType> extends ExecuteResultBase {
     @Getter
-    private final Type dataType = ((ParameterizedType) (getClass().getGenericSuperclass())).getActualTypeArguments()[0];
+    private final Type dataType;
 
     @Getter
     protected final LinkedHashSet<PackedData<DataType>> datas = new LinkedHashSet<>();
+
+    public MultipleResultBase(Class<DataType> typeClass) throws ClassNotFoundException, NoSuchFieldException {
+        dataType = typeClass;
+    }
 
     public Spliterator<PackedData<DataType>> spliterator() {
         return datas.spliterator();
