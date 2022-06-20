@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server;
 
+import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
 import cc.xfl12345.mybigdata.server.model.database.association.StringContentAssociation;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
@@ -31,6 +32,7 @@ public class StudyBeeOrm {
 
         StudyBeeOrm studyBeeOrm = new StudyBeeOrm();
         studyBeeOrm.justTest(BeeFactory.getHoneyFactory());
+        ContextFinalizer.deregisterJdbcDriver(null);
     }
 
     public void justTest(HoneyFactory honeyFactory) {
@@ -55,16 +57,14 @@ public class StudyBeeOrm {
         System.out.println(recordList);
 
         // 超字段长度测试
-        String wait2insert = "0123456789".repeat(100);
         StringContent stringContent = new StringContent();
-        stringContent.setContent(wait2insert);
+        stringContent.setContent("0123456789".repeat(100));
         stringContent.setGlobalId(recordList.get(0).getId());
         executeInsert(honeyFactory, stringContent);
 
         // unique key 冲突测试
-        wait2insert = "text";
         stringContent = new StringContent();
-        stringContent.setContent(wait2insert);
+        stringContent.setContent("text");
         stringContent.setGlobalId(recordList.get(0).getId());
         executeInsert(honeyFactory, stringContent);
 
@@ -75,11 +75,25 @@ public class StudyBeeOrm {
         executeInsert(honeyFactory, globalDataRecord);
 
 
+        // 关联查询测试
         StringContentAssociation associationQuery = new StringContentAssociation();
         associationQuery.setContent("text");
         MoreTable moreTable = honeyFactory.getMoreTable();
         System.out.println(JSON.toJSONString(moreTable.select(associationQuery)));
 
+
+        // 外键约束拒绝删除测试
+        stringContent = new StringContent();
+        stringContent.setContent("text");
+        try {
+            suid.delete(stringContent);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            Throwable cause = e.getCause();
+            if (cause instanceof SQLException sqlException) {
+                handleSqlException(sqlException, stringContent);
+            }
+        }
     }
 
     public int executeInsert(HoneyFactory honeyFactory, Object obj) {
@@ -91,57 +105,66 @@ public class StudyBeeOrm {
             System.out.println(e.getMessage());
             Throwable cause = e.getCause();
             if (cause instanceof SQLException sqlException) {
-                int errorCode = sqlException.getErrorCode();
-                BeeFactory beeFactory = BeeFactory.getInstance();
-                String dbTypeInString = ((DruidDataSource) beeFactory.getDataSource()).getDbType();
-                DbType dbType = DbType.valueOf(dbTypeInString);
-                switch (dbType) {
-                    // 如果是 MySQL 报错
-                    case mysql -> {
-                        switch (errorCode) {
-                            case 1059 -> {//ER_TOO_LONG_IDENT -- Identifier name '%s' is too long
-                                System.out.println("键名太长");
-                            }
-                            case 1060 -> {//ER_DUP_FIELDNAME -- Duplicate column name '%s'
-                                System.out.println("字段名称重复（unique限制）");
-                            }
-                            case 1061 -> {//ER_DUP_KEYNAME -- Duplicate key name '%s'
-                                System.out.println("键名重复");
-                            }
-                            case 1062 -> {//ER_DUP_ENTRY -- Duplicate entry '%s' for key %d
-                                System.out.println("字段内容重复（unique限制）");
-                                if (!(obj instanceof StringContent)) {
-                                    break;
-                                }
-                                ObjectToSQLRich objectToSQLRich = new ObjectToSQLRich();
-                                String sqlStringSelectGDR = objectToSQLRich.toSelectSQL(new GlobalDataRecord());
-                                SQLStatement sqlStatement = SQLUtils.parseSingleStatement(sqlStringSelectGDR, DbType.mysql);
-                                SQLStatement sqlStatement2 = new MySqlSelectIntoStatement();
-
-
-                                // MoreTable moreTable = honeyFactory.getMoreTable();
-                                // GlobalDataRecord crossQueryEntity = new GlobalDataRecord() {
-                                //     @Getter
-                                //     @Setter
-                                //     @JoinTable(mainField="id", subField="global_id", joinType= JoinType.JOIN)
-                                //     private StringContent stringContent = (StringContent) obj;
-                                // };
-                                // List<GlobalDataRecord> globalDataRecords = moreTable.select(crossQueryEntity);
-                            }
-                            case 1406 -> {// ER_DATA_TOO_LONG -- Data too long for column '%s' at row %ld
-                                System.out.println("数据超出字段长度");
-                            }
-                            default -> {
-                            }
-                        }
-                    }
-                    default -> System.out.println("Not supported database.");
-                }
+                handleSqlException(sqlException, obj);
             }
         }
 
         System.out.println(rowCount);
         return rowCount;
+    }
+
+    public void handleSqlException(SQLException sqlException, Object toy) {
+        int errorCode = sqlException.getErrorCode();
+        BeeFactory beeFactory = BeeFactory.getInstance();
+        String dbTypeInString = ((DruidDataSource) beeFactory.getDataSource()).getDbType();
+        DbType dbType = DbType.valueOf(dbTypeInString);
+        switch (dbType) {
+            // 如果是 MySQL 报错
+            case mysql -> {
+                switch (errorCode) {
+                    case 1059 -> { // ER_TOO_LONG_IDENT -- Identifier name '%s' is too long
+                        System.out.println("键名太长");
+                    }
+                    case 1060 -> { // ER_DUP_FIELDNAME -- Duplicate column name '%s'
+                        System.out.println("字段名称重复（unique限制）");
+                    }
+                    case 1061 -> { // ER_DUP_KEYNAME -- Duplicate key name '%s'
+                        System.out.println("键名重复");
+                    }
+                    case 1062 -> { // ER_DUP_ENTRY -- Duplicate entry '%s' for key %d
+                        System.out.println("字段内容重复（unique限制）");
+                        if (!(toy instanceof StringContent)) {
+                            break;
+                        }
+                        ObjectToSQLRich objectToSQLRich = new ObjectToSQLRich();
+                        String sqlStringSelectGDR = objectToSQLRich.toSelectSQL(new GlobalDataRecord());
+                        SQLStatement sqlStatement = SQLUtils.parseSingleStatement(sqlStringSelectGDR, DbType.mysql);
+                        SQLStatement sqlStatement2 = new MySqlSelectIntoStatement();
+
+
+                        // MoreTable moreTable = honeyFactory.getMoreTable();
+                        // GlobalDataRecord crossQueryEntity = new GlobalDataRecord() {
+                        //     @Getter
+                        //     @Setter
+                        //     @JoinTable(mainField="id", subField="global_id", joinType= JoinType.JOIN)
+                        //     private StringContent stringContent = (StringContent) obj;
+                        // };
+                        // List<GlobalDataRecord> globalDataRecords = moreTable.select(crossQueryEntity);
+                    }
+                    case 1406 -> { // ER_DATA_TOO_LONG -- Data too long for column '%s' at row %ld
+                        System.out.println("数据超出字段长度");
+                    }
+
+                    case 1451 -> { // ER_ROW_IS_REFERENCED_2 -- Cannot delete or update a parent row: a foreign key constraint fails (%s)
+                        System.out.println("该行已被其他表引用，因外键约束，拒绝删除。");
+                    }
+                    default -> {
+                        System.out.println("未知错误 code=" + errorCode);
+                    }
+                }
+            }
+            default -> System.out.println("Not supported database.");
+        }
     }
 
 }

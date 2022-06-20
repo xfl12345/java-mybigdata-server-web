@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "string_content")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("string_content")
-public class StringContent implements Serializable {
+public class StringContent implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -47,4 +47,9 @@ public class StringContent implements Serializable {
     private String content;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public StringContent clone() throws CloneNotSupportedException {
+        return (StringContent) super.clone();
+    }
 }

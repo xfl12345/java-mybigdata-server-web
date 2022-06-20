@@ -4,10 +4,11 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.ibatis.datasource.pooled.PooledDataSource;
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -21,6 +22,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -92,7 +94,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
     public void onApplicationEvent(ContextClosedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();
         if (applicationContext.getParent() == null) {
-            deregisterMybatisJdbcDriver(applicationContext);
+            deregisterJdbcDriver(applicationContext);
             FileSystemManager fileSystemManager = applicationContext.getBean("apacheVfsFileSystemManager", FileSystemManager.class);
             fileSystemManager.close();
         }
@@ -101,37 +103,44 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
     /**
      * 这是一个用来结束JDBC驱动的函数，防止redeploy时被警告存在内存泄露风险
      */
-    public void deregisterMybatisJdbcDriver(ApplicationContext springAppContext) {
+    public static void deregisterJdbcDriver(ApplicationContext springAppContext) {
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         TreeSet<String> dataSourceBeanNames = new TreeSet<>();
         if (drivers.hasMoreElements()) {
             if (springAppContext != null) {
-                dataSourceBeanNames = new TreeSet<>(List.of(springAppContext.getBeanNamesForType(DruidDataSource.class)));
+                dataSourceBeanNames = new TreeSet<>(List.of(springAppContext.getBeanNamesForType(DataSource.class)));
             }
             Driver d = null;
             DataSource dataSource;
             String driverInstanceName;
             int dataSourceBeanNamesCount = dataSourceBeanNames.size();
-            boolean isFirstOneDeregister = dataSourceBeanNamesCount == 0;
+            boolean isOk2DeregisterDriverNormally = springAppContext == null || dataSourceBeanNamesCount == 0;
             while (drivers.hasMoreElements()) {
                 try {
                     d = drivers.nextElement();
                     //优先卸载JDBC驱动
-                    if (isFirstOneDeregister) {
+                    if (isOk2DeregisterDriverNormally) {
                         driverInstanceName = d.toString();
                         DriverManager.deregisterDriver(d);
                         log.info(String.format("Driver %s deregistered", driverInstanceName));
                     } else {
+                        // 防止同一个驱动被反复卸载 （一个驱动可能被多个 bean 引用）
                         boolean isHitAsLeaseOnce = false;
                         @SuppressWarnings("unchecked")
                         TreeSet<String> tmpCopy = (TreeSet<String>) dataSourceBeanNames.clone();
                         for (String beanName : tmpCopy) {
                             dataSource = springAppContext.getBean(beanName, DataSource.class);
                             String dataSourceDriverName = "";
+                            if (dataSource instanceof PooledDataSource mybatisDataSource) {
+                                dataSourceDriverName = mybatisDataSource.getDriver();
+                            } else if (dataSource instanceof UnpooledDataSource mybatisDataSource) {
+                                dataSourceDriverName = mybatisDataSource.getDriver();
+                            } else if (dataSource instanceof DruidDataSource druidDataSource) {
+                                dataSourceDriverName = druidDataSource.getDriverClassName();
+                            }
                             if (d.getClass().getCanonicalName().equals(dataSourceDriverName)) {
                                 driverInstanceName = d.toString();
                                 ((BeanDefinitionRegistry) springAppContext.getAutowireCapableBeanFactory()).removeBeanDefinition(beanName);
-                                Runtime.getRuntime().gc();
                                 log.info(String.format("Bean[%s] has been removed definition from Spring context.", beanName));
                                 if (!isHitAsLeaseOnce) {
                                     isHitAsLeaseOnce = true;
@@ -140,19 +149,19 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
                                 }
                                 dataSourceBeanNames.remove(beanName);
                                 dataSourceBeanNamesCount--;
-                                isFirstOneDeregister = dataSourceBeanNamesCount == 0;
                             }
                         }
+                        isOk2DeregisterDriverNormally = dataSourceBeanNamesCount == 0;
+                        Runtime.getRuntime().gc();
                     }
                 } catch (SQLException ex) {
                     log.error(String.format("Error deregistering driver %s", d) + ":" + ex);
                 }
                 //像队列一样遍历列表。循环到队列为空的时候才退出
                 if (!drivers.hasMoreElements()) {
-                    //如果没有MyBatis的DataSource，则不需要先卸载JDBC驱动
-                    if (!isFirstOneDeregister) {
-                        isFirstOneDeregister = true;
-                    }
+                    // 如果出现了不认识的 bean ，将会导致 bean 数量无法清零。
+                    // 为了防止陷入死循环，允许直接使用常规（暴力）手段卸载
+                    isOk2DeregisterDriverNormally = true;
                     drivers = DriverManager.getDrivers();
                 }
             }

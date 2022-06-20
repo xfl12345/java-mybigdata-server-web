@@ -11,7 +11,7 @@ import java.util.Date;
 @javax.persistence.Table(name = "global_data_record")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("global_data_record")
-public class GlobalDataRecord implements Serializable {
+public class GlobalDataRecord implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -72,4 +72,9 @@ public class GlobalDataRecord implements Serializable {
     private Long description;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public GlobalDataRecord clone() throws CloneNotSupportedException {
+        return (GlobalDataRecord) super.clone();
+    }
 }

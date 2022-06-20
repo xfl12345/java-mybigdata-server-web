@@ -3,29 +3,31 @@ package cc.xfl12345.mybigdata.server.model.database.result;
 import cc.xfl12345.mybigdata.server.model.database.table.IntegerContent;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
 public class NumberTypeResult extends SingleDataResultBase {
     @Getter
-    @Setter
     protected BigDecimal number = null;
 
-    @Getter
-    protected IntegerContent integerContent = null;
+    public void setNumber(BigDecimal number) {
+        this.number = number;
+    }
 
-    public void setIntegerContent(IntegerContent integerContent) {
-        this.integerContent = integerContent;
+    public void setNumber(IntegerContent integerContent) {
         number = new BigDecimal(integerContent.getContent());
     }
 
-    @Getter
-    protected StringContent stringContent = null;
+    public void setNumber(Long integer) {
+        number = new BigDecimal(integer);
+    }
 
-    public void setStringContent(StringContent stringContent) {
-        this.stringContent = stringContent;
+    public void setNumber(StringContent stringContent) {
         number = new BigDecimal(stringContent.getContent());
+    }
+
+    public void setNumber(String string) {
+        number = new BigDecimal(string);
     }
 
     public Double getDouble() {

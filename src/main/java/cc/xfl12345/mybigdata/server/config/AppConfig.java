@@ -1,7 +1,9 @@
 package cc.xfl12345.mybigdata.server.config;
 
+import cc.xfl12345.mybigdata.server.model.database.handler.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.handler.impl.SqlErrorHandlerImpl;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
 import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
 import lombok.Getter;
@@ -72,6 +74,11 @@ public class AppConfig {
     }
 
 
+    @Bean("sqlErrorHandler")
+    public SqlErrorHandler getSqlErrorHandler() {
+        return new SqlErrorHandlerImpl();
+    }
+
     @Bean("globalDataRecordProducer")
     public GlobalDataRecordProducer getGlobalDataRecordProducer() {
         GlobalDataRecordProducer producer = new GlobalDataRecordProducer();
@@ -84,6 +91,7 @@ public class AppConfig {
         StringTypeHandlerImpl stringTypeHandler = new StringTypeHandlerImpl();
         stringTypeHandler.setCoreTableCache(getCoreTableCache());
         stringTypeHandler.setGlobalDataRecordProducer(getGlobalDataRecordProducer());
+        stringTypeHandler.setSqlErrorHandler(getSqlErrorHandler());
         return stringTypeHandler;
     }
 }

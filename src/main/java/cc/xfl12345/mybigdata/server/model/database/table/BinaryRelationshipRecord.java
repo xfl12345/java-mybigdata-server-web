@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "binary_relationship_record")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("binary_relationship_record")
-public class BinaryRelationshipRecord implements Serializable {
+public class BinaryRelationshipRecord implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -39,4 +39,9 @@ public class BinaryRelationshipRecord implements Serializable {
     private Long itemB;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public BinaryRelationshipRecord clone() throws CloneNotSupportedException {
+        return (BinaryRelationshipRecord) super.clone();
+    }
 }

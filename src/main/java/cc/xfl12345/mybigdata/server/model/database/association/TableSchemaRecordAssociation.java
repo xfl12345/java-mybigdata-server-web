@@ -1,6 +1,7 @@
-package cc.xfl12345.mybigdata.server.model.database.table;
+package cc.xfl12345.mybigdata.server.model.database.association;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 表名：table_schema_record
@@ -8,9 +9,8 @@ import java.io.Serializable;
 @lombok.Data
 @io.swagger.annotations.ApiModel("")
 @javax.persistence.Table(name = "table_schema_record")
-@javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("table_schema_record")
-public class TableSchemaRecord implements Cloneable, Serializable {
+public class TableSchemaRecordAssociation implements Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -48,8 +48,8 @@ public class TableSchemaRecord implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public TableSchemaRecord clone() throws CloneNotSupportedException {
-        return (TableSchemaRecord) super.clone();
-    }
+    @lombok.Getter
+    @lombok.Setter
+    @org.teasoft.bee.osql.annotation.JoinTable(mainField = "global_id", subField = "id", subClazz = cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord.class, joinType = org.teasoft.bee.osql.annotation.JoinType.LEFT_JOIN)
+    private List<cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord> globalDataRecords;
 }

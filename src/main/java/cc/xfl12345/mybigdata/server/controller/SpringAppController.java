@@ -73,10 +73,7 @@ public class SpringAppController implements ApplicationContextAware {
                     } catch (InterruptedException e) {
                         log.error(e.getMessage());
                     }
-                    SpringApplication.exit(
-                        applicationContext,
-                        applicationContext.getBean(ExitCodeGenerator.class)
-                    );
+                    SpringApplication.exit(applicationContext);
                 });
                 thread.start();
                 return true;

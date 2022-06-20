@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server;
 
+import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.sql.SQLUtils;
@@ -70,6 +71,6 @@ public class StudyNutzDao {
         globalDataRecord = record.toPojo(GlobalDataRecord.class);
 
 
-        dataSource.close();
+        ContextFinalizer.deregisterJdbcDriver(null);
     }
 }

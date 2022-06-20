@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "auth_account")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("auth_account")
-public class AuthAccount implements Serializable {
+public class AuthAccount implements Cloneable, Serializable {
     /**
      * 账号ID
      */
@@ -47,4 +47,9 @@ public class AuthAccount implements Serializable {
     private Long extraInfoId;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public AuthAccount clone() throws CloneNotSupportedException {
+        return (AuthAccount) super.clone();
+    }
 }

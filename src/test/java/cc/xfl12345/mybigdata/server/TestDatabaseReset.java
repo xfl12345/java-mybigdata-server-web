@@ -1,6 +1,7 @@
 package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.initializer.MyDatabaseInitializer;
+import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
 import com.alibaba.druid.pool.DruidDataSource;
 
 public class TestDatabaseReset {
@@ -17,6 +18,7 @@ public class TestDatabaseReset {
             .execute("drop database if exists xfl_mybigdata");
 
         databaseInitializer.afterPropertiesSet();
+        ContextFinalizer.deregisterJdbcDriver(null);
     }
 
 }

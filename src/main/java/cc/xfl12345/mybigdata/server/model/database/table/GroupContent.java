@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "group_content")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("group_content")
-public class GroupContent implements Serializable {
+public class GroupContent implements Cloneable, Serializable {
     /**
      * 组id
      */
@@ -39,4 +39,9 @@ public class GroupContent implements Serializable {
     private Long item;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public GroupContent clone() throws CloneNotSupportedException {
+        return (GroupContent) super.clone();
+    }
 }

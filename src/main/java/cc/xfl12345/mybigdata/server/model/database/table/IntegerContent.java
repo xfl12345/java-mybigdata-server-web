@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "integer_content")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("integer_content")
-public class IntegerContent implements Serializable {
+public class IntegerContent implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -31,4 +31,9 @@ public class IntegerContent implements Serializable {
     private Long content;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public IntegerContent clone() throws CloneNotSupportedException {
+        return (IntegerContent) super.clone();
+    }
 }

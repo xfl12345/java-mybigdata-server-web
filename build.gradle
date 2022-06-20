@@ -48,7 +48,7 @@ dependencies {
     def mybatisGeneratorVersion = "1.3.7"
     def lombokVersion = "1.18.24"
     def victools_jsonschema = "4.24.2"
-    def saTokenVersion = '1.30.0'
+    def saTokenVersion = "1.30.0"
     def asmVersion = "9.3"
     def tk_mybatis_version = "4.2.1"
 
@@ -130,9 +130,9 @@ dependencies {
 
     // JSON support
 //    // https://mvnrepository.com/artifact/com.alibaba/fastjson
-//    implementation group: 'com.alibaba', name: 'fastjson', version: '2.0.3'
+//    implementation group: "com.alibaba", name: "fastjson", version: "2.0.3"
     // https://mvnrepository.com/artifact/com.alibaba.fastjson22/fastjson2
-    implementation group: 'com.alibaba.fastjson2', name: 'fastjson2', version: '2.0.3'
+    implementation group: "com.alibaba.fastjson2", name: "fastjson2", version: "2.0.3"
 
 
     // https://mvnrepository.com/artifact/org.json/json
@@ -193,7 +193,7 @@ dependencies {
     implementation group: "commons-httpclient", name: "commons-httpclient", version: "3.1"
 
 //    // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
-//    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+//    implementation group: "commons-beanutils", name: "commons-beanutils", version: "1.9.4"
 
     // https://mvnrepository.com/artifact/org.apache.tika/tika-core
     implementation group: "org.apache.tika", name: "tika-core", version: "2.4.0"
@@ -234,13 +234,13 @@ dependencies {
 
 //    // MyBatis-Plus
 //    // https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter
-//    testImplementation group: 'com.baomidou', name: 'mybatis-plus-boot-starter', version: '3.5.1'
+//    testImplementation group: "com.baomidou", name: "mybatis-plus-boot-starter", version: "3.5.1"
 //
 //    // https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-generator
-//    testImplementation group: 'com.baomidou', name: 'mybatis-plus-generator', version: '3.5.1'
+//    testImplementation group: "com.baomidou", name: "mybatis-plus-generator", version: "3.5.1"
 
     // https://mvnrepository.com/artifact/org.mybatis.scripting/mybatis-velocity
-    testImplementation group: 'org.mybatis.scripting', name: 'mybatis-velocity', version: '2.1.1'
+    testImplementation group: "org.mybatis.scripting", name: "mybatis-velocity", version: "2.1.1"
 
 
     // MyBatis nuclear bomb
@@ -267,7 +267,11 @@ dependencies {
     implementation group: "org.freemarker", name: "freemarker", version: "2.3.31"
 
     // https://mvnrepository.com/artifact/io.swagger/swagger-annotations
-    implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.6'
+    implementation group: "io.swagger", name: "swagger-annotations", version: "1.6.6"
+
+    // other mybatis generator plugins
+    // https://mvnrepository.com/artifact/com.itfsw/mybatis-generator-plugin
+    testImplementation group: "com.itfsw", name: "mybatis-generator-plugin", version: "1.3.10"
 
 
 //    // Java Email support
@@ -309,11 +313,11 @@ dependencies {
     implementation group: "com.github.drinkjava2", name: "jsqlbox", version: "5.0.13.jre8"
 
 //    // https://mvnrepository.com/artifact/org.nutz/nutzboot-starter
-//    implementation group: 'org.nutz', name: 'nutzboot-starter', version: '2.5.1.v20220215'
+//    implementation group: "org.nutz", name: "nutzboot-starter", version: "2.5.1.v20220215"
 
     // nutz
     // https://mvnrepository.com/artifact/org.nutz/nutz
-    implementation group: 'org.nutz', name: 'nutz', version: '1.r.69.v20220215'
+    implementation group: "org.nutz", name: "nutz", version: "1.r.69.v20220215"
 
 
 

@@ -68,14 +68,14 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             affectedRowCount = suid.insert(content);
             if (affectedRowCount != 1) {
                 transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.UNKNOWN_FAILED);
-                result.setSqlException(new Exception("未知错误，插入字符串表失败。"));
+                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
+                result.setMessage("未知错误，插入字符串表失败。");
             } else {
                 affectedRowCount = suid.update(globalDataRecord);
                 if (affectedRowCount != 1) {
                     transaction.rollback();
                     result.setSimpleResult(SimpleCoreTableCurdResult.UNKNOWN_FAILED);
-                    result.setSqlException(new Exception("未知错误，更新全局记录表失败。"));
+                    result.setMessage("未知错误，更新全局记录表失败。");
                 } else {
                     transaction.commit();
                     result.setGlobalDataRecord(globalDataRecord);
@@ -84,40 +84,14 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
                 }
             }
         } catch (BeeException | InterruptedException | NullPointerException e) {
-            // log.error(e.getMessage());
-            transaction.rollback();
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLException sqlException) {
-                int errorCode = sqlException.getErrorCode();
-                result.setSqlException(sqlException);
-                BeeFactory beeFactory = BeeFactory.getInstance();
-                String dbTypeInString = ((DruidDataSource) beeFactory.getDataSource()).getDbType();
-                DbType dbType = DbType.valueOf(dbTypeInString);
-                switch (dbType) {
-                    // 如果是 MySQL 报错
-                    case mysql -> {
-                        switch (errorCode) {
-                            case 1062 -> {//ER_DUP_ENTRY -- Duplicate entry '%s' for key %d
-                                result.setSimpleResult(SimpleCoreTableCurdResult.DUPLICATE);
-                                // 既然重复了，那就把它查出来。
-                                // TODO 完善接口定义
-                                StringTypeResult query = selectStringByFullText(value, null);
-                                if (query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
-                                    result.setGlobalDataRecord(query.getGlobalDataRecord());
-                                    result.setStringContent(query.getStringContent());
-                                }
-                            }
-                            case 1406 -> {// ER_DATA_TOO_LONG -- Data too long for column '%s' at row %ld
-                                // System.out.println("数据超出字段长度");
-                                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OVER_FLOW);
-                            }
-                            default -> result.setSimpleResult(SimpleCoreTableCurdResult.UNKNOWN_FAILED);
-                        }
-                    }
-                    default -> log.error("Not supported database.");
+            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
+            if (result.getSimpleResult().equals(SimpleCoreTableCurdResult.DUPLICATE)) {
+                // 既然重复了，那就把它查出来。
+                StringTypeResult query = selectStringByFullText(value, null);
+                if (query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
+                    result.setGlobalDataRecord(query.getGlobalDataRecord());
+                    result.setStringContent(query.getStringContent());
                 }
-            } else {
-                result.setSqlException(e);
             }
         }
 
@@ -174,7 +148,7 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
                 }
             }
         } catch (Exception e) {
-            defaultErrorHandler(e, transaction, result);
+            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
         }
 
         return result;
@@ -229,7 +203,7 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
                 }
             }
         } catch (Exception e) {
-            defaultErrorHandler(e, transaction, result);
+            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
         }
 
         return result;
@@ -270,7 +244,7 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
 
             result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
         } catch (Exception e) {
-            defaultErrorHandler(e, transaction, result);
+            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
         }
 
         return result;
@@ -303,7 +277,7 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             result.setStringContent(searchStringContent);
             transaction.commit();
         } catch (Exception e) {
-            defaultErrorHandler(e, transaction, result);
+            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
         }
 
         return result;
@@ -363,35 +337,9 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
 
             result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
         } catch (Exception e) {
-            defaultErrorHandler(e, transaction, result);
+            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
         }
 
         return result;
-    }
-
-    protected void defaultErrorHandler(Exception e, Transaction transaction, ExecuteResultBase result) {
-        // log.error(e.getMessage());
-        transaction.rollback();
-        if (e instanceof IndexOutOfBoundsException) {
-            result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-        } else {
-            result.setSqlException(e);
-            Throwable cause = e.getCause();
-            if (cause instanceof SQLException sqlException) {
-                int errorCode = sqlException.getErrorCode();
-                BeeFactory beeFactory = BeeFactory.getInstance();
-                String dbTypeInString = ((DruidDataSource) beeFactory.getDataSource()).getDbType();
-                DbType dbType = DbType.valueOf(dbTypeInString);
-                switch (dbType) {
-                    // 如果是 MySQL 报错
-                    case mysql -> {
-                        switch (errorCode) {
-                            default -> result.setSimpleResult(SimpleCoreTableCurdResult.UNKNOWN_FAILED);
-                        }
-                    }
-                    default -> log.error("Not supported database.");
-                }
-            }
-        }
     }
 }

@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "tree_struct_record")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("tree_struct_record")
-public class TreeStructRecord implements Serializable {
+public class TreeStructRecord implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -63,4 +63,9 @@ public class TreeStructRecord implements Serializable {
     private String structData;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public TreeStructRecord clone() throws CloneNotSupportedException {
+        return (TreeStructRecord) super.clone();
+    }
 }

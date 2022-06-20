@@ -12,11 +12,13 @@ import org.teasoft.bee.osql.Op;
 import org.teasoft.bee.osql.SuidRich;
 import org.teasoft.bee.osql.transaction.Transaction;
 import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
-import org.teasoft.honey.osql.core.*;
+import org.teasoft.honey.osql.core.ConditionImpl;
+import org.teasoft.honey.osql.core.HoneyFactory;
+import org.teasoft.honey.osql.core.NoCache;
+import org.teasoft.honey.osql.core.SessionFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -25,14 +27,13 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
     @Setter
     protected volatile NoArgGenerator uuidGenerator;
 
-    public UUID getNewUUID() {
-        return uuidGenerator.generate();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    public GlobalDataRecordProducer() {
+        super();
         GlobalDataRecordProducer myself = this;
-        producingThread = new Thread() {
+        Random random = new Random();
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
+        producingThread = new Thread(getThreadName("producingThread", simpleDateFormat, date, random)) {
             @Override
             public void run() {
                 // 先缓存 SQL条件判断组件
@@ -53,6 +54,8 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
 
                         // 先取出，投入到资源池里
                         List<GlobalDataRecord> items = suid.select(new GlobalDataRecord(), condition);
+                        transaction.commit();
+
                         int itemsCount = items.size();
                         for (int i = 0; keepProduce && i < itemsCount; i++) {
                             GlobalDataRecord item = items.get(i);
@@ -66,6 +69,19 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
                                 log.error(e.getMessage());
                             }
                         }
+                    } catch (BeeException e) {
+                        log.error(e.getMessage());
+                        transaction.rollback();
+                    }
+
+                    transaction = SessionFactory.getTransaction();
+                    try {
+                        transaction.begin();
+                        transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+                        HoneyFactory honeyFactory = new HoneyFactory();
+                        // 禁用缓存
+                        honeyFactory.setCache(new NoCache());
+                        SuidRich suid = honeyFactory.getSuidRich();
 
                         // 不够再凑数
                         if (keepProduce) {
@@ -81,27 +97,16 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
                                 suid.insert(records);
                             }
                         }
+
                         transaction.commit();
                     } catch (BeeException e) {
                         log.error(e.getMessage());
                         transaction.rollback();
                     }
-
-                    // try {
-                    //     transaction.begin();
-                    //     transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-                    //     HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-                    //     SuidRich suid = honeyFactory.getSuidRich();
-                    //
-                    //     transaction.commit();
-                    // } catch (BeeException e) {
-                    //     log.error(e.getMessage());
-                    //     transaction.rollback();
-                    // }
                 }
             }
         };
-        preProduceThread = new Thread() {
+        preProduceThread = new Thread(getThreadName("preProduceThread", simpleDateFormat, date, random)) {
             @Override
             public void run() {
                 if (keepProduce) {
@@ -109,6 +114,21 @@ public class GlobalDataRecordProducer extends AbstractPooledProducer<GlobalDataR
                 }
             }
         };
+    }
+
+    public UUID getNewUUID() {
+        return uuidGenerator.generate();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
         preProduceThread.start();
+    }
+
+    protected String getThreadName(String name, SimpleDateFormat simpleDateFormat, Date date, Random random) {
+        return GlobalDataRecordProducer.class.getSimpleName()
+            + "_" + name
+            + "_" + simpleDateFormat.format(date)
+            + "_" + random.nextInt(0, Integer.MAX_VALUE);
     }
 }

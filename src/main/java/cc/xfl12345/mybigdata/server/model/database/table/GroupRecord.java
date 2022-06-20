@@ -10,7 +10,7 @@ import java.io.Serializable;
 @javax.persistence.Table(name = "group_record")
 @javax.persistence.Entity
 @org.teasoft.bee.osql.annotation.Table("group_record")
-public class GroupRecord implements Serializable {
+public class GroupRecord implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
      */
@@ -31,4 +31,9 @@ public class GroupRecord implements Serializable {
     private Long groupName;
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public GroupRecord clone() throws CloneNotSupportedException {
+        return (GroupRecord) super.clone();
+    }
 }

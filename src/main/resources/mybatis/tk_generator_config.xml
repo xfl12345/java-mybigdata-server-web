@@ -31,6 +31,8 @@
         <!--bee ORM 注解-->
         <plugin type="cc.xfl12345.mybigdata.server.plugin.mybatis.org.BeeOrmAnnotationPlugin"/>
 
+        <!-- 数据ModelCloneable插件 -->
+        <plugin type="com.itfsw.mybatis.generator.plugins.ModelCloneablePlugin"/>
 
         <!--数据库连接信息-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
@@ -50,6 +52,9 @@
 
         <table tableName="global_data_record">
             <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="table_schema_record">
+            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="string_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
@@ -133,6 +138,9 @@
         <javaModelGenerator targetProject="src/test/java"
                             targetPackage="cc.xfl12345.a_generate_test.association"/>
 
+        <table tableName="table_schema_record">
+            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
+        </table>
         <table tableName="string_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
@@ -201,6 +209,9 @@
 
         <table tableName="global_data_record">
             <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="table_schema_record">
+            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="string_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
