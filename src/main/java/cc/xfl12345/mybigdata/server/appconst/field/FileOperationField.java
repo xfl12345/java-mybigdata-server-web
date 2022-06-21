@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server.appconst.field;
 
 public class FileOperationField {
     // 文件和文件夹（目录）共有功能
-//    public static final String create = "create";
+    public static final String CREATE = "create";
     public static final String DELETE = "delete";
     public static final String FIND = "find";
     public static final String CHANGE_NAME = "changeName";
