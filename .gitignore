@@ -7,8 +7,6 @@ build/
 
 /src/test/java/cc/xfl12345/a_generate_test/
 
-gradle.properties
-
 
 ### STS ###
 .apt_generated
