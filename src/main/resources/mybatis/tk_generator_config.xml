@@ -75,7 +75,7 @@
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="auth_account">
-            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
+            <generatedKey column="account_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="binary_relationship_record">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
@@ -159,9 +159,6 @@
         <table tableName="object_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
-        <table tableName="auth_account">
-            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
-        </table>
         <table tableName="binary_relationship_record">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
@@ -232,7 +229,7 @@
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="auth_account">
-            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
+            <generatedKey column="account_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="binary_relationship_record">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>

@@ -14,13 +14,13 @@ public class AuthAccount implements Cloneable, Serializable {
     /**
      * 账号ID
      */
-    @javax.persistence.Column(name = "global_id", nullable = false)
+    @javax.persistence.Id
+    @javax.persistence.Column(name = "account_id", nullable = false)
     @javax.persistence.GeneratedValue(generator = "JDBC")
     @io.swagger.annotations.ApiModelProperty("账号ID")
-    @javax.persistence.Id
-    @org.teasoft.bee.osql.annotation.Column("global_id")
+    @org.teasoft.bee.osql.annotation.Column("account_id")
     @org.teasoft.bee.osql.annotation.PrimaryKey
-    private Long globalId;
+    private Long accountId;
 
     /**
      * 账号密码的哈希值

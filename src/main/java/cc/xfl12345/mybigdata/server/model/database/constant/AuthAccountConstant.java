@@ -9,9 +9,10 @@ public class AuthAccountConstant {
     /**
      * 账号ID
      */
-    @javax.persistence.Column(name = "global_id", nullable = false)
+    @javax.persistence.Id
+    @javax.persistence.Column(name = "account_id", nullable = false)
     @javax.persistence.GeneratedValue(generator = "JDBC")
-    private Long globalId;
+    private Long accountId;
 
     /**
      * 账号密码的哈希值
@@ -31,9 +32,9 @@ public class AuthAccountConstant {
     @javax.persistence.Column(name = "extra_info_id", nullable = false)
     private Long extraInfoId;
 
-    public static final String GLOBAL_ID = "globalId";
+    public static final String ACCOUNT_ID = "accountId";
 
-    public static final String DB_GLOBAL_ID = "global_id";
+    public static final String DB_ACCOUNT_ID = "account_id";
 
     public static final String PASSWORD_HASH = "passwordHash";
 
