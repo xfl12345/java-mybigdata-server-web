@@ -14,6 +14,7 @@ import org.teasoft.bee.osql.annotation.JoinTable;
 import org.teasoft.bee.osql.annotation.JoinType;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MyBigDataBeeOrmAssociationPlugin extends PluginAdapter {
     @Override
@@ -23,14 +24,15 @@ public class MyBigDataBeeOrmAssociationPlugin extends PluginAdapter {
 
     @Override
     public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-        IntrospectedColumn column = introspectedTable.getColumn(KeyWords.KEY_WORD_GLOBAL_ID);
+        Optional<IntrospectedColumn> column = introspectedTable.getColumn(KeyWords.KEY_WORD_GLOBAL_ID);
         if (column != null) {
             String associationClassName = "cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord";
             topLevelClass.addImportedType(new FullyQualifiedJavaType(List.class.getCanonicalName()));
-            Field field = new Field();
+            Field field = new Field(
+                "globalDataRecords",
+                new FullyQualifiedJavaType("List<" + associationClassName + ">")
+            );
             field.setVisibility(JavaVisibility.PRIVATE);
-            field.setType(new FullyQualifiedJavaType("List<" + associationClassName + ">"));
-            field.setName("globalDataRecords");
             field.addAnnotation("@" + Getter.class.getCanonicalName());
             field.addAnnotation("@" + Setter.class.getCanonicalName());
             field.addAnnotation("@" + JoinTable.class.getCanonicalName() + "(" +

@@ -36,7 +36,7 @@
 
         <!--数据库连接信息-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;serverTimezone=Asia/Shanghai&amp;nullCatalogMeansCurrent=true&amp;allowMultiQueries=true"
+                        connectionURL="jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;serverTimezone=Asia/Shanghai&amp;nullCatalogMeansCurrent=true&amp;allowMultiQueries=true&amp;useInformationSchema=true"
                         userId="xfl"
                         password="amazingxfl666">
         </jdbcConnection>
@@ -129,7 +129,7 @@
 
         <!--数据库连接信息-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;serverTimezone=Asia/Shanghai&amp;nullCatalogMeansCurrent=true&amp;allowMultiQueries=true"
+                        connectionURL="jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;serverTimezone=Asia/Shanghai&amp;nullCatalogMeansCurrent=true&amp;allowMultiQueries=true&amp;useInformationSchema=true"
                         userId="xfl"
                         password="amazingxfl666">
         </jdbcConnection>
@@ -198,7 +198,7 @@
 
         <!--数据库连接信息-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;serverTimezone=Asia/Shanghai&amp;nullCatalogMeansCurrent=true&amp;allowMultiQueries=true"
+                        connectionURL="jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;serverTimezone=Asia/Shanghai&amp;nullCatalogMeansCurrent=true&amp;allowMultiQueries=true&amp;useInformationSchema=true"
                         userId="xfl"
                         password="amazingxfl666">
         </jdbcConnection>

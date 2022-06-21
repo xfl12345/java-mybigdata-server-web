@@ -26,13 +26,15 @@ package cc.xfl12345.mybigdata.server.plugin.mybatis.tk;
 import io.swagger.annotations.ApiModelProperty;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.Plugin;
 import org.mybatis.generator.api.dom.java.*;
 import org.mybatis.generator.config.CommentGeneratorConfiguration;
 import org.mybatis.generator.config.Context;
+import org.mybatis.generator.config.GeneratedKey;
 import org.mybatis.generator.internal.util.StringUtility;
-import tk.mybatis.mapper.generator.FalseMethodPlugin;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -105,12 +107,11 @@ public class SmartMapperPlugin extends FalseMethodPlugin {
      * 生成的Mapper接口
      *
      * @param interfaze
-     * @param topLevelClass
      * @param introspectedTable
      * @return
      */
     @Override
-    public boolean clientGenerated(Interface interfaze, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+    public boolean clientGenerated(Interface interfaze, IntrospectedTable introspectedTable) {
         //获取实体类
         FullyQualifiedJavaType entityType = new FullyQualifiedJavaType(introspectedTable.getBaseRecordType());
         //import接口
@@ -143,15 +144,15 @@ public class SmartMapperPlugin extends FalseMethodPlugin {
                                        TopLevelClass topLevelClass,
                                        IntrospectedColumn introspectedColumn,
                                        IntrospectedTable introspectedTable,
-                                       Plugin.ModelClassType modelClassType) {
+                                       ModelClassType modelClassType) {
         //添加注解
         if (field.isTransient()) {
             //@Column
-            justAddAnnotation2Field(topLevelClass, field, javax.persistence.Transient.class, null);
+            justAddAnnotation2Field(topLevelClass, field, Transient.class, null);
         }
         for (IntrospectedColumn column : introspectedTable.getPrimaryKeyColumns()) {
             if (introspectedColumn == column) {
-                justAddAnnotation2Field(topLevelClass, field, javax.persistence.Id.class, null);
+                justAddAnnotation2Field(topLevelClass, field, Id.class, null);
                 break;
             }
         }
@@ -169,18 +170,22 @@ public class SmartMapperPlugin extends FalseMethodPlugin {
         } else if (forceAnnotation) {
             addJpaColumnAnnotation(field, topLevelClass, introspectedColumn, introspectedTable, column);
         }
-        if (introspectedColumn.isIdentity()) {
-            if ("JDBC".equals(introspectedTable.getTableConfiguration().getGeneratedKey().getRuntimeSqlStatement())) {
-                justAddAnnotation2Field(topLevelClass, field, javax.persistence.GeneratedValue.class, "generator = \"JDBC\"");
-            } else {
-                justAddAnnotation2Field(topLevelClass, field, javax.persistence.GeneratedValue.class, "strategy = GenerationType.IDENTITY");
+        Optional<GeneratedKey> generatedKey = introspectedTable.getTableConfiguration().getGeneratedKey();
+        if (generatedKey.isPresent()) {
+            if (introspectedColumn.isIdentity()) {
+                if ("JDBC".equals(generatedKey.get().getRuntimeSqlStatement())) {
+                    justAddAnnotation2Field(topLevelClass, field, GeneratedValue.class, "generator = \"JDBC\"");
+                } else {
+                    justAddAnnotation2Field(topLevelClass, field, GeneratedValue.class, "strategy = GenerationType.IDENTITY");
+                }
+            } else if (introspectedColumn.isSequenceColumn()) {
+                //在 Oracle 中，如果需要是 SEQ_TABLENAME，那么可以配置为 select SEQ_{1} from dual
+                String tableName = introspectedTable.getFullyQualifiedTableNameAtRuntime();
+                String sql = MessageFormat.format(generatedKey.get().getRuntimeSqlStatement(), tableName, tableName.toUpperCase());
+                justAddAnnotation2Field(topLevelClass, field, GeneratedValue.class, "strategy = GenerationType.IDENTITY, generator = \"" + sql + "\"");
             }
-        } else if (introspectedColumn.isSequenceColumn()) {
-            //在 Oracle 中，如果需要是 SEQ_TABLENAME，那么可以配置为 select SEQ_{1} from dual
-            String tableName = introspectedTable.getFullyQualifiedTableNameAtRuntime();
-            String sql = MessageFormat.format(introspectedTable.getTableConfiguration().getGeneratedKey().getRuntimeSqlStatement(), tableName, tableName.toUpperCase());
-            justAddAnnotation2Field(topLevelClass, field, javax.persistence.GeneratedValue.class, "strategy = GenerationType.IDENTITY, generator = \"" + sql + "\"");
         }
+
         // region swagger注解
         if (this.needsSwagger) {
             String remarks = introspectedColumn.getRemarks();
@@ -307,22 +312,24 @@ public class SmartMapperPlugin extends FalseMethodPlugin {
         }
         if (generateColumnConsts) {
             for (IntrospectedColumn introspectedColumn : introspectedTable.getAllColumns()) {
-                Field field = new Field();
+                Field field = new Field(
+                    introspectedColumn.getActualColumnName().toUpperCase(),
+                    new FullyQualifiedJavaType(String.class.getName())
+                );
                 field.setVisibility(JavaVisibility.PUBLIC);
                 field.setStatic(true);
                 field.setFinal(true);
-                field.setName(introspectedColumn.getActualColumnName().toUpperCase()); //$NON-NLS-1$
-                field.setType(new FullyQualifiedJavaType(String.class.getName())); //$NON-NLS-1$
                 field.setInitializationString("\"" + introspectedColumn.getJavaProperty() + "\"");
                 context.getCommentGenerator().addClassComment(topLevelClass, introspectedTable);
                 topLevelClass.addField(field);
                 //增加字段名常量,用于pageHelper
-                Field columnField = new Field();
+                Field columnField = new Field(
+                    "DB_" + introspectedColumn.getActualColumnName().toUpperCase(),
+                    new FullyQualifiedJavaType(String.class.getName())
+                );
                 columnField.setVisibility(JavaVisibility.PUBLIC);
                 columnField.setStatic(true);
                 columnField.setFinal(true);
-                columnField.setName("DB_" + introspectedColumn.getActualColumnName().toUpperCase()); //$NON-NLS-1$
-                columnField.setType(new FullyQualifiedJavaType(String.class.getName())); //$NON-NLS-1$
                 columnField.setInitializationString("\"" + introspectedColumn.getActualColumnName() + "\"");
                 topLevelClass.addField(columnField);
             }
@@ -332,13 +339,12 @@ public class SmartMapperPlugin extends FalseMethodPlugin {
             List<String> baseClassName = Arrays.asList("byte", "short", "char", "int", "long", "float", "double", "boolean");
             List<String> wrapperClassName = Arrays.asList("Byte", "Short", "Character", "Integer", "Long", "Float", "Double", "Boolean");
             List<String> otherClassName = Arrays.asList("String", "BigDecimal", "BigInteger");
-            Method defaultMethod = new Method();
+            Method defaultMethod = new Method("defaultInstance");
             //增加方法注释
             defaultMethod.addJavaDocLine("/**");
             defaultMethod.addJavaDocLine(" * 带默认值的实例");
             defaultMethod.addJavaDocLine("*/");
             defaultMethod.setStatic(true);
-            defaultMethod.setName("defaultInstance");
             defaultMethod.setVisibility(JavaVisibility.PUBLIC);
             defaultMethod.setReturnType(topLevelClass.getType());
             defaultMethod.addBodyLine(String.format("%s instance = new %s();", topLevelClass.getType().getShortName(), topLevelClass.getType().getShortName()));
@@ -465,10 +471,10 @@ public class SmartMapperPlugin extends FalseMethodPlugin {
             commentCfg.setConfigurationType(SmartMapperCommentGenerator.class.getCanonicalName());
             context.setCommentGeneratorConfiguration(commentCfg);
         }
-        //支持oracle获取注释#114
-        context.getJdbcConnectionConfiguration().addProperty("remarksReporting", "true");
-        //支持mysql获取注释
-        context.getJdbcConnectionConfiguration().addProperty("useInformationSchema", "true");
+        // //支持oracle获取注释#114
+        // context.getConnectionFactoryConfiguration().addProperty("remarksReporting", "true");
+        // //支持mysql获取注释
+        // context.getConnectionFactoryConfiguration().addProperty("useInformationSchema", "true");
     }
 
     @Override
