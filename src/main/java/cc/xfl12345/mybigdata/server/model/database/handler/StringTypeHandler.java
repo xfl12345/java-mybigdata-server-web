@@ -4,8 +4,6 @@ import cc.xfl12345.mybigdata.server.model.database.result.MultipleResultBase;
 import cc.xfl12345.mybigdata.server.model.database.result.StringTypeResult;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 
-import java.util.List;
-
 public interface StringTypeHandler {
     /**
      * 插入字符串
