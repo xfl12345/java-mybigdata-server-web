@@ -96,70 +96,9 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
         return result;
     }
 
-    @Override
-    public StringTypeResult updateStringByGlobalId(String value, Long globalId) {
+    protected StringTypeResult updateStringByCondition(String value, Condition condition) {
         Date nowTime = new Date();
         StringTypeResult result = new StringTypeResult();
-
-        // 开启事务，防止 global_id 冲突
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            MoreTable moreTable = honeyFactory.getMoreTable();
-            StringContentAssociation data2search = new StringContentAssociation();
-            data2search.setGlobalId(globalId);
-            StringContentAssociation dataInDb = moreTable.select(data2search).get(0);
-
-            StringContent data2update = new StringContent();
-            data2update.setGlobalId(globalId);
-            data2update.setContent(value);
-            data2update.setContentLength((short) value.length());
-
-            GlobalDataRecord gdrDataInDb = dataInDb.getGlobalDataRecords().get(0);
-
-            GlobalDataRecord gdrData2update = new GlobalDataRecord();
-            gdrData2update.setId(gdrDataInDb.getId());
-            gdrData2update.setUpdateTime(nowTime);
-            gdrData2update.setModifiedCount(gdrDataInDb.getModifiedCount() + 1);
-
-            // 更新数据
-            int affectedRowCount = 0;
-            // 更新 全局ID表
-            affectedRowCount = suid.update(gdrData2update);
-            if (affectedRowCount == 0) {
-                transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-            } else {
-                // 更新 字符串表
-                affectedRowCount = suid.update(data2update);
-                if (affectedRowCount == 0) {
-                    transaction.rollback();
-                    result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-                } else {
-                    transaction.commit();
-                    result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
-                    result.setStringContent(data2update);
-                }
-            }
-        } catch (Exception e) {
-            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
-        }
-
-        return result;
-    }
-
-    public StringTypeResult updateStringByFullText(String oldValue, String value) {
-        Date nowTime = new Date();
-        StringTypeResult result = new StringTypeResult();
-        // TODO 完善接口定义
-        // StringTypeResult query = selectStringByFullText(oldValue, null);
-        // if (!query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
-        //     return query;
-        // }
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
@@ -171,8 +110,6 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             MoreTable moreTable = honeyFactory.getMoreTable();
 
             // 查询数据
-            Condition condition = new ConditionImpl();
-            condition.op(StringContentConstant.DB_CONTENT, Op.eq, oldValue);
             StringContentAssociation association = moreTable.select(new StringContentAssociation(), condition).get(0);
 
             // 创建更新缓存
@@ -212,6 +149,19 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
         }
 
         return result;
+    }
+
+    @Override
+    public StringTypeResult updateStringByGlobalId(String value, Long globalId) {
+        Condition condition = new ConditionImpl();
+        condition.op(StringContentConstant.GLOBAL_ID, Op.eq, globalId);
+        return updateStringByCondition(value, condition);
+    }
+
+    public StringTypeResult updateStringByFullText(String oldValue, String value) {
+        Condition condition = new ConditionImpl();
+        condition.op(StringContentConstant.DB_CONTENT, Op.eq, oldValue);
+        return updateStringByCondition(value, condition);
     }
 
     @Override
