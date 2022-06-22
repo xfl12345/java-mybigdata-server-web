@@ -41,7 +41,7 @@ public class AuthAccount implements Cloneable, Serializable {
     /**
      * 账号额外信息
      */
-    @javax.persistence.Column(name = "extra_info_id", nullable = false)
+    @javax.persistence.Column(name = "extra_info_id", nullable = true)
     @io.swagger.annotations.ApiModelProperty("账号额外信息")
     @org.teasoft.bee.osql.annotation.Column("extra_info_id")
     private Long extraInfoId;

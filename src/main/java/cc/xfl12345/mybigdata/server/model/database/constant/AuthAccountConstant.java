@@ -29,7 +29,7 @@ public class AuthAccountConstant {
     /**
      * 账号额外信息
      */
-    @javax.persistence.Column(name = "extra_info_id", nullable = false)
+    @javax.persistence.Column(name = "extra_info_id", nullable = true)
     private Long extraInfoId;
 
     public static final String ACCOUNT_ID = "accountId";
