@@ -437,7 +437,7 @@ CREATE TABLE auth_account
     `account_id`    bigint          NOT NULL PRIMARY KEY AUTO_INCREMENT comment '账号ID',
     `password_hash` char(128)       NOT NULL comment '账号密码的哈希值',
     `password_salt` char(128)       NOT NULL comment '账号密码的哈希值计算的佐料',
-    `extra_info_id` bigint NOT NULL comment '账号额外信息',
+    `extra_info_id` bigint          NOT NULL comment '账号额外信息',
     unique key unique_account(account_id),
     index boost_query_all (account_id, password_hash, password_salt, extra_info_id),
     foreign key (extra_info_id) references global_data_record (id) on delete restrict on update restrict
