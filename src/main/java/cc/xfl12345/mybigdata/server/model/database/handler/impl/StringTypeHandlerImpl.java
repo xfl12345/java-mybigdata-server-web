@@ -156,10 +156,10 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
         Date nowTime = new Date();
         StringTypeResult result = new StringTypeResult();
         // TODO 完善接口定义
-        StringTypeResult query = selectStringByFullText(oldValue, null);
-        if (!query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
-            return query;
-        }
+        // StringTypeResult query = selectStringByFullText(oldValue, null);
+        // if (!query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
+        //     return query;
+        // }
 
         // 开启事务，防止 global_id 冲突
         Transaction transaction = SessionFactory.getTransaction();
@@ -168,8 +168,15 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
             SuidRich suid = honeyFactory.getSuidRich();
+            MoreTable moreTable = honeyFactory.getMoreTable();
 
-            GlobalDataRecord gdrDataInDb = query.getGlobalDataRecord();
+            // 查询数据
+            Condition condition = new ConditionImpl();
+            condition.op(StringContentConstant.DB_CONTENT, Op.eq, oldValue);
+            StringContentAssociation association = moreTable.select(new StringContentAssociation(), condition).get(0);
+
+            // 创建更新缓存
+            GlobalDataRecord gdrDataInDb = association.getGlobalDataRecords().get(0);
 
             StringContent data2update = new StringContent();
             data2update.setGlobalId(gdrDataInDb.getId());
@@ -185,20 +192,20 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             int affectedRowCount = 0;
             // 更新 全局ID表
             affectedRowCount = suid.update(gdrData2update);
-            if (affectedRowCount == 0) {
-                transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-            } else {
+            if (affectedRowCount == 1) {
                 // 更新 字符串表
                 affectedRowCount = suid.update(data2update);
-                if (affectedRowCount == 0) {
-                    transaction.rollback();
-                    result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-                } else {
+                if (affectedRowCount == 1) {
                     transaction.commit();
                     result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
                     result.setStringContent(data2update);
+                } else {
+                    transaction.rollback();
+                    result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
                 }
+            } else {
+                transaction.rollback();
+                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
             }
         } catch (Exception e) {
             sqlErrorHandler.defaultErrorHandler(e, transaction, result);
@@ -268,12 +275,12 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             int affectedRowCount = 0;
             affectedRowCount = suid.delete(searchStringContent);
             if (affectedRowCount == 0) {
+                transaction.rollback();
                 result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
             } else {
+                transaction.commit();
                 result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
             }
-            result.setStringContent(searchStringContent);
-            transaction.commit();
         } catch (Exception e) {
             sqlErrorHandler.defaultErrorHandler(e, transaction, result);
         }

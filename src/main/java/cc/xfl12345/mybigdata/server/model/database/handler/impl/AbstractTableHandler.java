@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 
 import cc.xfl12345.mybigdata.server.model.database.handler.SqlErrorHandler;
-import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
+import cc.xfl12345.mybigdata.server.model.database.producer.impl.GlobalDataRecordProducer;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.DisposableBean;

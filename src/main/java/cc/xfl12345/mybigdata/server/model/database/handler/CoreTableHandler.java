@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
-import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
+import cc.xfl12345.mybigdata.server.model.database.producer.impl.GlobalDataRecordProducer;
 import cc.xfl12345.mybigdata.server.model.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.database.result.SingleDataResultBase;
 import com.alibaba.fastjson2.JSONObject;

@@ -32,9 +32,13 @@ public class SqlErrorHandlerImpl implements SqlErrorHandler, InitializingBean {
         if (coreTableResultMap == null) {
             coreTableResultMap = new HashMap<>();
             HashMap<Integer, SimpleCoreTableCurdResult> mysql = new HashMap<>();
+            // ER_TOO_LONG_IDENT -- Identifier name '%s' is too long
             mysql.put(1059, SimpleCoreTableCurdResult.FAILED_OVER_FLOW);
+            // ER_DUP_ENTRY -- Duplicate entry '%s' for key %d
             mysql.put(1062, SimpleCoreTableCurdResult.DUPLICATE);
+            // ER_DATA_TOO_LONG -- Data too long for column '%s' at row %ld
             mysql.put(1406, SimpleCoreTableCurdResult.FAILED_OVER_FLOW);
+            // ER_ROW_IS_REFERENCED_2 -- Cannot delete or update a parent row: a foreign key constraint fails (%s)
             mysql.put(1451, SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
             coreTableResultMap.put("mysql", mysql);
         }

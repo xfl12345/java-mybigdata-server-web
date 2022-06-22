@@ -5,7 +5,7 @@ import cc.xfl12345.mybigdata.server.model.database.handler.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.SqlErrorHandlerImpl;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
-import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
+import cc.xfl12345.mybigdata.server.model.database.producer.impl.GlobalDataRecordProducer;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
@@ -36,6 +36,20 @@ public class TestDataHandler {
             stringTypeHandler.selectStringByPrefix("t", null),
             JSONWriter.Feature.PrettyFormat
         ));
+
+
+        System.out.println(JSON.toJSONString(
+            stringTypeHandler.updateStringByFullText("text", "text666"),
+            JSONWriter.Feature.PrettyFormat
+        ));
+
+        System.out.println(JSON.toJSONString(
+            stringTypeHandler.updateStringByFullText("text666", "text"),
+            JSONWriter.Feature.PrettyFormat
+        ));
+
+
+
 
         globalDataRecordProducer.destroy();
         stringTypeHandler.destroy();

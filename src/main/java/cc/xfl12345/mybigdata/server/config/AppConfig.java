@@ -5,7 +5,7 @@ import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.SqlErrorHandlerImpl;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
-import cc.xfl12345.mybigdata.server.model.database.producer.GlobalDataRecordProducer;
+import cc.xfl12345.mybigdata.server.model.database.producer.impl.GlobalDataRecordProducer;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
