@@ -1,30 +1,30 @@
 ext {
-    def org_apache_poi_version = "5.2.1"
-    def tomcatVersion = "9.0.60"
-    def jackrabbitVersion = "2.21.10"
+    def org_apache_poi_version = '5.2.1'
+    def tomcatVersion = '9.0.60'
+    def jackrabbitVersion = '2.21.10'
 
 
     myDiyConf = [
         dependencies: [
             // poi
-            "org.apache.poi"   : [
+            'org.apache.poi'   : [
                 "$org_apache_poi_version": [
-                    "poi",
-                    "poi-ooxml-full"
+                    'poi',
+                    'poi-ooxml-full'
                 ]
             ],
             // JSP support
-            "org.apache.tomcat": [
+            'org.apache.tomcat': [
                 "$tomcatVersion": [
-                    "tomcat-jsp-api",
-                    "tomcat-jasper",
-                    "tomcat-servlet-api"
+                    'tomcat-jsp-api',
+                    'tomcat-jasper',
+                    'tomcat-servlet-api'
                 ]
             ],
-            "org.apache.jackrabbit": [
+            'org.apache.jackrabbit': [
                 "$jackrabbitVersion": [
-                    "jackrabbit-core",
-                    "jackrabbit-webdav"
+                    'jackrabbit-core',
+                    'jackrabbit-webdav'
                 ]
             ]
         ],
