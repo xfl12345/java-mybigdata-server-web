@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.initializer;
 
 
-import cc.xfl12345.mybigdata.server.appconst.MyConst;
+import cc.xfl12345.mybigdata.server.appconst.CommonConst;
 import cc.xfl12345.mybigdata.server.model.SpringBeanAPI;
 import cc.xfl12345.mybigdata.server.model.jdbc.MysqlJdbcUrlHelper;
 import cc.xfl12345.mybigdata.server.utility.MyBatisSqlUtils;
@@ -12,14 +12,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.apache.tools.ant.taskdefs.SQLExec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.UrlResource;
-import org.springframework.core.io.support.EncodedResource;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -115,7 +111,7 @@ public class MyDatabaseInitializer implements SpringBeanAPI {
         tmpConfProp.remove("password");
         // 创建一个临时的数据库连接，完成数据库初始化
         // 构建一个不带附加参数的JDBC URL
-        String tmpJdbcConnectionURL = mysqlJdbcUrlHelper.getSqlConnUrlWithConfigProp(MyConst.INFORMATION_SCHEMA_TABLE_NAME, tmpConfProp);
+        String tmpJdbcConnectionURL = mysqlJdbcUrlHelper.getSqlConnUrlWithConfigProp(CommonConst.INFORMATION_SCHEMA_TABLE_NAME, tmpConfProp);
         log.info("Temporary JDBC URL=" + tmpJdbcConnectionURL);
         // 创建一个临时连接，用于试探MySQL数据库
         Connection conn2 = mysqlTableSchemaDataSource.getConnection();

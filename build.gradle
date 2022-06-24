@@ -320,6 +320,9 @@ dependencies {
     implementation group: "org.nutz", name: "nutz", version: "1.r.69.v20220215"
 
 
+    // ECC 加解密
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15to18
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15to18', version: '1.71'
 
 
 
