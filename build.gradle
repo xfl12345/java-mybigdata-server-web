@@ -329,9 +329,6 @@ dependencies {
     // https://mvnrepository.com/artifact/cn.hutool/hutool-core
     implementation group: 'cn.hutool', name: 'hutool-core', version: hutoolVersion
 
-    // https://mvnrepository.com/artifact/cn.hutool/hutool-crypto
-    implementation group: 'cn.hutool', name: 'hutool-crypto', version: hutoolVersion
-
 
 //    implementation fileTree(dir:'src/main/webapp',includes:['**/*.*'])
 
