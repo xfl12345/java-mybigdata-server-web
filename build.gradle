@@ -51,6 +51,7 @@ dependencies {
     def saTokenVersion = '1.30.0'
     def asmVersion = '9.3'
     def tk_mybatis_version = '4.2.1'
+    def hutoolVersion = '5.8.4.M1'
 
     def springBootDependencies = [
         //'starter-thymeleaf',
@@ -324,6 +325,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15to18
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15to18', version: '1.71'
 
+    // HuTool 超级工具集
+    // https://mvnrepository.com/artifact/cn.hutool/hutool-core
+    implementation group: 'cn.hutool', name: 'hutool-core', version: hutoolVersion
+
+    // https://mvnrepository.com/artifact/cn.hutool/hutool-crypto
+    implementation group: 'cn.hutool', name: 'hutool-crypto', version: hutoolVersion
 
 
 //    implementation fileTree(dir:'src/main/webapp',includes:['**/*.*'])
