@@ -1,11 +1,7 @@
-package cc.xfl12345.mybigdata.server.controller;
+package cc.xfl12345.mybigdata.server.controller.restful;
 
 import com.alibaba.druid.stat.DruidStatService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,14 +14,7 @@ import java.io.IOException;
 @RestController
 @Slf4j
 @RequestMapping(DruidStatController.servletName)
-public class DruidStatController implements ApplicationContextAware {
-    protected ApplicationContext applicationContext;
-
-    @Autowired
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+public class DruidStatController {
 
     protected DruidStatService statService = DruidStatService.getInstance();
     public static final String servletName = "druid";

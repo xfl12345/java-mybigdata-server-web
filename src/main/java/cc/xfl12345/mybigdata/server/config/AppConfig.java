@@ -9,12 +9,17 @@ import cc.xfl12345.mybigdata.server.model.database.producer.impl.GlobalDataRecor
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.teasoft.honey.osql.core.BeeFactory;
 import org.teasoft.honey.osql.core.SessionFactory;
 import org.teasoft.spring.boot.config.BeeAutoConfiguration;
+
+import javax.sql.DataSource;
 
 @Configuration
 @AutoConfigureAfter({ IndependenceBeansConfig.class, JdbcConfig.class, BeeAutoConfiguration.class })
@@ -36,6 +41,8 @@ public class AppConfig {
     }
 
     @Bean("beeFactory")
+    @ConditionalOnMissingBean
+    @ConditionalOnSingleCandidate(DataSource.class)
     public BeeFactory getBeeFactory() {
         BeeFactory beeFactory = BeeFactory.getInstance();
         beeFactory.setDataSource(jdbcConfig.getDruidDataSource());
@@ -43,6 +50,8 @@ public class AppConfig {
     }
 
     @Bean("sessionFactory")
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(BeeFactory.class)
     public SessionFactory getSessionFactory() {
         SessionFactory factory = new SessionFactory();
         factory.setBeeFactory(getBeeFactory());

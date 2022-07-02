@@ -1,408 +1,418 @@
-// package cc.xfl12345.mybigdata.server.service;
-//
-//
-// import cc.xfl12345.mybigdata.server.appconst.api.result.JsonApiResult;
-// import cc.xfl12345.mybigdata.server.appconst.api.result.LoginApiResult;
-// import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
-// import cc.xfl12345.mybigdata.server.appconst.field.AccountOperationField;
-// import cc.xfl12345.mybigdata.server.appconst.field.MySessionAttributes;
-// import cc.xfl12345.mybigdata.server.model.api.request.BaseRequestObject;
-// import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
-// import cc.xfl12345.mybigdata.server.model.database.table.AuthAccount;
-// import com.alibaba.fastjson2.JSONObject;
-// import lombok.extern.slf4j.Slf4j;
-// import org.apache.commons.codec.DecoderException;
-// import org.apache.commons.codec.binary.Hex;
-// import org.apache.commons.codec.digest.DigestUtils;
-// import org.springframework.dao.DataAccessException;
-// import org.springframework.stereotype.Service;
-//
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpSession;
-// import java.util.Date;
-// import java.util.List;
-//
-//
-// /**
-//  * (AuthAccount)表服务实现类
-//  *
-//  * @author makejava
-//  * @since 2021-04-19 16:00:51
-//  */
-// @Slf4j
-// @Service("tbAccountService")
-// public class AccountService {
-//
-//
-//     public static final String jsonApiVersion = "1";
-//
-//
-//     /**
-//      * 检查完JSON数据结构是否合法之后，调用具体的业务函数
-//      */
-//     @Override
-//     public JsonCommonApiResponseObject getResult(HttpServletRequest request, JSONObject object) {
-//         JsonCommonApiResponseObject responseObject = new JsonCommonApiResponseObject(jsonApiVersion);
-//         BaseRequestObject baseRequestObject = object.toJavaObject(BaseRequestObject.class);
-//         try {
-//             //兼容旧API版本的请求
-//             switch (baseRequestObject.version) {
-//                 //当前版本（最新版本）
-//                 case jsonApiVersion:
-//                     //选择操作
-//                     switch (baseRequestObject.operation) {
-//                         //登录
-//                         case AccountOperationField.login:
-//                             LoginRequestData loginRequestData = baseRequestObject.data.toJavaObject(LoginRequestData.class);
-//                             LoginApiResult loginApiResult = login(request.getSession(), loginRequestData.username, loginRequestData.password);
-//                             responseObject.success = loginApiResult.equals(LoginApiResult.SUCCEED);
-//                             responseObject.code = loginApiResult.getNum();
-//                             responseObject.message = loginApiResult.getName();
-//                             responseObject.version = jsonApiVersion;
-//                             break;
-//                         case AccountOperationField.logout:
-//                             LogoutApiResult logoutApiResult = logout(request.getSession());
-//                             responseObject.success = logoutApiResult.equals(LogoutApiResult.SUCCEED);
-//                             responseObject.code = logoutApiResult.getNum();
-//                             responseObject.message = logoutApiResult.getName();
-//                             responseObject.version = jsonApiVersion;
-//                             break;
-//                         default:
-//                             responseObject.setApiResult(JsonApiResult.FAILED_INVALID);
-//                     }
-//                     break;
-//                 default:
-//                     responseObject.setApiResult(JsonApiResult.FAILED_INVALID);
-//                     break;
-//             }
-//         } catch (Exception e) {
-//             log.error(e.toString());
-//             responseObject.setApiResult(JsonApiResult.FAILED_INVALID);
-//         }
-//         return responseObject;
-//     }
-//
-//
-//     /**
-//      * 检查当前会话是否存在有效登录
-//      *
-//      * @param request 客户端请求
-//      * @return 是否已登录
-//      */
-//     public boolean checkIsLoggedIn(HttpServletRequest request) {
-//         return checkIsLoggedIn(request.getSession());
-//     }
-//
-//     /**
-//      * 检查当前会话是否存在有效登录
-//      *
-//      * @param session 客户端会话
-//      * @return 是否已登录
-//      */
-//     public boolean checkIsLoggedIn(HttpSession session) {
-//         AuthAccount tbAccount = (AuthAccount) session.getAttribute(MySessionAttributes.TB_ACCOUNT);
-//         if(tbAccount != null){
-//             AccountSession accountSession = accountSessionDao.queryByAccountId(tbAccount.getAccountId());
-//             if(accountSession == null || ! accountSession.getSessionId().equals(session.getId())){
-//                 session.invalidate();
-//             }
-//             else {
-//                 return true;
-//             }
-//         }
-//         return false;
-//     }
-//
-//
-//     /**
-//      * 登录，验证用户名和密码是否正确。如果通过验证，将设置accountId到tbAccount对象里面
-//      *
-//      * @param session      当前会话，用于获取会话ID，以及设置session变量
-//      * @param username     用户名
-//      * @param passwordHash 来自客户端发送来的密码SHA512 HEX值
-//      * @return 是否通过验证
-//      */
-//     public LoginApiResult login(HttpSession session, String username, String passwordHash) {
-//         LoginApiResult loginApiResult = LoginApiResult.FAILED;
-//         if (checkIsLoggedIn(session)){
-//             return LoginApiResult.FAILED_ALREADY_LOGINED;
-//         }
-//         //检查两者 是否 非空且合法
-//         if ( RegisterFieldChecker.isUsernameUnderLegal(username) &&
-//                 MyStrIsOK.isLetterDigitOnly(passwordHash) &&
-//                 username.length() <= AuthAccountField.USERNAME_MAX_LENGTH &&
-//                 passwordHash.length() == MyConst.SHA_512_HEX_STR_LENGTH) {
-//             //从数据库拉取用户信息
-//             AuthAccount tbAccountInDb = queryByUsername(username);
-//             //如果用户名不存在，则立即返回
-//             if (tbAccountInDb == null)
-//                 return loginApiResult;
-//             //默认前端已对密码文本已完成SHA512哈希值计算。这行补全完整的单向加密。这样，哪怕被拖库，也可以保证密码安全。
-//             byte[] passwordHashFromRequest = DigestUtils.md5(passwordHash + tbAccountInDb.getPasswordSalt());
-//             //对比密码哈希值是否一致，使用 时间定长 的比较方法，防止试探性攻击。
-//             byte[] passwordHashFromDatabase;
-//             boolean passwordCorrect = false;
-//             try {
-//                 passwordHashFromDatabase = Hex.decodeHex(tbAccountInDb.getPasswordHash());
-//                 passwordCorrect = true;
-//                 for (int i = 0; i < passwordHashFromDatabase.length; i++) {
-//                     if ((passwordHashFromRequest[i] ^ passwordHashFromDatabase[i]) != 0) {
-//                         passwordCorrect = false;
-//                     }
-//                 }
-//             } catch (DecoderException e) {
-//                 e.printStackTrace();
-//                 log.error("数据库密码格式错误，从16进制字符 转码 到二进制失败！");
-//             }
-//             if (passwordCorrect) {//密码正确，执行插入数据库操作。
-//                 loginApiResult = login(session, tbAccountInDb);
-//             }
-//         }
-//         return loginApiResult;
-//     }
-//
-//     public LoginApiResult login(HttpSession session, AuthAccount tbAccountInDb) {
-//         LoginApiResult loginApiResult = LoginApiResult.OTHER_FAILED;
-//         AccountSession accountSession = new AccountSession();
-//         accountSession.setSessionId(session.getId());
-//         accountSession.setAccountId(tbAccountInDb.getAccountId());
-//         int affectedRowCount = 0;
-//         try {
-//             affectedRowCount = accountSessionDao.insert(accountSession);
-//             session.setAttribute(MySessionAttributes.TB_ACCOUNT, tbAccountInDb);
-//             DirectoryView currDirView = fileService.getDirectoryView(tbAccountInDb.getRootDirectoryId());
-//             session.setAttribute(MySessionAttributes.CURRENT_WORK_DIRECTOR, currDirView);
-//             loginApiResult = LoginApiResult.SUCCEED;
-//         } catch (DataAccessException e) {
-//             Throwable cause = e.getCause();
-//             if (cause instanceof MySQLIntegrityConstraintViolationException) {
-//                 loginApiResult = LoginApiResult.DUPLICATE_KEY;
-//             }
-//             log.warn(e.toString());
-//         }
-//         return loginApiResult;
-//     }
-//
-//     /**
-//      * 通过判断用户请求来智能注销登录
-//      *
-//      * @param session 客户端会话
-//      * @return 是否成功
-//      */
-//     public LogoutApiResult logout(HttpSession session) {
-//         LogoutApiResult logoutApiResult = LogoutApiResult.OTHER_FAILED;
-//         AuthAccount tbAccount = (AuthAccount) session.getAttribute(MySessionAttributes.TB_ACCOUNT);
-//         //检查是否存在有效的账号ID
-//         if (tbAccount != null) {
-//             long accountId = tbAccount.getAccountId();
-//             AccountSession accountSession = this.accountSessionDao.queryByAccountId(accountId);
-//             if (accountSession == null) {
-//                 logoutApiResult = LogoutApiResult.SESSION_EXPIRE;
-//             } else {
-//                 if (logoutByAccountId(accountId)) {
-//                     session.removeAttribute(MySessionAttributes.TB_ACCOUNT);
-//                     logoutApiResult = LogoutApiResult.SUCCEED;
-//                 } else {
-//                     logoutApiResult = LogoutApiResult.FAILED;
-//                 }
-//             }
-//         } else {
-//             logoutApiResult = LogoutApiResult.NO_LOGIN;
-//         }
-//         return logoutApiResult;
-//     }
-//
-//     /**
-//      * 注册账号
-//      *
-//      * @param registerJson 客户端请求发来的JSON对象
-//      * @return 返回注册结果
-//      */
-//     public RegisterResult register(HttpSession session, JSONObject registerJson, int callCount) {
-//         RegisterResult registerResult = new RegisterResult();
-//         //优先检查字段是否合法
-//         RegisterApiResult registerApiResult = RegisterFieldChecker.autoCheck(registerJson);
-//         registerResult.tbAccount = null;
-//         if (registerApiResult.equals(RegisterApiResult.SUCCEED)) {
-//             String username = (String) registerJson.get(RegisterRequestField.USERNAME);//获取用户名字段
-//             String passwordStr = (String) registerJson.get(RegisterRequestField.PASSWORD);//获取密码字段
-//             String email = (String) registerJson.get(RegisterRequestField.EMAIL);//获取邮箱字段
-//             String gender = (String) registerJson.get(RegisterRequestField.GENDER);//获取性别字段
-//             //检查用户名是否被注册
-//             if (userQueryByUsername(username) == null) {//用户名未被注册
-//                 //检查邮箱是否被注册
-//                 if (userQueryByEmail(email) == null) {//未注册
-//                     Date date = new Date();
-//                     String passwordSalt = generatePasswordSalt();
-//                     String passwordHash = generatePasswordHash(passwordStr, passwordSalt);
-//                     String currDate = StaticSpringApp.getSimpleDateFormat().format(date);
-//                     String currMillisecond = StaticSpringApp.getMillisecondFormatter().format(date);
-//
-//                     AuthAccount tbAccount = new AuthAccount();
-//                     tbAccount.setUsername(username);
-//                     tbAccount.setPasswordHash(passwordHash);
-//                     tbAccount.setPasswordSalt(passwordSalt);
-//                     tbAccount.setPermissionId(tbPermissionService.gePermissionIdOfEmailNotActivatedAccount());
-//                     tbAccount.setRegisterTime(currDate);
-//                     tbAccount.setRegisterTimeInMs(Integer.valueOf(currMillisecond));
-//                     tbAccount.setRootDirectoryId(TbDirectoryField.DIRECTORY_ID.blackhouse.id);
-//                     tbAccount.setEmail(email);
-//                     tbAccount.setGender(gender);
-//                     tbAccount.setAccountStatus(AuthAccountField.ACCOUNT_STATUS.EMAIL_NOT_ACTIVATED);
-//                     SentEmailApiResult sentEmailApiResult = emailVerificationService.isUnderSentEmailLimitation(tbAccount);
-//                     if (sentEmailApiResult.equals(SentEmailApiResult.SUCCEED)) {
-//                         int affectedRowCount = 0;
-//                         AuthAccount tbAccountInDb;
-//                         try {//注册并获取账号ID
-//                             affectedRowCount = insert(tbAccount);
-//                             tbAccountInDb = userQueryByEmail(tbAccount.getEmail());
-//                             registerResult.tbAccount = tbAccountInDb;
-//                             login(session, tbAccountInDb);
-//                             registerApiResult = RegisterApiResult.SUCCEED;
-//                             emailVerificationService.sendEmail(tbAccount);
-//                         } catch (DataAccessException e) {
-//                             Throwable cause = e.getCause();
-//                             if (cause instanceof MySQLIntegrityConstraintViolationException) {
-//                                 if (callCount == 1) {
-//                                     // 对瞬时重复注册情况的处理（有且只有 1 端注册有效）
-//                                     RegisterResult registerResult2 = register(session, registerJson, callCount + 1);
-//                                     registerApiResult = registerResult2.registerApiResult;
-//                                 } else {
-//                                     log.error("注册功能 发生了严重的错误！已终止无限递归！请立即排查原因！！error=" + e);
-//                                     registerApiResult = RegisterApiResult.OTHER_FAILED;
-//                                 }
-//                             } else {
-//                                 log.error("注册功能 发生了未知错误！请立即排查原因！！error=" + e);
-//                                 registerApiResult = RegisterApiResult.OTHER_FAILED;
-//                             }
-//                         }
-//                     } else {
-//                         if (sentEmailApiResult.equals(SentEmailApiResult.FAILED_FREQUENCY_MAX))
-//                             registerApiResult = RegisterApiResult.FAILED_FREQUENCY_MAX;
-//                         else if (sentEmailApiResult.equals(SentEmailApiResult.FAILED_TODAY_MAX))
-//                             registerApiResult = RegisterApiResult.FAILED_TODAY_MAX;
-//                     }
-//                 } else {
-//                     registerApiResult = RegisterApiResult.FAILED_EMAIL_EXIST;
-//                 }
-//             } else {
-//                 registerApiResult = RegisterApiResult.FAILED_USERNAME_EXIST;
-//             }
-//         }
-//         registerResult.registerApiResult = registerApiResult;
-//         return registerResult;
-//     }
-//
-//     public String generatePasswordHash(String passwordStr, String salt) {
-//         return DigestUtils.md5Hex(Hex.encodeHexString(DigestUtils.sha512(passwordStr)) + salt);
-//     }
-//
-//     public String generatePasswordSalt() {
-//         return emailVerificationService.generateEmailVerificationCode(AuthAccountField.PASSWORD_SALT_LENGTH);
-//     }
-//
-//
-//     /**
-//      * 通过电子邮箱查询单条数据
-//      *
-//      * @param email 电子邮箱
-//      * @return 实例对象
-//      */
-//     public AuthAccount userQueryByEmail(String email) {
-//         return this.tbAccountDao.userQueryByEmail(email);
-//     }
-//
-//     /**
-//      * 按账号ID注销登录
-//      *
-//      * @param accountId 账号ID
-//      * @return 是否成功
-//      */
-//     public boolean logoutByAccountId(Long accountId) {
-//         return this.accountSessionDao.deleteByAccountId(accountId) == 1;
-//     }
-//
-//     /**
-//      * 按会话ID注销登录
-//      *
-//      * @param sessionId 会话ID
-//      * @return 是否成功
-//      */
-//     public boolean logoutBySessionId(String sessionId) {
-//         return this.accountSessionDao.deleteBySessionId(sessionId) == 1;
-//     }
-//
-//     /**
-//      * 通过用户名查询单条数据
-//      *
-//      * @param username 用户名
-//      * @return 实例对象
-//      */
-//     public AuthAccount queryByUsername(String username) {
-//         return this.tbAccountDao.queryByUsername(username);
-//     }
-//
-//     /**
-//      * 根据用户名查询允许提供给普通用户的单条数据
-//      *
-//      * @param username 用户名
-//      * @return 实例对象
-//      */
-//     AuthAccount userQueryByUsername(String username) {
-//         return this.tbAccountDao.userQueryByUsername(username);
-//     }
-//
-//     /**
-//      * 通过用户名查询登录验证所需要的数据
-//      *
-//      * @param username 用户名
-//      * @return 实例对象
-//      */
-//     AuthAccount queryValidationInformationByUsername(String username) {
-//         return this.tbAccountDao.queryValidationInformationByUsername(username);
-//     }
-//
-//     /**
-//      * 通过ID查询单条数据
-//      *
-//      * @param accountId 主键
-//      * @return 实例对象
-//      */
-//     public AuthAccount queryById(Long accountId) {
-//         return this.tbAccountDao.queryById(accountId);
-//     }
-//
-//     /**
-//      * 新增数据
-//      *
-//      * @param tbAccount 实例对象
-//      * @return 实例对象
-//      */
-//     public int insert(AuthAccount tbAccount) {
-//         return this.tbAccountDao.insert(tbAccount);
-//     }
-//
-//     /**
-//      * 根据账号ID，修改账号数据
-//      * 更新成功后，同步更新当前账号的session对象
-//      *
-//      * @param tbAccount 实例对象
-//      * @return 实例对象
-//      */
-//     public synchronized int update(AuthAccount tbAccount) {
-//         return affectedRow;
-//     }
-//
-//     /**
-//      * 通过主键删除数据
-//      *
-//      * @param accountId 主键
-//      * @return 是否成功
-//      */
-//     public boolean deleteById(Long accountId) {
-//
-//
-//         return this.tbAccountDao.deleteById(accountId) == 1;
-//     }
-//
-// }
+package cc.xfl12345.mybigdata.server.service;
+
+
+import cc.xfl12345.mybigdata.server.appconst.CommonConst;
+import cc.xfl12345.mybigdata.server.appconst.api.request.RegisterRequestField;
+import cc.xfl12345.mybigdata.server.appconst.api.result.JsonApiResult;
+import cc.xfl12345.mybigdata.server.appconst.api.result.LoginApiResult;
+import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
+import cc.xfl12345.mybigdata.server.appconst.api.result.RegisterApiResult;
+import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
+import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
+import cc.xfl12345.mybigdata.server.model.database.constant.AuthAccountConstant;
+import cc.xfl12345.mybigdata.server.model.database.handler.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.AuthAccount;
+import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
+import cc.xfl12345.mybigdata.server.service.result.RegisterResult;
+import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
+import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.fastjson2.JSONObject;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
+import org.teasoft.bee.osql.BeeException;
+import org.teasoft.bee.osql.Condition;
+import org.teasoft.bee.osql.Op;
+import org.teasoft.bee.osql.SuidRich;
+import org.teasoft.bee.osql.transaction.Transaction;
+import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
+import org.teasoft.honey.osql.core.BeeFactory;
+import org.teasoft.honey.osql.core.ConditionImpl;
+import org.teasoft.honey.osql.core.HoneyFactory;
+import org.teasoft.honey.osql.core.SessionFactory;
+
+
+/**
+ * (AuthAccount)表服务实现类
+ *
+ * @author makejava
+ * @since 2021-04-19 16:00:51
+ */
+@Slf4j
+@Service("tbAccountService")
+public class AccountService implements InitializingBean {
+    @Getter
+    @Setter
+    protected SqlErrorHandler sqlErrorHandler;
+    @Getter
+    @Setter
+    protected RandomCodeGenerator randomCodeGenerator;
+
+    @Getter
+    @Setter
+    protected String jsonApiVersion = "1";
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+    }
+
+    /**
+     * 检查当前会话是否已登录
+     *
+     * @return 是否已登录
+     */
+    public boolean checkIsLoggedIn() {
+        return StpUtil.isLogin();
+    }
+
+    public AuthAccount queryByUsername(String username) {
+        AuthAccount account = null;
+        Condition condition = new ConditionImpl();
+        // TODO 目前仅支持单用户。尝试支持多用户
+        if (AccountField.ROOT_USERNAME.equals(username)) {
+            // 开启事务
+            Transaction transaction = SessionFactory.getTransaction();
+            try {
+                transaction.begin();
+                transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+                HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+                SuidRich suid = honeyFactory.getSuidRich();
+                condition.op(AuthAccountConstant.ACCOUNT_ID, Op.eq, AccountField.ROOT_ACCOUNT_ID);
+                account = suid.select(new AuthAccount(), condition).get(0);
+                transaction.commit();
+            } catch (Exception e) {
+                transaction.rollback();
+            }
+        }
+
+        return account;
+    }
+
+
+    public LoginApiResult login(String username, String passwordHash) {
+        LoginApiResult loginApiResult = LoginApiResult.OTHER_FAILED;
+        //检查两者 是否 非空且合法
+        if (RegisterFieldChecker.isUsernameUnderLegal(username) &&
+            MyStrIsOK.isLetterDigitOnly(passwordHash) &&
+            username.length() <= AccountField.USERNAME_MAX_LENGTH &&
+            passwordHash.length() == CommonConst.SHA_512_HEX_STR_LENGTH) {
+            //从数据库拉取用户信息
+            AuthAccount account = queryByUsername(username);
+            //如果用户不存在，则立即返回
+            if (account == null) {
+                loginApiResult = LoginApiResult.FAILED;
+            } else {
+                if (validate(account, passwordHash)) {//密码正确
+                    StpUtil.logout(); // 切换账号
+                    StpUtil.login(account.getAccountId());
+                    loginApiResult = LoginApiResult.SUCCEED;
+                }
+            }
+        } else {
+            loginApiResult = LoginApiResult.FAILED;
+        }
+
+        return loginApiResult;
+    }
+
+
+    /**
+     * 验证用户名和密码是否正确。
+     *
+     * @param account      账号数据
+     * @param passwordHash 来自客户端发送来的密码SHA512 HEX值
+     * @return 是否通过验证
+     */
+    public boolean validate(AuthAccount account, String passwordHash) {
+        //默认前端已对密码文本已完成SHA512哈希值计算。这行补全完整的单向加密。这样，哪怕被拖库，也可以保证密码安全。
+        String passwordHashFromRequest = passwordHashEncrypt(passwordHash, account.getPasswordSalt());
+        String passwordHashFromDatabase = account.getPasswordHash();
+        boolean passwordCorrect = false;
+        try {
+            passwordCorrect = true;
+            //对比密码哈希值是否一致，使用 时间定长 的比较方法，防止试探性攻击。
+            for (int i = 0; i < passwordHashFromDatabase.length(); i++) {
+                if ((passwordHashFromRequest.charAt(i) ^ passwordHashFromDatabase.charAt(i)) != 0) {
+                    passwordCorrect = false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("数据库密码格式错误，可能长度不一致。e=" + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * 踢人下线，根据账号id 和 设备类型
+     * 当对方再次访问系统时，会抛出NotLoginException异常，场景值=-5
+     *
+     * @param loginId – 账号id
+     * @param device  – 设备类型 (填null代表踢出所有设备类型)
+     * @return 是否成功
+     */
+    public LogoutApiResult kickout(Long loginId, String device) {
+        StpUtil.kickout(loginId, device);
+        return LogoutApiResult.SUCCEED;
+    }
+
+
+    public LogoutApiResult logout() {
+        if (StpUtil.isLogin()) {
+            StpUtil.logout();
+            return LogoutApiResult.SUCCEED;
+        } else {
+            return LogoutApiResult.NO_LOGIN;
+        }
+    }
+
+
+    public boolean resetPassword(String passwordHash) {
+        Long accountId = (Long) StpUtil.getLoginId();
+        if (accountId == null) {
+            return false;
+        } else {
+            String passwordSalt = generatePasswordSalt();
+            String encryptedPasswordHash = passwordHashEncrypt(passwordHash, passwordSalt);
+
+            AuthAccount account = new AuthAccount();
+            account.setAccountId(accountId);
+            account.setPasswordSalt(passwordSalt);
+            account.setPasswordHash(encryptedPasswordHash);
+            return updateById(account);
+        }
+    }
+
+
+    // /**
+    //  * 注册账号
+    //  *
+    //  * @param registerInfo 注册信息
+    //  * @return 返回注册结果
+    //  */
+    // public RegisterResult register(JSONObject registerInfo) {
+    //     RegisterResult registerResult = new RegisterResult();
+    //     RegisterApiResult registerApiResult = RegisterApiResult.OTHER_FAILED;
+    //     String passwordStr = (String) registerInfo.get(RegisterRequestField.PASSWORD);//获取密码字段
+    //     if (RegisterFieldChecker.isPasswordComplexityEnough(passwordStr)) {
+    //         String passwordSalt = generatePasswordSalt();
+    //         String passwordHash = generatePasswordHash(passwordStr, passwordSalt);
+    //         // TODO 实现账号注册功能
+    //
+    //     } else {
+    //         registerApiResult = RegisterApiResult.ILLEGAL_PASSWORD;
+    //     }
+    //     registerResult.apiResult = registerApiResult;
+    //     return registerResult;
+    // }
+
+    public String passwordHashEncrypt(String passwordHash, String salt) {
+        return DigestUtils.sha512Hex(passwordHash + salt);
+    }
+
+    public String generatePasswordHash(String passwordStr, String salt) {
+        return passwordHashEncrypt(DigestUtils.sha512Hex(passwordStr), salt);
+    }
+
+    public String generatePasswordSalt() {
+        return randomCodeGenerator.generate(AccountField.PASSWORD_SALT_LENGTH);
+    }
+
+
+    // /**
+    //  * 通过电子邮箱查询单条数据
+    //  *
+    //  * @param email 电子邮箱
+    //  * @return 实例对象
+    //  */
+    // public AuthAccount userQueryByEmail(String email) {
+    //     return this.tbAccountDao.userQueryByEmail(email);
+    // }
+    //
+    // /**
+    //  * 按账号ID注销登录
+    //  *
+    //  * @param accountId 账号ID
+    //  * @return 是否成功
+    //  */
+    // public boolean logoutByAccountId(Long accountId) {
+    //     return this.accountSessionDao.deleteByAccountId(accountId) == 1;
+    // }
+    //
+    // /**
+    //  * 按会话ID注销登录
+    //  *
+    //  * @param sessionId 会话ID
+    //  * @return 是否成功
+    //  */
+    // public boolean logoutBySessionId(String sessionId) {
+    //     return this.accountSessionDao.deleteBySessionId(sessionId) == 1;
+    // }
+    //
+    // /**
+    //  * 通过用户名查询单条数据
+    //  *
+    //  * @param username 用户名
+    //  * @return 实例对象
+    //  */
+    // public AuthAccount queryByUsername(String username) {
+    //     return this.tbAccountDao.queryByUsername(username);
+    // }
+    //
+    // /**
+    //  * 根据用户名查询允许提供给普通用户的单条数据
+    //  *
+    //  * @param username 用户名
+    //  * @return 实例对象
+    //  */
+    // AuthAccount userQueryByUsername(String username) {
+    //     return this.tbAccountDao.userQueryByUsername(username);
+    // }
+    //
+    // /**
+    //  * 通过用户名查询登录验证所需要的数据
+    //  *
+    //  * @param username 用户名
+    //  * @return 实例对象
+    //  */
+    // AuthAccount queryValidationInformationByUsername(String username) {
+    //     return this.tbAccountDao.queryValidationInformationByUsername(username);
+    // }
+
+    /**
+     * 新增数据
+     *
+     * @param account 实例对象
+     * @return 实例对象
+     */
+    public boolean insert(AuthAccount account) {
+        boolean result = false;
+
+        // TODO 实现账号创建之后，自动关联所有数据。包括账号ID、时间等等其它重要数据。
+        Transaction transaction = SessionFactory.getTransaction();
+        try {
+            transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+            SuidRich suid = honeyFactory.getSuidRich();
+
+            // 插入数据
+            int affectedRowCount = 0;
+            affectedRowCount = suid.insert(account);
+            if (affectedRowCount == 1) {
+                transaction.commit();
+                result = true;
+            } else {
+                transaction.rollback();
+            }
+        } catch (BeeException | NullPointerException ignored) {
+            transaction.rollback();
+        }
+
+        return result;
+    }
+
+    /**
+     * 通过主键删除数据
+     *
+     * @param accountId 主键
+     * @return 是否成功
+     */
+    public boolean deleteById(Long accountId) {
+        boolean result = false;
+
+        Transaction transaction = SessionFactory.getTransaction();
+        try {
+            transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+            SuidRich suid = honeyFactory.getSuidRich();
+
+            // 删除数据
+            int affectedRowCount = 0;
+            affectedRowCount = suid.deleteById(AuthAccount.class, accountId);
+            if (affectedRowCount == 1) {
+                transaction.commit();
+                result = true;
+            } else {
+                transaction.rollback();
+            }
+        } catch (BeeException | NullPointerException ignored) {
+            transaction.rollback();
+        }
+
+        return result;
+    }
+
+    /**
+     * 根据账号ID，修改账号数据
+     *
+     * @param account 实例对象
+     * @return 实例对象
+     */
+    public boolean updateById(AuthAccount account) {
+        if (account.getAccountId() == null) {
+            return false;
+        }
+        boolean result = false;
+
+        Transaction transaction = SessionFactory.getTransaction();
+        try {
+            transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+            SuidRich suid = honeyFactory.getSuidRich();
+
+            // 更新数据
+            int affectedRowCount = 0;
+            affectedRowCount = suid.update(account);
+            if (affectedRowCount == 1) {
+                transaction.commit();
+                result = true;
+            } else {
+                transaction.rollback();
+            }
+        } catch (BeeException | NullPointerException ignored) {
+            transaction.rollback();
+        }
+
+        return result;
+    }
+
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param accountId 主键
+     * @return 实例对象
+     */
+    public AuthAccount queryById(Long accountId) {
+        AuthAccount result = null;
+
+        Transaction transaction = SessionFactory.getTransaction();
+        try {
+            transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+            SuidRich suid = honeyFactory.getSuidRich();
+
+            // 查询数据
+            result = suid.selectById(new AuthAccount(), accountId);
+            if (result != null) {
+                transaction.commit();
+            } else {
+                transaction.rollback();
+            }
+        } catch (BeeException | NullPointerException ignored) {
+            transaction.rollback();
+        }
+
+        return result;
+    }
+}

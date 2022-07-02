@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public enum JsonApiResult {
     SUCCEED("成功", HttpStatus.OK.value()),
+    FAILED("失败", HttpStatus.FORBIDDEN.value()),
     FAILED_INVALID("参数无效", HttpStatus.FORBIDDEN.value()),
     FAILED_MISSING_PARAMS("缺少参数", HttpStatus.FORBIDDEN.value()),
     FAILED_TOO_MUCH_PARAMS("参数过多", HttpStatus.FORBIDDEN.value()),

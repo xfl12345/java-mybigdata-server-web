@@ -1,6 +1,10 @@
 package cc.xfl12345.mybigdata.server.appconst.field;
 
 public class AccountField {
+    public static final long ROOT_ACCOUNT_ID = 1;
+    public static final String ROOT_USERNAME = "root";
+    public static final String ROOT_ACCOUNT_INIT_PASSWORD = "mybigdata";
+
     public static final int USERNAME_MIN_LENGTH = 6;
     public static final int USERNAME_MAX_LENGTH = 32;
     public static final int PASSWORD_MIN_LENGTH = 8;
