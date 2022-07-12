@@ -2,6 +2,7 @@ package cc.xfl12345.mybigdata.server.listener;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
@@ -47,7 +48,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
 
     @Autowired
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 

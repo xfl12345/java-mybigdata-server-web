@@ -14,9 +14,10 @@ public class StudyJsonSchema extends TestSpringAppLoad {
         );
 
 
-
+        System.out.print("\n".repeat(10));
         System.out.println(
             JSON.toJSON(jsonChecker.getSchema().getSchemaObject()).toString()
         );
+        System.out.print("\n".repeat(10));
     }
 }

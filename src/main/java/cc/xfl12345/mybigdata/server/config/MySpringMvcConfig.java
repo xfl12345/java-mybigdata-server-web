@@ -4,6 +4,7 @@ import cc.xfl12345.mybigdata.server.interceptor.ApiRequestInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.DruidStatInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.MySaRouteInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.UploadInterceptor;
+import lombok.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -27,7 +28,7 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
 
     @Autowired
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 

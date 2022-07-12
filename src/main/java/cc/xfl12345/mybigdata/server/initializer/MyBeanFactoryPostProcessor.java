@@ -1,7 +1,6 @@
 package cc.xfl12345.mybigdata.server.initializer;
 
 
-import cc.xfl12345.mybigdata.server.model.StaticSpringApp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -15,6 +14,5 @@ public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
         // 优先初始化一些 Bean
-        configurableListableBeanFactory.createBean(StaticSpringApp.class);
     }
 }
