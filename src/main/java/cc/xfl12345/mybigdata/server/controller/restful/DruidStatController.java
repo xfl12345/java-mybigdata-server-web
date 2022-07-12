@@ -19,13 +19,6 @@ public class DruidStatController {
     protected DruidStatService statService = DruidStatService.getInstance();
     public static final String servletName = "druid";
     public static final String servletPathCache1 = "/" + servletName;
-    public static final String servletPathCache2 = "/" + servletName + "/";
-    public static final String servletIndexPagePathCache = servletName + "/index.html";
-
-    @RequestMapping(path = {"", "index"})
-    public void indexView(HttpServletResponse response) throws IOException {
-        response.sendRedirect(servletIndexPagePathCache);
-    }
 
     @RequestMapping("{partOne:^\\w+.+}.json")
     public @ResponseBody String root(HttpServletRequest request, @PathVariable String partOne) {
