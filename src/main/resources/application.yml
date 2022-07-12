@@ -95,6 +95,7 @@ server:
         encoding:
             enabled: true
             charset: UTF-8
+        context-path: /mybigdata
 
 
 debug: false
