@@ -2,23 +2,21 @@ package cc.xfl12345.mybigdata.server.initializer;
 
 
 import cc.xfl12345.mybigdata.server.appconst.CommonConst;
-import cc.xfl12345.mybigdata.server.model.SpringBeanAPI;
 import cc.xfl12345.mybigdata.server.model.jdbc.MysqlJdbcUrlHelper;
 import cc.xfl12345.mybigdata.server.utility.MyBatisSqlUtils;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.mysql.cj.conf.ConnectionUrl;
-import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -29,15 +27,7 @@ import java.util.Properties;
 
 @Component("myDatabaseInitializer")
 @Slf4j
-public class MyDatabaseInitializer implements SpringBeanAPI {
-    @Getter
-    protected ApplicationContext applicationContext;
-
-    @Autowired
-    @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+public class MyDatabaseInitializer implements InitializingBean {
 
     protected String username;
     protected String password;
