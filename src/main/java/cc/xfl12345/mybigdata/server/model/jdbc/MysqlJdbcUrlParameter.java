@@ -5,10 +5,6 @@ import com.mysql.cj.conf.HostInfo;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Properties;
-
 public class MysqlJdbcUrlParameter {
     @Getter
     @Setter
