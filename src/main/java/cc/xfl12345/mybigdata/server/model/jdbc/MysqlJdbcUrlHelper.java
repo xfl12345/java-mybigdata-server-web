@@ -11,10 +11,6 @@ public class MysqlJdbcUrlHelper extends MysqlJdbcUrlParameter {
         super();
     }
 
-    public MysqlJdbcUrlHelper(Properties mysqlJdbcUrlBaseParameters) {
-        this(new MysqlJdbcUrlParameter(mysqlJdbcUrlBaseParameters));
-    }
-
     public MysqlJdbcUrlHelper(ConnectionUrl connectionUrl) {
         this(new MysqlJdbcUrlParameter(connectionUrl));
         this.additionalParameters = connectionUrl.getConnectionArgumentsAsProperties();
