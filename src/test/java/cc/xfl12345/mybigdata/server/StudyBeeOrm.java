@@ -94,6 +94,20 @@ public class StudyBeeOrm {
                 handleSqlException(sqlException, stringContent);
             }
         }
+
+        // honeyFactory.getPreparedSql()
+        // honeyFactory.getBeeSql().select()
+        // List<Long> globalIds = honeyFactory.getCallableSql().select(
+        //     "insert_string_content(?, ?, ?, ?)",
+        //     Long.MAX_VALUE,
+        //     new Object[]{
+        //         uuidGenerator.generate(),
+        //         "测试描述",
+        //         uuidGenerator.generate(),
+        //         "xfl666"
+        //     }
+        // );
+        // System.out.println("globalIds:" + globalIds);
     }
 
     public int executeInsert(HoneyFactory honeyFactory, Object obj) {
