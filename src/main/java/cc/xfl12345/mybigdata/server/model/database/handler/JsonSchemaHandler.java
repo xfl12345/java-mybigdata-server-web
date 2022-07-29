@@ -1,21 +1,17 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
-import cc.xfl12345.mybigdata.server.model.database.result.JsonTypeResult;
-import net.jimblackler.jsonschemafriend.Schema;
-import org.teasoft.bee.osql.Condition;
+import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
+import cc.xfl12345.mybigdata.server.model.database.table.TableSchemaRecord;
+import com.alibaba.fastjson2.JSONObject;
+
+import java.util.List;
 
 public interface JsonSchemaHandler {
-    JsonTypeResult insertJsonSchema(String userDefineName, Schema jsonSchema);
+    Long insert(JSONObject jsonSchema) throws Exception;
 
-    JsonTypeResult selectJsonSchemaByName(String userDefineName);
+    List<TableSchemaRecord> selectJsonSchemaByKeyWords(String... keys);
 
-    JsonTypeResult updateJsonSchema(Condition condition, Schema jsonSchema);
+    void update(TableSchemaRecord tableSchemaRecord) throws TableOperationException;
 
-    JsonTypeResult updateJsonSchemaByName(String userDefineName, Schema jsonSchema);
-
-    JsonTypeResult updateJsonSchemaByGlobalId(Long globalId, Schema jsonSchema);
-
-    JsonTypeResult updateJsonSchemaNameByGlobalId(Long globalId, String userDefineName);
-
-    JsonTypeResult deleteJsonSchemaByName(String userDefineName);
+    void deleteById(Long globalId) throws TableOperationException;
 }

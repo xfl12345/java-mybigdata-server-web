@@ -30,7 +30,14 @@ public class DruidStatController {
         return statService.service(relativeURL);
     }
 
-    @RequestMapping(value = {"weburi-/{partOne:.*}.json", "weburi-/*/{partOne:.*}.json", "weburi-/*/*/{partOne:.*}.json"})
+    @RequestMapping(value = {
+        "weburi-/{partOne:.*}.json",
+        "weburi-/*/{partOne:.*}.json",
+        "weburi-/*/*/{partOne:.*}.json",
+        "weburi-/*/*/*/{partOne:.*}.json",
+        "weburi-/*/*/*/*/{partOne:.*}.json",
+        "weburi-/*/*/*/*/*/{partOne:.*}.json"
+    })
     public @ResponseBody String weburi(HttpServletRequest request, @PathVariable String partOne) {
         return root(request, partOne);
     }

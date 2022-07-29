@@ -72,7 +72,12 @@ VALUES (2, ''),
        # 第九个字符串，关于 常量 true
        (9, 'true'),
        # 第十个字符串，关于 常量 false
-       (10, 'false');
+       (10, 'false'),
+       # 第十一个字符串，关于 布尔值表 的描述
+       (11, '布尔值表的名称'),
+       # 第十二个字符串，关于 布尔值表 的名称
+       (12, 'boolean_content');
+
 
 
 /**
@@ -111,7 +116,9 @@ VALUES (1, '00000000-cb7a-11eb-0000-f828196a1686', 6, 4),
        (7, '00000006-cb7a-11eb-0000-f828196a1686', 6, 3),
        (8, '00000007-cb7a-11eb-0000-f828196a1686', 6, 7),
        (9, '00000008-cb7a-11eb-0000-f828196a1686', 6, 2),
-       (10, '00000009-cb7a-11eb-0000-f828196a1686', 6, 2);
+       (10, '00000009-cb7a-11eb-0000-f828196a1686', 6, 2),
+       (11, '0000000a-cb7a-11eb-0000-f828196a1686', 6, 2),
+       (12, '0000000b-cb7a-11eb-0000-f828196a1686', 6, 2);
 
 # 常量，自己解释自己
 UPDATE global_data_record SET description = 9 WHERE id = 9;
@@ -124,6 +131,27 @@ ALTER TABLE string_content
 # 添加 字符串格式 引用出处（自环）
 ALTER TABLE string_content
     add foreign key (data_format) references string_content (global_id) on delete restrict on update cascade;
+
+/**
+  布尔值表。只有两行数据的表。为的只是维护架构逻辑的一致性。
+ */
+CREATE TABLE boolean_content
+(
+    `global_id`      bigint  NOT NULL comment '当前表所在数据库实例里的全局ID',
+    `content`        boolean NOT NULL comment '布尔值',
+    unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
+    unique key boost_query_content (content) comment '唯一限制。意味着该表只可能有两个值。'
+) ENGINE = InnoDB
+  ROW_FORMAT = DYNAMIC;
+
+INSERT INTO global_data_record (id, uuid, table_name, description)
+VALUES (20, '00000014-cb7a-11eb-0000-f828196a1686', 12, 9);
+INSERT INTO boolean_content (global_id, content) VALUES (20, true);
+
+INSERT INTO global_data_record (id, uuid, table_name, description)
+VALUES (21, '00000015-cb7a-11eb-0000-f828196a1686', 12, 10);
+INSERT INTO boolean_content (global_id, content) VALUES (21, false);
+
 
 ALTER TABLE global_data_record AUTO_INCREMENT = 100;
 
@@ -432,6 +460,9 @@ SET FOREIGN_KEY_CHECKS = 1;
 # FROM information_schema.tables
 # WHERE table_schema = 'xfl_mybigdata';
 
+/**
+  账号表
+ */
 CREATE TABLE auth_account
 (
     `account_id`    bigint          NOT NULL PRIMARY KEY AUTO_INCREMENT comment '账号ID',

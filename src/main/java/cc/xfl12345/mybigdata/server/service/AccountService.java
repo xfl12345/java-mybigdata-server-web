@@ -2,21 +2,16 @@ package cc.xfl12345.mybigdata.server.service;
 
 
 import cc.xfl12345.mybigdata.server.appconst.CommonConst;
-import cc.xfl12345.mybigdata.server.appconst.api.request.RegisterRequestField;
-import cc.xfl12345.mybigdata.server.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.appconst.api.result.LoginApiResult;
 import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
-import cc.xfl12345.mybigdata.server.appconst.api.result.RegisterApiResult;
 import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.model.database.constant.AuthAccountConstant;
-import cc.xfl12345.mybigdata.server.model.database.handler.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.AuthAccount;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
-import cc.xfl12345.mybigdata.server.service.result.RegisterResult;
 import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

@@ -1,29 +1,40 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
-import cc.xfl12345.mybigdata.server.model.database.result.GroupTypeResult;
+import cc.xfl12345.mybigdata.server.model.api.database.result.GroupData;
+import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 public interface GroupTypeHandler {
-    GroupTypeResult insertNewGroup(List<Long> groupItems);
+    Long insertNewGroup(String name, List<Long> groupItems) throws Exception;
 
-    GroupTypeResult insertExistGroupByGlobalId(Long globalId, List<Long> groupItems);
+    void insertIntoGroupByGlobalId(Long globalId, List<Long> groupItems) throws TableOperationException;
 
-    GroupTypeResult deleteGroupItemByGlobalId(Long globalId, List<Long> groupItems);
+    void deleteGroupItemByGlobalId(Long globalId, List<Long> groupItems) throws TableOperationException;
 
-    GroupTypeResult replaceAllGroupItemByGlobalId(Long globalId, List<Long> groupItems);
+    void replaceAllGroupItemByGlobalId(Long globalId, List<Long> groupItems) throws TableOperationException;
 
-    GroupTypeResult replaceGroupItemByGlobalId(Long globalId, List<Long> groupOldItems, List<Long> groupNewItems);
+    void replaceGroupItemByGlobalId(Long globalId, List<Long> groupOldItems, List<Long> groupNewItems) throws TableOperationException;
 
 
-    GroupTypeResult insertNewGroup(Set<Long> groupItems);
+    Long insertNewGroup(String name, Set<Long> groupItems) throws Exception;
 
-    GroupTypeResult insertExistGroupByGlobalId(Long globalId, Set<Long> groupItems);
+    void insertIntoGroupByGlobalId(Long globalId, Set<Long> groupItems) throws TableOperationException;
 
-    GroupTypeResult deleteGroupItemByGlobalId(Long globalId, Set<Long> groupItems);
+    void deleteGroupItemByGlobalId(Long globalId, Set<Long> groupItems) throws TableOperationException;
 
-    GroupTypeResult replaceAllGroupItemByGlobalId(Long globalId, Set<Long> groupItems);
+    void replaceAllGroupItemByGlobalId(Long globalId, Set<Long> groupItems) throws TableOperationException;
 
-    GroupTypeResult replaceGroupItemByGlobalId(Long globalId, Set<Long> groupOldItems, Set<Long> groupNewItems);
+    void replaceGroupItemByGlobalId(Long globalId, Set<Long> groupOldItems, Set<Long> groupNewItems) throws TableOperationException;
+
+
+    void deleteGroupByGlobalId(Long globalId) throws Exception;
+
+    GroupData selectGroupByGlobalId(Long globalId) throws Exception;
+
+    Collection<Long> selectGroupItemsByGlobalId(Long globalId) throws Exception;
+
+    String selectGroupNameByGlobalId(Long globalId) throws Exception;
 }

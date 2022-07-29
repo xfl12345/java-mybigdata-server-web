@@ -1,6 +1,8 @@
 package cc.xfl12345.mybigdata.server.controller;
 
 import cc.xfl12345.mybigdata.server.service.VfsWebDavService;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,13 @@ import java.io.IOException;
 public class WebdavController {
     public final static String VIRTUAL_SERVLET_PATH = "webdav";
 
-    @Autowired
+    @Getter
     protected VfsWebDavService vfsWebDavService;
+
+    @Autowired
+    public void setVfsWebDavService(VfsWebDavService vfsWebDavService) {
+        this.vfsWebDavService = vfsWebDavService;
+    }
 
     @RequestMapping("/**")
     public void vfsWebdav(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -33,7 +40,7 @@ public class WebdavController {
         if (range == null) {
             range = request.getHeader("Range");
         }
-        if(!StringUtils.isEmpty(range)) {
+        if (!StringUtils.isEmpty(range)) {
             log.info(request.getRemoteAddr() + " request for range=" + range);
         }
         vfsWebDavService.service(wrapper, response);

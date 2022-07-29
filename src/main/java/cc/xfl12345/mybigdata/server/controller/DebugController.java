@@ -39,7 +39,7 @@ public class DebugController implements ApplicationContextAware {
                 "stringTypeHandler",
                 StringTypeHandler.class
             );
-            log.debug(JSON.toJSONString(stringTypeHandler.selectStringByFullText("text", new String[]{CoreTableNames.TABLE_NAME_GLOBAL_DATA_RECORD + "." + GlobalDataRecordConstant.DB_ID})));
+            log.debug(JSON.toJSONString(stringTypeHandler.selectStringByFullText("text", new String[]{CoreTableNames.GLOBAL_DATA_RECORD.getName() + "." + GlobalDataRecordConstant.DB_ID})));
 
         } catch (Exception e) {
             log.error(e.getMessage());

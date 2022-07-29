@@ -129,12 +129,12 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
 
     protected FileObject rootPathFileObject;
 
-//    @Getter
-//    @Setter
-//    protected String servletName = "webdav";
+    @Getter
+    @Setter
+    protected boolean enableServer = true;
 
     @Getter
-    protected String rootPath;
+    protected String rootPath = null;
 
     public void setRootPath(String rootPath) throws Exception {
         if (rootPath == null)
@@ -151,7 +151,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
             throw new Exception(initFailedMessage + ", VFS root file not exist or null");
         this.rootPath = rootPath;
         this.rootPathFileObject = root;
-        resourceFactory = new MyVfsDavResourceFactory(getLockManager(), root);
+        resourceFactory = new MyVfsDavResourceFactory(getLockManager(), this.rootPathFileObject);
     }
 
     public void setAuditMethods(List<String> auditMethods) {
@@ -164,7 +164,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
 
     public void afterPropertiesSet() throws Exception {
         if(rootPath == null) {
-            throw new IllegalArgumentException("The '"+ INIT_PARAM_ROOTPATH +"' param is required.");
+            setRootPath(System.getProperty("java.io.tmpdir"));
         }
 
         if (fileSystemOptions == null) {
@@ -202,6 +202,11 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
     }
 
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!enableServer) {
+            response.setStatus(HttpServletResponse.SC_GONE);
+            return;
+        }
+
         try {
             // Include servlet path to prefix
             if (includeContextPath) {

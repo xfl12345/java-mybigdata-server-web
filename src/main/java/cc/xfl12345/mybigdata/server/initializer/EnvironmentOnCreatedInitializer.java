@@ -18,6 +18,7 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         String classLoaderName = Thread.currentThread().getContextClassLoader().getClass().getCanonicalName();
         Properties properties = new Properties();
+        // 判断是否在 Tomcat 容器下运行，决定 log 日志文件保存目录
         // org.apache.catalina.loader.ParallelWebappClassLoader
         if(classLoaderName.startsWith("org.apache.catalina")) {
             properties.setProperty("logging.config", "classpath:log/conf/tomcat/logback-spring.xml");

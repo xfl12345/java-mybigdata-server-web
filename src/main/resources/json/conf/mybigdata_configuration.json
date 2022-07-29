@@ -1,18 +1,1 @@
-{
-    "core": {
-        "table_name": {
-            "global_record": {
-                "record": "global_data_record"
-            },
-            "table_schema_record": {
-                "record": "table_schema_record"
-            },
-            "string_type": {
-                "content": "string_content"
-            },
-            "integer_number_type": {
-                "content": "integer_content"
-            }
-        }
-    }
-}
+{}

@@ -2,82 +2,124 @@ package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.appconst.KeyWords;
+import cc.xfl12345.mybigdata.server.model.database.constant.StringContentConstant;
+import cc.xfl12345.mybigdata.server.model.database.table.BooleanContent;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import cc.xfl12345.mybigdata.server.pojo.StringIdCache;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.teasoft.bee.osql.BeeException;
+import org.teasoft.bee.osql.Condition;
+import org.teasoft.bee.osql.Op;
 import org.teasoft.bee.osql.SuidRich;
 import org.teasoft.bee.osql.transaction.Transaction;
 import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 import org.teasoft.honey.osql.core.BeeFactory;
-import org.teasoft.honey.osql.core.HoneyFactory;
+import org.teasoft.honey.osql.core.ConditionImpl;
 import org.teasoft.honey.osql.core.SessionFactory;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 @Slf4j
 public class CoreTableCache implements InitializingBean {
-    // @Getter
-    // @Setter
-    // protected BeeFactory beeFactory;
-
     @Getter
     protected StringIdCache tableNameCache;
 
     @Getter
-    protected StringIdCache jsonContants;
+    protected Long idOfTrue;
 
-    public CoreTableCache() throws Exception {
+    @Getter
+    protected Long idOfFalse;
+
+    public CoreTableCache() {
         tableNameCache = new StringIdCache(6);
-        jsonContants = new StringIdCache(2);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        refreshJsonContants();
+        refreshBooleanCache();
         refreshCoreTableNameCache();
     }
 
-    public Long selectStringByFullText(String value) throws BeeException {
-        // 预备一个 StringContent对象 空间
-        StringContent content = new StringContent();
-        content.setContent(value);
+    protected void refreshCoreTableNameCache(String... values) throws Exception {
+        Condition condition = new ConditionImpl();
+        StringBuilder stringBuilder = new StringBuilder(values.length * 32);
+        for (String s : values) {
+            stringBuilder.append(s).append(',');
+        }
+        stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
 
-        // 开启事务，防止 global_id 冲突
+        condition.selectField(StringContentConstant.GLOBAL_ID, StringContentConstant.CONTENT).op(StringContentConstant.CONTENT, Op.in, stringBuilder.toString());
+
+        // 开启事务
         Transaction transaction = SessionFactory.getTransaction();
         try {
             transaction.begin();
             transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
+            SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
 
             // 查询数据
-            content = suid.selectOne(content);
+            List<StringContent> contents = suid.select(new StringContent(), condition);
+            if (contents.size() != values.length) {
+                HashSet<String> actuallyGet = new HashSet<>(contents.stream().map(StringContent::getContent).toList());
+                HashSet<String> missing =  new HashSet<>(List.of(values));
+                missing.removeAll(actuallyGet);
+                throw new IllegalArgumentException("We are looking for " + values.length + " records. " +
+                    "We get table name data in follow: " +
+                    JSONObject.toJSONString(contents, JSONWriter.Feature.PrettyFormat) + ". " +
+                    "It is missing " + missing + "."
+                );
+            }
+
+            for (StringContent content : contents) {
+                tableNameCache.put(content.getContent(), content.getGlobalId());
+            }
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw e;
+        }
+    }
+
+    public void refreshCoreTableNameCache() throws Exception {
+        String[] tableNames = Arrays.stream(CoreTableNames.values())
+            .map(CoreTableNames::getName)
+            .toArray(String[]::new);
+        refreshCoreTableNameCache(tableNames);
+        log.info("Cache \"global_id\" for core table name: " + JSONObject.toJSONString(tableNameCache.getKey2ValueMap(), JSONWriter.Feature.PrettyFormat));
+    }
+
+    public void refreshBooleanCache() throws Exception {
+        // 开启事务
+        Transaction transaction = SessionFactory.getTransaction();
+        try {
+            transaction.begin();
+            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
+            SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
+
+            // 查询数据
+            List<BooleanContent> booleanContents = suid.select(new BooleanContent());
+            for (BooleanContent booleanContent : booleanContents) {
+                if (booleanContent.getContent()) {
+                    idOfTrue = booleanContent.getGlobalId();
+                } else {
+                    idOfFalse = booleanContent.getGlobalId();
+                }
+            }
+
             transaction.commit();
         } catch (BeeException e) {
             log.error(e.getMessage());
             transaction.rollback();
             throw e;
         }
-
-        return content.getGlobalId();
-    }
-
-    protected void refreshMapByName(StringIdCache cache, String name) throws Exception {
-        cache.put(name, selectStringByFullText(name));
-    }
-
-    protected void refreshCoreTableNameCache() throws Exception {
-        refreshMapByName(tableNameCache, CoreTableNames.TABLE_NAME_GLOBAL_DATA_RECORD);
-        refreshMapByName(tableNameCache, CoreTableNames.TABLE_NAME_TABLE_SCHEMA_RECORD);
-        refreshMapByName(tableNameCache, CoreTableNames.TABLE_NAME_STRING_CONTENT);
-        refreshMapByName(tableNameCache, CoreTableNames.TABLE_NAME_INTEGER_CONTENT);
-        refreshMapByName(tableNameCache, CoreTableNames.TABLE_NAME_GROUP_RECORD);
-        refreshMapByName(tableNameCache, CoreTableNames.TABLE_NAME_GROUP_CONTENT);
-    }
-
-    protected void refreshJsonContants() throws Exception{
-        refreshMapByName(jsonContants, KeyWords.KEY_WORD_TRUE);
-        refreshMapByName(jsonContants, KeyWords.KEY_WORD_FALSE);
+        log.info("Cache \"global_id\" for JSON constant - boolean value: true <---> " + idOfTrue);
+        log.info("Cache \"global_id\" for JSON constant - boolean value: false <---> " + idOfFalse);
     }
 }

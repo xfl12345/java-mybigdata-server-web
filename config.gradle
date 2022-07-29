@@ -1,7 +1,7 @@
 ext {
-    def org_apache_poi_version = '5.2.1'
-    def tomcatVersion = '9.0.60'
-    def jackrabbitVersion = '2.21.10'
+    def org_apache_poi_version = '5.2.2'
+    def tomcatVersion = '9.0.65'
+    def jackrabbitVersion = '2.21.11'
 
 
     myDiyConf = [

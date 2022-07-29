@@ -125,25 +125,25 @@ public class MyDatabaseInitializer implements InitializingBean {
                 tryExecuteResourceSqlFile(conn2, classLoader, "database/db_init_insert_pre_data.sql", ";");
             }
             log.info("Database initiated!");
-        } catch (IOException exception) {
-            log.error(exception.getMessage());
+        } catch (SQLException | IOException exception) {
             log.error("Database initiation failed.");
+            log.error(exception.getMessage());
+            throw exception;
+        } finally {
+            conn2.close();
+            mysqlTableSchemaDataSource.close();
         }
-        conn2.close();
-        mysqlTableSchemaDataSource.close();
     }
 
-    protected boolean tryExecuteResourceSqlFile(Connection conn, ClassLoader classLoader, String fileResourcePath, String delimiter) throws SQLException, IOException {
+    protected void tryExecuteResourceSqlFile(Connection conn, ClassLoader classLoader, String fileResourcePath, String delimiter) throws SQLException, IOException {
         URL fileURL = classLoader.getResource(fileResourcePath);
         if (fileURL != null) {
             log.info("Executing SQL file URL=" + fileURL.toString());
             executeSqlFile(conn, fileURL, delimiter);
-            log.info("Execution done. SQL file path=" + fileURL.toString());
-            return true;
+            log.info("Execution done. SQL file URL=" + fileURL.toString());
         } else  {
             log.info("Execution will not process. Because file is not found. SQL file resource path=" + fileResourcePath);
         }
-        return false;
     }
 
     public static void executeSqlFile(Connection connection, URL sqlFileURL, String delimiter) throws IOException, SQLException {

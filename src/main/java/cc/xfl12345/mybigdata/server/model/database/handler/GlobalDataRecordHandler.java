@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
-import cc.xfl12345.mybigdata.server.model.database.result.SingleDataResultBase;
+import cc.xfl12345.mybigdata.server.model.api.database.result.SingleDataResultBase;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import org.teasoft.bee.osql.Condition;
 

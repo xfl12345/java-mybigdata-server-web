@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
-import cc.xfl12345.mybigdata.server.model.database.association.StringContentAssociation;
+import cc.xfl12345.mybigdata.server.model.database.association.StringContentGlobalRecordAssociation;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import com.alibaba.druid.DbType;
@@ -76,7 +76,7 @@ public class StudyBeeOrm {
 
 
         // 关联查询测试
-        StringContentAssociation associationQuery = new StringContentAssociation();
+        StringContentGlobalRecordAssociation associationQuery = new StringContentGlobalRecordAssociation();
         associationQuery.setContent("text");
         MoreTable moreTable = honeyFactory.getMoreTable();
         System.out.println(JSON.toJSONString(moreTable.select(associationQuery)));

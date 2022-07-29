@@ -56,24 +56,19 @@ SELECT insert_string_content(
            '0000300f-cb7a-11eb-0000-f828196a1686',
            'integer_content');
 
+# 注册 auth_account 表
+SELECT insert_string_content(
+           '00003010-cb7a-11eb-0000-f828196a1686',
+           '账号表的名称',
+           '00003011-cb7a-11eb-0000-f828196a1686',
+           'auth_account');
+
 # # 注册 label_record 表
 # SELECT insert_string_content(
 #            '0000300a-cb7a-11eb-0000-f828196a1686',
 #            '标签记录表的名称',
 #            '0000300b-cb7a-11eb-0000-f828196a1686',
 #            'label_record');
-
-
-# SELECT insert_string_content(
-#            '00004000-cb7a-11eb-0000-f828196a1686',
-#            '布尔值true组的名称',
-#            '00004001-cb7a-11eb-0000-f828196a1686',
-#            '布尔值true组');
-# SELECT insert_string_content(
-#            '00004002-cb7a-11eb-0000-f828196a1686',
-#            '布尔值false组的名称',
-#            '00004003-cb7a-11eb-0000-f828196a1686',
-#            '布尔值false组');
 
 INSERT INTO global_data_record (uuid, table_name, description)
 VALUES ('00004004-cb7a-11eb-0000-f828196a1686',

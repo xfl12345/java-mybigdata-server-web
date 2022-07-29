@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.config;
 
+import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import org.springframework.context.annotation.Bean;
@@ -33,5 +34,10 @@ public class IndependenceBeansConfig {
     @Bean(name = "uuidGenerator")
     public TimeBasedGenerator getTimeBasedGenerator() {
         return Generators.timeBasedGenerator();
+    }
+
+    @Bean(name = "resourceCacheMapBean")
+    public ResourceCacheMapBean getResourceCacheBean() {
+        return new ResourceCacheMapBean();
     }
 }

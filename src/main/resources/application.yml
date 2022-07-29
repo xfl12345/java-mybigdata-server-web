@@ -100,7 +100,6 @@ server:
 
 debug: false
 logging:
-    config: "classpath:log/conf/logback-spring.xml"
     charset:
         console: UTF-8
 
@@ -108,6 +107,7 @@ logging:
 app:
     service:
         vfs-webdav:
+#            enable-server: false
             root-path: "C:/bigtmp/"
 
 

@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.pojo;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StringIdCache {
@@ -51,5 +52,13 @@ public class StringIdCache {
 
     public String getKey(Long value) {
         return v2k.get(value);
+    }
+
+    public Map<String, Long> getKey2ValueMap() {
+        return k2v;
+    }
+
+    public Map<Long, String> getValue2KeyMap() {
+        return v2k;
     }
 }

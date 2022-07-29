@@ -1,256 +1,194 @@
 package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 
+import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.association.StringContentAssociation;
+import cc.xfl12345.mybigdata.server.model.database.association.StringContentGlobalRecordAssociation;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.constant.StringContentConstant;
+import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.result.MultipleResultBase;
-import cc.xfl12345.mybigdata.server.model.database.result.PackedData;
-import cc.xfl12345.mybigdata.server.model.database.result.StringTypeResult;
 import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
 import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.teasoft.bee.osql.*;
-import org.teasoft.bee.osql.transaction.Transaction;
-import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 import org.teasoft.honey.osql.core.BeeFactory;
 import org.teasoft.honey.osql.core.ConditionImpl;
 import org.teasoft.honey.osql.core.HoneyFactory;
-import org.teasoft.honey.osql.core.SessionFactory;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class StringTypeHandlerImpl extends AbstractTableHandler implements StringTypeHandler {
-    @Override
-    public StringTypeResult insertString(String value) {
-        Date date = new Date();
-        StringTypeResult result = new StringTypeResult();
+public class StringTypeHandlerImpl extends AbstractCoreTableHandler implements StringTypeHandler {
 
+    @Getter
+    @Setter
+    protected SqlErrorHandler sqlErrorHandler = null;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        if (sqlErrorHandler == null) {
+            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("sqlErrorHandler"));
+        }
+    }
+
+    @Override
+    public Long insert(String value) {
+        Date date = new Date();
+
+        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
         // 预备一个 StringContent对象 空间
         StringContent content = new StringContent();
         content.setContent(value);
         content.setContentLength((short) value.length());
 
-        // 开启事务，防止 global_id 冲突
-        Transaction transaction = SessionFactory.getTransaction();
+        GlobalDataRecord globalDataRecord = getNewRegisteredGlobalDataRecord(
+            date,
+            coreTableCache.getTableNameCache().getValue(CoreTableNames.STRING_CONTENT.getName())
+        );
+
+        content.setGlobalId(globalDataRecord.getId());
+
+        // 插入数据
+        return suid.insertAndReturnId(content);
+    }
+
+    @Override
+    public Long insertOrSelect4Id(String value) throws Exception {
+        Long globalId;
         try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            GlobalDataRecord globalDataRecord = globalDataRecordProducer.poll(5, TimeUnit.SECONDS);
-            if (globalDataRecord == null) {
-                transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_GET_GID_TIMEOUT);
-                return result;
-            }
-
-            // 触发 读 锁定（锁定单行）
-            globalDataRecord = suid.selectById(new GlobalDataRecord(), globalDataRecord.getId());
-            globalDataRecord.setCreateTime(date);
-            globalDataRecord.setUpdateTime(date);
-            globalDataRecord.setModifiedCount(1L);
-            globalDataRecord.setTableName(
-                coreTableCache.getTableNameCache().getValue(CoreTableNames.TABLE_NAME_STRING_CONTENT)
-            );
-            content.setGlobalId(globalDataRecord.getId());
-
-            // 插入数据
-            int affectedRowCount = 0;
-            affectedRowCount = suid.insert(content);
-            if (affectedRowCount != 1) {
-                transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
-                result.setMessage("未知错误，插入字符串表失败。");
+            globalId = insert(value);
+        } catch (BeeException beeException) {
+            SimpleCoreTableCurdResult curdResult = sqlErrorHandler.getSimpleCoreTableCurdResult(beeException);
+            if (curdResult.equals(SimpleCoreTableCurdResult.DUPLICATE)) {
+                globalId = selectId(value);
             } else {
-                affectedRowCount = suid.update(globalDataRecord);
-                if (affectedRowCount != 1) {
-                    transaction.rollback();
-                    result.setSimpleResult(SimpleCoreTableCurdResult.UNKNOWN_FAILED);
-                    result.setMessage("未知错误，更新全局记录表失败。");
-                } else {
-                    transaction.commit();
-                    result.setGlobalDataRecord(globalDataRecord);
-                    result.setStringContent(content);
-                    result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
-                }
-            }
-        } catch (BeeException | InterruptedException | NullPointerException e) {
-            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
-            if (result.getSimpleResult().equals(SimpleCoreTableCurdResult.DUPLICATE)) {
-                // 既然重复了，那就把它查出来。
-                StringTypeResult query = selectStringByFullText(value, null);
-                if (query.getSimpleResult().equals(SimpleCoreTableCurdResult.SUCCEED)) {
-                    result.setGlobalDataRecord(query.getGlobalDataRecord());
-                    result.setStringContent(query.getStringContent());
-                }
+                throw beeException;
             }
         }
 
-        return result;
+        return globalId;
     }
 
-    protected StringTypeResult updateStringByCondition(String value, Condition condition) {
+    protected void updateStringByCondition(String value, Condition condition) throws TableOperationException {
         Date nowTime = new Date();
-        StringTypeResult result = new StringTypeResult();
 
-        // 开启事务，防止 global_id 冲突
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-            MoreTable moreTable = honeyFactory.getMoreTable();
+        HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
+        SuidRich suid = honeyFactory.getSuidRich();
+        MoreTable moreTable = honeyFactory.getMoreTable();
 
-            // 查询数据
-            StringContentAssociation association = moreTable.select(new StringContentAssociation(), condition).get(0);
+        // 查询数据
+        StringContentGlobalRecordAssociation association = moreTable
+            .select(new StringContentGlobalRecordAssociation(), condition).get(0);
 
-            // 创建更新缓存
-            GlobalDataRecord gdrDataInDb = association.getGlobalDataRecords().get(0);
+        // 创建更新缓存
+        GlobalDataRecord gdrDataInDb = association.getGlobalDataRecords().get(0);
 
-            StringContent data2update = new StringContent();
-            data2update.setGlobalId(gdrDataInDb.getId());
-            data2update.setContent(value);
-            data2update.setContentLength((short) value.length());
+        StringContent data2update = new StringContent();
+        data2update.setGlobalId(gdrDataInDb.getId());
+        data2update.setContent(value);
+        data2update.setContentLength((short) value.length());
 
-            GlobalDataRecord gdrData2update = new GlobalDataRecord();
-            gdrData2update.setId(gdrDataInDb.getId());
-            gdrData2update.setUpdateTime(nowTime);
-            gdrData2update.setModifiedCount(gdrDataInDb.getModifiedCount() + 1);
+        GlobalDataRecord gdrData2update = new GlobalDataRecord();
+        gdrData2update.setId(gdrDataInDb.getId());
+        gdrData2update.setUpdateTime(nowTime);
+        gdrData2update.setModifiedCount(gdrDataInDb.getModifiedCount() + 1);
 
-            // 更新数据
-            int affectedRowCount = 0;
-            // 更新 全局ID表
-            affectedRowCount = suid.update(gdrData2update);
-            if (affectedRowCount == 1) {
-                // 更新 字符串表
-                affectedRowCount = suid.update(data2update);
-                if (affectedRowCount == 1) {
-                    transaction.commit();
-                    result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
-                    result.setStringContent(data2update);
-                } else {
-                    transaction.rollback();
-                    result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
-                }
-            } else {
-                transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_OPERATION_REJECTED);
+        // 更新数据
+        int affectedRowCount = 0;
+        // 更新 全局ID表
+        affectedRowCount = suid.update(gdrData2update);
+        if (affectedRowCount == 1) {
+            // 更新 字符串表
+            affectedRowCount = suid.update(data2update);
+            if (affectedRowCount != 1) {
+                throw getUpdateShouldBe1Exception(
+                    affectedRowCount,
+                    CoreTableNames.STRING_CONTENT.getName()
+                );
             }
-        } catch (Exception e) {
-            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
+        } else {
+            throw getUpdateShouldBe1Exception(
+                affectedRowCount,
+                CoreTableNames.GLOBAL_DATA_RECORD.getName()
+            );
         }
-
-        return result;
     }
 
     @Override
-    public StringTypeResult updateStringByGlobalId(String value, Long globalId) {
+    public void updateStringByGlobalId(String value, Long globalId) throws TableOperationException {
         Condition condition = new ConditionImpl();
-        condition.op(StringContentConstant.GLOBAL_ID, Op.eq, globalId);
-        return updateStringByCondition(value, condition);
+        condition.forUpdate().op(StringContentConstant.GLOBAL_ID, Op.eq, globalId);
+        updateStringByCondition(value, condition);
     }
 
-    public StringTypeResult updateStringByFullText(String oldValue, String value) {
+    public void updateStringByFullText(String oldValue, String value) throws TableOperationException {
         Condition condition = new ConditionImpl();
-        condition.op(StringContentConstant.DB_CONTENT, Op.eq, oldValue);
-        return updateStringByCondition(value, condition);
+        condition.forUpdate().op(StringContentConstant.DB_CONTENT, Op.eq, oldValue);
+        updateStringByCondition(value, condition);
+    }
+
+    protected StringContent selectOneStringByCondition(Condition condition) {
+        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
+        // 查询数据
+        List<StringContent> stringContents = suid.select(new StringContent(), condition);
+        return stringContents.size() == 1 ? stringContents.get(0) : null;
     }
 
     @Override
-    public StringTypeResult selectStringByFullText(String value, String[] fields) {
-        StringTypeResult result = new StringTypeResult();
-
-        StringContentAssociation association = new StringContentAssociation();
-        association.setContent(value);
-
+    public StringContent selectStringByFullText(String value, String[] fields) {
         Condition condition = new ConditionImpl();
         if (fields != null) {
             condition.selectField(fields);
         }
-
-        // 开启事务，防止 global_id 冲突
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            MoreTable moreTable = honeyFactory.getMoreTable();
-
-            // 查询数据
-            association = moreTable.select(association, condition).get(0);
-            result.setGlobalDataRecord(association.getGlobalDataRecords().get(0));
-
-            transaction.commit();
-
-            StringContent stringContent = new StringContent();
-            stringContent.setGlobalId(association.getGlobalId());
-            stringContent.setContent(association.getContent());
-            stringContent.setContentLength(association.getContentLength());
-            stringContent.setDataFormat(association.getDataFormat());
-            result.setStringContent(stringContent);
-
-            result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
-        } catch (Exception e) {
-            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
-        }
-
-        return result;
+        condition.op(StringContentConstant.CONTENT, Op.eq, value);
+        // 查询数据
+        return selectOneStringByCondition(condition);
     }
 
     @Override
-    public StringTypeResult deleteStringByFullText(String value) {
-        StringTypeResult result = new StringTypeResult();
+    public StringContent selectById(Long globalId, String[] fields) {
+        Condition condition = new ConditionImpl();
+        if (fields != null) {
+            condition.selectField(fields);
+        }
+        condition.op(StringContentConstant.GLOBAL_ID, Op.eq, globalId);
+        return selectOneStringByCondition(condition);
+    }
 
+    @Override
+    public Long selectId(String value) {
+        Condition condition = new ConditionImpl();
+        condition.selectField(StringContentConstant.GLOBAL_ID);
+        condition.op(StringContentConstant.CONTENT, Op.eq, value);
+        // 查询数据
+        StringContent stringContent = selectOneStringByCondition(condition);
+        return stringContent == null ? null : stringContent.getGlobalId();
+    }
+
+    @Override
+    public void deleteStringByFullText(String value) throws TableOperationException {
+        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
         // 预备一个 StringContent对象 空间
-        StringContent searchStringContent = new StringContent();
-        searchStringContent.setContent(value);
+        StringContent stringContent = selectStringByFullText(value, null);
+        // 删除数据
+        int affectedRowCount = suid.delete(stringContent);
+        checkAffectedRowShouldBe1(affectedRowCount, CURD.DELETE, CoreTableNames.STRING_CONTENT.getName());
 
-        // 开启事务，防止 global_id 冲突
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            // 删除数据
-            int affectedRowCount = 0;
-            affectedRowCount = suid.delete(searchStringContent);
-            if (affectedRowCount == 0) {
-                transaction.rollback();
-                result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-            } else {
-                transaction.commit();
-                result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
-            }
-        } catch (Exception e) {
-            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
-        }
-
-        return result;
+        GlobalDataRecord globalDataRecord = new GlobalDataRecord();
+        globalDataRecord.setId(stringContent.getGlobalId());
+        affectedRowCount = suid.delete(globalDataRecord);
+        checkAffectedRowShouldBe1(affectedRowCount, CURD.DELETE, CoreTableNames.GLOBAL_DATA_RECORD.getName());
     }
 
     @Override
-    public MultipleResultBase<StringContent> selectStringByPrefix(String prefix, String[] fields) {
-        MultipleResultBase<StringContent> result = null;
-        try {
-            result = new MultipleResultBase<>(StringContent.class);
-        } catch (ClassNotFoundException | NoSuchFieldException e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            return null;
-        }
-
-        StringContentAssociation associationQuery = new StringContentAssociation();
-
+    public List<StringContent> selectStringByPrefix(String prefix, String[] fields) {
+        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
         Condition condition = new ConditionImpl();
         condition.op(
             StringContentConstant.DB_CONTENT,
@@ -262,39 +200,6 @@ public class StringTypeHandlerImpl extends AbstractTableHandler implements Strin
             condition.selectField(fields);
         }
 
-
-        // 开启事务，防止 global_id 冲突
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-
-            MoreTable moreTable = honeyFactory.getMoreTable();
-            // String sql = ((MoreObjSQL) moreTable).getMoreObjToSQL().toSelectSQL(association, condition);
-            // log.info(sql);
-
-            // 查询数据
-            List<StringContentAssociation> associations = moreTable.select(associationQuery, condition);
-            transaction.commit();
-
-            for (StringContentAssociation association : associations) {
-                PackedData<StringContent> packedData = new PackedData<>();
-                packedData.globalDataRecord = association.getGlobalDataRecords().get(0);
-                StringContent stringContent = new StringContent();
-                stringContent.setGlobalId(association.getGlobalId());
-                stringContent.setDataFormat(association.getDataFormat());
-                stringContent.setContentLength(association.getContentLength());
-                stringContent.setContent(association.getContent());
-                packedData.content = stringContent;
-                result.add(packedData);
-            }
-
-            result.setSimpleResult(SimpleCoreTableCurdResult.SUCCEED);
-        } catch (Exception e) {
-            sqlErrorHandler.defaultErrorHandler(e, transaction, result);
-        }
-
-        return result;
+        return suid.select(new StringContent(), condition);
     }
 }

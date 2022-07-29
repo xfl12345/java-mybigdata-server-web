@@ -1,8 +1,8 @@
 package cc.xfl12345.mybigdata.server.classloader;
 
 import lombok.Getter;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
-import org.apache.commons.vfs2.provider.ram.RamFileObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -65,11 +65,11 @@ public class FoxyURLClassLoader extends SecureClassLoader {
 
     public Class<?> addClass(String name, byte[] b, int off, int len) throws IOException {
         Class<?> cls = defineClass(name, b, off, len);
-        RamFileObject ramFileObject = (RamFileObject) fileSystem.resolveFile(
+        FileObject ramFileObject = fileSystem.resolveFile(
             "ram:/jvm/bytecode/" + byteCodeFileFolderName + '/'
             + cls.getCanonicalName() + ".class"
         );
-        OutputStream outputStream = ramFileObject.getOutputStream();
+        OutputStream outputStream = ramFileObject.getContent().getOutputStream();
         outputStream.write(b, off, len);
         outputStream.close();
 //        addURL(ramFileObject.getURL());

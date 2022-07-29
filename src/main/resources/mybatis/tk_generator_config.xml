@@ -59,6 +59,9 @@
         <table tableName="string_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
+        <table tableName="boolean_content">
+            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
+        </table>
         <table tableName="integer_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
@@ -122,7 +125,7 @@
         <plugin type="cc.xfl12345.mybigdata.server.plugin.mybatis.org.BeeOrmAnnotationPlugin"/>
 
         <plugin type="cc.xfl12345.mybigdata.server.plugin.mybatis.org.RenameClassSuffixPlugin">
-            <property name="suffixString" value="Association"/>
+            <property name="suffixString" value="GlobalRecordAssociation"/>
         </plugin>
 
         <plugin type="cc.xfl12345.mybigdata.server.plugin.mybatis.org.MyBigDataBeeOrmAssociationPlugin"/>
@@ -142,6 +145,9 @@
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="string_content">
+            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="boolean_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="integer_content">
@@ -211,6 +217,9 @@
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="string_content">
+            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
+        </table>
+        <table tableName="boolean_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="integer_content">

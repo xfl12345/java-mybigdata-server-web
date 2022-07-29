@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.config;
 
-import cc.xfl12345.mybigdata.server.initializer.OfflineJsonSchemaURLInitializer;
-import cc.xfl12345.mybigdata.server.model.checker.OfflineJsonChecker;
+import cc.xfl12345.mybigdata.server.initializer.JsonSchemaFileLoader;
+import cc.xfl12345.mybigdata.server.model.checker.JsonChecker;
 import cc.xfl12345.mybigdata.server.plugin.jsonschemafriend.ApacheURLBasedCacheLoader;
 import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
 import com.github.victools.jsonschema.generator.OptionPreset;
@@ -19,36 +19,43 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 @Configuration
 public class JSONSchemaConfig {
     @Getter
-    protected VFSConfig vfsConfig;
+    protected StandardFileSystemManager standardFileSystemManager;
 
     @Autowired
-    public void setVfsConfig(VFSConfig vfsConfig) {
-        this.vfsConfig = vfsConfig;
+    public void setStandardFileSystemManager(StandardFileSystemManager standardFileSystemManager) {
+        this.standardFileSystemManager = standardFileSystemManager;
     }
 
-    @Bean(name = "offlineJsonSchemaURLInitializer")
+    @Getter
+    protected ResourceCacheMapBean resourceCacheMapBean;
+
+    @Autowired
+    public void setResourceCacheMapBean(ResourceCacheMapBean resourceCacheMapBean) {
+        this.resourceCacheMapBean = resourceCacheMapBean;
+    }
+
+    @Bean(name = "jsonSchemaFileLoader")
     @Scope(value = "singleton")
-    public OfflineJsonSchemaURLInitializer getOfflineJsonSchemaURLInitializer() throws IOException {
-        ResourceCacheMapBean cacheMapBean = vfsConfig.getResourceCacheBean();
-        StandardFileSystemManager fileSystemManager = vfsConfig.getStandardFileSystemManager();
+    public JsonSchemaFileLoader getJsonSchemaFileLoader() {
+        ResourceCacheMapBean cacheMapBean = getResourceCacheMapBean();
+        StandardFileSystemManager fileSystemManager = getStandardFileSystemManager();
 
-        OfflineJsonSchemaURLInitializer initializer = new OfflineJsonSchemaURLInitializer();
-        initializer.setCacheMapBean(cacheMapBean);
-        initializer.setFileSystemManager(fileSystemManager);
+        JsonSchemaFileLoader loader = new JsonSchemaFileLoader();
+        loader.setCacheMapBean(cacheMapBean);
+        loader.setFileSystemManager(fileSystemManager);
 
-        return initializer;
+        return loader;
     }
 
     @Bean(name = "apacheURLBasedCacheLoader")
     @Scope(value = "singleton")
-    public ApacheURLBasedCacheLoader getApacheURLBasedCacheLoader() throws IOException {
-        return new ApacheURLBasedCacheLoader(vfsConfig.getStandardFileSystemManager());
+    public ApacheURLBasedCacheLoader getApacheURLBasedCacheLoader() {
+        return new ApacheURLBasedCacheLoader(getStandardFileSystemManager());
     }
 
 
@@ -64,37 +71,23 @@ public class JSONSchemaConfig {
     }
 
     @Bean(name = "jsonSchemaChecker")
-    public OfflineJsonChecker getJsonSchemaChecker() throws GenerationException, IOException, URISyntaxException {
-        return new OfflineJsonChecker(
-            getSchemaStore(),
-            getValidator(),
-            getOfflineJsonSchemaURLInitializer().getRootJsonSchemaFileURL(),
-            null
-        );
+    public JsonChecker getJsonSchemaChecker() throws GenerationException, IOException {
+        URL url = getJsonSchemaFileLoader().getRamfsRootJsonSchemaFileURL();
+        return new JsonChecker(getSchemaStore(), getValidator(), url);
     }
 
     @Bean(name = "baseRequestObjectChecker")
-    public OfflineJsonChecker getBaseRequestObjectChecker() throws GenerationException, IOException, URISyntaxException {
-        URL url = vfsConfig.getStandardFileSystemManager()
+    public JsonChecker getBaseRequestObjectChecker() throws GenerationException, IOException {
+        URL url = getStandardFileSystemManager()
             .resolveFile("ram:/" + "json/schema/base_request_object.json").getURL();
-        return new OfflineJsonChecker(
-            getSchemaStore(),
-            getValidator(),
-            url,
-            getJsonSchemaChecker()
-        );
+        return new JsonChecker(getSchemaStore(), getValidator(), url);
     }
 
     @Bean(name = "mybatisRowBoundsObjectChecker")
-    public OfflineJsonChecker getMybatisRowBoundsObjectChecker() throws GenerationException, IOException, URISyntaxException {
-        URL url = vfsConfig.getStandardFileSystemManager()
+    public JsonChecker getMybatisRowBoundsObjectChecker() throws GenerationException, IOException {
+        URL url = getStandardFileSystemManager()
             .resolveFile("ram:/" + "json/schema/mybatis_row_bounds_object.json").getURL();
-        return new OfflineJsonChecker(
-            getSchemaStore(),
-            getValidator(),
-            url,
-            getJsonSchemaChecker()
-        );
+        return new JsonChecker(getSchemaStore(), getValidator(), url);
     }
 
     @Bean(name = "schemaGeneratorConfigBuilder")

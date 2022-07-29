@@ -1,0 +1,83 @@
+{
+    "title": "Link Description Object",
+
+    "type": "object",
+    "properties": {
+        "anchor": {
+            "type": "string",
+            "format": "uri-template"
+        },
+        "anchorPointer": {
+            "type": "string",
+            "anyOf": [
+                { "format": "json-pointer" },
+                { "format": "relative-json-pointer" }
+            ]
+        },
+        "rel": {
+            "anyOf": [
+                { "type": "string" },
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "minItems": 1
+                }
+            ]
+        },
+        "href": {
+            "type": "string",
+            "format": "uri-template"
+        },
+        "hrefSchema": {
+            "$dynamicRef": "hyper-schema.json#meta",
+            "default": false
+        },
+        "templatePointers": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string",
+                "anyOf": [
+                    { "format": "json-pointer" },
+                    { "format": "relative-json-pointer" }
+                ]
+            }
+        },
+        "templateRequired": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true
+        },
+        "title": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "targetSchema": {
+            "$dynamicRef": "hyper-schema.json#meta",
+            "default": true
+        },
+        "targetMediaType": {
+            "type": "string"
+        },
+        "targetHints": {},
+        "headerSchema": {
+            "$dynamicRef": "hyper-schema.json#meta",
+            "default": true
+        },
+        "submissionMediaType": {
+            "type": "string",
+            "default": "application/json"
+        },
+        "submissionSchema": {
+            "$dynamicRef": "hyper-schema.json#meta",
+            "default": true
+        },
+        "$comment": {
+            "type": "string"
+        }
+    },
+    "required": [ "rel", "href" ]
+}
