@@ -1,4 +1,6 @@
 {
+    "$schema": "https://json-schema.org/draft/2020-12/hyper-schema",
+    "$id": "https://json-schema.org/draft/2020-12/meta/hyper-schema",
     "$vocabulary": {
         "https://json-schema.org/draft/2019-09/vocab/hyper-schema": true
     },
@@ -14,7 +16,7 @@
         "links": {
             "type": "array",
             "items": {
-                "$ref": "../links.json"
+                "$ref": "https://json-schema.org/draft/2020-12/links"
             }
         }
     },

@@ -2,94 +2,60 @@ package cc.xfl12345.mybigdata.server.model.checker;
 
 import cc.xfl12345.mybigdata.server.appconst.JsonSchemaKeyWords;
 import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.ValidationMessage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.jimblackler.jsonschemafriend.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Set;
 
 
 @Slf4j
 public class JsonChecker {
-    protected Validator validator;
 
     @Getter
-    protected Schema schema;
+    protected JsonSchema jsonSchema;
 
-    @Getter
-    protected URL fileURL;
+    protected ObjectMapper objectMapper;
 
     protected JSONObject jsonObject;
 
-    public JsonChecker(
-        SchemaStore schemaStore,
-        Validator validator,
-        URL jsonSchemaFileURL) throws GenerationException, IOException {
-        this.validator = validator;
-        // Load the schema.
-        fileURL = jsonSchemaFileURL;
-
-        InputStream inputStream = fileURL.openStream();
-        jsonObject = JSONObject.parseObject(
-            new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
-        );
-        inputStream.close();
-
-        schema = schemaStore.loadSchema(fileURL);
+    public JsonChecker(ObjectMapper objectMapper, JsonSchema jsonSchema) {
+        this.jsonSchema = jsonSchema;
+        this.objectMapper = objectMapper;
+        this.jsonObject = JSONObject.parseObject(jsonSchema.getSchemaNode().toString());
     }
 
     public JSONObject getJsonObject() {
         return jsonObject.clone();
     }
 
-    public String getParentJsonSchema() {
+    public String getMetaSchema() {
         return jsonObject.getString(JsonSchemaKeyWords.SCHEMA.getName());
     }
 
     public boolean getCheckResultAsBoolean(String jsonString) {
         boolean isOK = false;
         try {
-            check(jsonString);
-            isOK = true;
+            Set<ValidationMessage> errors = jsonSchema.validate(objectMapper.readTree(jsonString));
+            isOK = errors.isEmpty();
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
+
         return isOK;
     }
 
     public boolean getCheckResultAsBoolean(Object obj) {
         boolean isOK = false;
         try {
-            check(obj);
-            isOK = true;
-        } catch (ValidationException e) {
+            Set<ValidationMessage> errors = jsonSchema.validate(objectMapper.valueToTree(obj));
+            isOK = errors.isEmpty();
+        } catch (Exception e) {
             log.debug(e.getMessage());
         }
+
         return isOK;
-    }
-
-    public void check(String jsonString) throws ValidationException {
-        validator.validateJson(schema, jsonString);
-    }
-
-    public void check(Object obj) throws ValidationException {
-        validator.validate(schema, obj);
-    }
-
-    public void setJsonObjectPropertiesOrder(List<String> list) {
-        JSONObject properties = jsonObject.getJSONObject(JsonSchemaKeyWords.PROPERTIES.getName());
-        JSONObject orderedProperties = new JSONObject();
-        for (String item : list) {
-            JSONObject property = properties.getJSONObject(item);
-            if (property != null) {
-                orderedProperties.put(item, property);
-            }
-        }
-        jsonObject.replace(JsonSchemaKeyWords.PROPERTIES.getName(), orderedProperties);
     }
 }

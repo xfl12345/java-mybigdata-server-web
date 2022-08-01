@@ -1,16 +1,17 @@
 package cc.xfl12345.mybigdata.server;
 
 
-import java.io.*;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 import freemarker.cache.URLTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import net.jimblackler.jsonschemafriend.SchemaStore;
 import strman.Strman;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class StudyFreemarker {
@@ -34,8 +35,8 @@ public class StudyFreemarker {
             Map<String, Object> dataMap = new HashMap<String, Object>();
             dataMap.put("classPath", "cc.xfl12345.mybigdata.server");
 
-            String canonicalName = SchemaStore.class.getCanonicalName();
-            String simpleName = SchemaStore.class.getSimpleName();
+            String canonicalName = MybigdataApplication.class.getCanonicalName();
+            String simpleName = MybigdataApplication.class.getSimpleName();
 
             dataMap.put("classCanonicalName", canonicalName);
             dataMap.put("classSimpleName", simpleName);

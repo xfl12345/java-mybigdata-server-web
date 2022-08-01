@@ -1,25 +1,27 @@
 package cc.xfl12345.mybigdata.server.config;
 
-import cc.xfl12345.mybigdata.server.initializer.JsonSchemaFileLoader;
 import cc.xfl12345.mybigdata.server.model.checker.JsonChecker;
-import cc.xfl12345.mybigdata.server.plugin.jsonschemafriend.ApacheURLBasedCacheLoader;
-import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
+import cc.xfl12345.mybigdata.server.plugin.networknt.schema.DraftV202012HyperSchema;
+import cc.xfl12345.mybigdata.server.plugin.networknt.schema.DraftV202012Links;
+import cc.xfl12345.mybigdata.server.plugin.networknt.schema.DraftV202012Schema;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.victools.jsonschema.generator.OptionPreset;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
+import com.networknt.schema.JsonMetaSchema;
+import com.networknt.schema.JsonSchemaFactory;
 import lombok.Getter;
-import net.jimblackler.jsonschemafriend.GenerationException;
-import net.jimblackler.jsonschemafriend.SchemaStore;
-import net.jimblackler.jsonschemafriend.Validator;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 
 @Configuration
 public class JSONSchemaConfig {
@@ -31,63 +33,66 @@ public class JSONSchemaConfig {
         this.standardFileSystemManager = standardFileSystemManager;
     }
 
-    @Getter
-    protected ResourceCacheMapBean resourceCacheMapBean;
-
-    @Autowired
-    public void setResourceCacheMapBean(ResourceCacheMapBean resourceCacheMapBean) {
-        this.resourceCacheMapBean = resourceCacheMapBean;
-    }
-
-    @Bean(name = "jsonSchemaFileLoader")
-    @Scope(value = "singleton")
-    public JsonSchemaFileLoader getJsonSchemaFileLoader() {
-        ResourceCacheMapBean cacheMapBean = getResourceCacheMapBean();
-        StandardFileSystemManager fileSystemManager = getStandardFileSystemManager();
-
-        JsonSchemaFileLoader loader = new JsonSchemaFileLoader();
-        loader.setCacheMapBean(cacheMapBean);
-        loader.setFileSystemManager(fileSystemManager);
-
-        return loader;
-    }
-
-    @Bean(name = "apacheURLBasedCacheLoader")
-    @Scope(value = "singleton")
-    public ApacheURLBasedCacheLoader getApacheURLBasedCacheLoader() {
-        return new ApacheURLBasedCacheLoader(getStandardFileSystemManager());
+    @Bean(name = "jsonObjectMapper")
+    public ObjectMapper getObjectMapper() {
+        return new ObjectMapper();
     }
 
 
-    @Bean(name = "jsonSchemaStore")
-    @Scope(value = "singleton")
-    public SchemaStore getSchemaStore() throws IOException {
-        return new SchemaStore(getApacheURLBasedCacheLoader());
-    }
+    @Bean(name = "jsonSchemaFactory")
+    public JsonSchemaFactory getJsonSchemaFactory() throws IOException {
+        ObjectMapper mapper = getObjectMapper();
 
-    @Bean(name = "jsonValidator")
-    public Validator getValidator() {
-        return new Validator();
+        URL mappingsURL = Thread.currentThread().getContextClassLoader()
+            .getResource("json/conf/json_schema_validator_uri_mapping.json");
+
+        HashMap<String, String> mapping = new HashMap<String, String>();
+        for (JsonNode jsonNode : mapper.readTree(mappingsURL)) {
+            mapping.put(jsonNode.get("publicURL").asText(),
+                "resource:/" + jsonNode.get("localPath").asText());
+        }
+
+
+        JsonMetaSchema draftV202012HyperSchema = new DraftV202012HyperSchema().getInstance();
+        JsonMetaSchema draftV202012Links = new DraftV202012Links().getInstance();
+        JsonMetaSchema draftV202012 = new DraftV202012Schema().getInstance();
+
+        JsonSchemaFactory factory = new JsonSchemaFactory.Builder()
+            .addMetaSchema(draftV202012)
+            .addMetaSchema(draftV202012Links)
+            .addMetaSchema(draftV202012HyperSchema)
+            .defaultMetaSchemaURI(draftV202012HyperSchema.getUri())
+            // .defaultMetaSchemaURI(draftV202012.getUri())
+            .addUriMappings(mapping)
+            .build();
+
+        return factory;
     }
 
     @Bean(name = "jsonSchemaChecker")
-    public JsonChecker getJsonSchemaChecker() throws GenerationException, IOException {
-        URL url = getJsonSchemaFileLoader().getRamfsRootJsonSchemaFileURL();
-        return new JsonChecker(getSchemaStore(), getValidator(), url);
+    public JsonChecker getJsonSchemaChecker() throws IOException {
+        return new JsonChecker(
+            getObjectMapper(),
+            getJsonSchemaFactory().getSchema(URI.create(
+                new DraftV202012HyperSchema().getInstance().getUri()
+            ))
+        );
     }
 
     @Bean(name = "baseRequestObjectChecker")
-    public JsonChecker getBaseRequestObjectChecker() throws GenerationException, IOException {
-        URL url = getStandardFileSystemManager()
-            .resolveFile("ram:/" + "json/schema/base_request_object.json").getURL();
-        return new JsonChecker(getSchemaStore(), getValidator(), url);
+    public JsonChecker getBaseRequestObjectChecker() throws IOException {
+        return new JsonChecker(
+            getObjectMapper(),
+            getJsonSchemaFactory().getSchema(URI.create("resource:/" + "json/schema/base_request_object.json"))
+        );
     }
 
     @Bean(name = "mybatisRowBoundsObjectChecker")
-    public JsonChecker getMybatisRowBoundsObjectChecker() throws GenerationException, IOException {
-        URL url = getStandardFileSystemManager()
-            .resolveFile("ram:/" + "json/schema/mybatis_row_bounds_object.json").getURL();
-        return new JsonChecker(getSchemaStore(), getValidator(), url);
+    public JsonChecker getMybatisRowBoundsObjectChecker() throws IOException {
+        return new JsonChecker(
+            getObjectMapper(),
+            getJsonSchemaFactory().getSchema(URI.create("resource:/" + "json/schema/mybatis_row_bounds_object.json"))
+        );
     }
 
     @Bean(name = "schemaGeneratorConfigBuilder")

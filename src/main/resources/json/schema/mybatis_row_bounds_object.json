@@ -1,4 +1,5 @@
 {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "mybatis_row_bounds_object",
     "description": "MyBatis RowBound 对象的字段检验",
     "type": "object",

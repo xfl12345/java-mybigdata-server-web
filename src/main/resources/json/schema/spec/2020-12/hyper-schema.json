@@ -1,4 +1,6 @@
 {
+    "$schema": "https://json-schema.org/draft/2020-12/hyper-schema",
+    "$id": "https://json-schema.org/draft/2020-12/hyper-schema",
     "$vocabulary": {
         "https://json-schema.org/draft/2020-12/vocab/core": true,
         "https://json-schema.org/draft/2020-12/vocab/applicator": true,
@@ -13,8 +15,8 @@
 
     "title": "JSON Hyper-Schema",
     "allOf": [
-        { "$ref": "schema.json" },
-        { "$ref": "meta/hyper-schema.json" }
+        { "$ref": "https://json-schema.org/draft/2020-12/schema" },
+        { "$ref": "https://json-schema.org/draft/2020-12/meta/hyper-schema" }
     ],
     "links": [
         {

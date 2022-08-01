@@ -1,4 +1,6 @@
 {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://json-schema.org/draft/2020-12/links",
     "title": "Link Description Object",
 
     "type": "object",
@@ -29,7 +31,7 @@
             "format": "uri-template"
         },
         "hrefSchema": {
-            "$dynamicRef": "hyper-schema.json#meta",
+            "$dynamicRef": "https://json-schema.org/draft/2020-12/hyper-schema#meta",
             "default": false
         },
         "templatePointers": {
@@ -56,7 +58,7 @@
             "type": "string"
         },
         "targetSchema": {
-            "$dynamicRef": "hyper-schema.json#meta",
+            "$dynamicRef": "https://json-schema.org/draft/2020-12/hyper-schema#meta",
             "default": true
         },
         "targetMediaType": {
@@ -64,7 +66,7 @@
         },
         "targetHints": {},
         "headerSchema": {
-            "$dynamicRef": "hyper-schema.json#meta",
+            "$dynamicRef": "https://json-schema.org/draft/2020-12/hyper-schema#meta",
             "default": true
         },
         "submissionMediaType": {
@@ -72,7 +74,7 @@
             "default": "application/json"
         },
         "submissionSchema": {
-            "$dynamicRef": "hyper-schema.json#meta",
+            "$dynamicRef": "https://json-schema.org/draft/2020-12/hyper-schema#meta",
             "default": true
         },
         "$comment": {

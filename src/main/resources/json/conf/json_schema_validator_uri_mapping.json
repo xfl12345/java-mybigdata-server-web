@@ -1,0 +1,52 @@
+[
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/schema",
+        "localPath": "json/schema/spec/2020-12/schema.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/links",
+        "localPath": "json/schema/spec/2020-12/links.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/hyper-schema",
+        "localPath": "json/schema/spec/2020-12/hyper-schema.json"
+    },
+
+
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/applicator",
+        "localPath": "json/schema/spec/2020-12/meta/applicator.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/content",
+        "localPath": "json/schema/spec/2020-12/meta/content.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/core",
+        "localPath": "json/schema/spec/2020-12/meta/core.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/format-annotation",
+        "localPath": "json/schema/spec/2020-12/meta/format-annotation.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/format-assertion",
+        "localPath": "json/schema/spec/2020-12/meta/format-assertion.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/hyper-schema",
+        "localPath": "json/schema/spec/2020-12/meta/hyper-schema.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/meta-data",
+        "localPath": "json/schema/spec/2020-12/meta/meta-data.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/unevaluated",
+        "localPath": "json/schema/spec/2020-12/meta/unevaluated.json"
+    },
+    {
+        "publicURL": "https://json-schema.org/draft/2020-12/meta/validation",
+        "localPath": "json/schema/spec/2020-12/meta/validation.json"
+    }
+]
