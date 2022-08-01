@@ -15,8 +15,7 @@ create
 use
     xfl_mybigdata;
 
-SET
-    FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE `test_table`
 (
@@ -131,6 +130,9 @@ ALTER TABLE string_content
 # 添加 字符串格式 引用出处（自环）
 ALTER TABLE string_content
     add foreign key (data_format) references string_content (global_id) on delete restrict on update cascade;
+
+# 启用外键检查
+SET FOREIGN_KEY_CHECKS = 1;
 
 /**
   布尔值表。只有两行数据的表。为的只是维护架构逻辑的一致性。
@@ -420,40 +422,6 @@ CREATE TABLE object_content
 ) ENGINE = InnoDB
   ROW_FORMAT = DYNAMIC;
 
-# /**
-#   专门记录 “标签” 的表——标签记录表
-#  */
-# CREATE TABLE label_record
-# (
-#     `global_id` bigint NOT NULL comment '当前表所在数据库实例里的全局ID',
-#     group_id    bigint NOT NULL comment '标签集合',
-#     foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
-#     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
-#     # 拒绝一切外表级联删除行记录，只允许按 主键id 删除行记录
-#     foreign key (group_id) references group_record (global_id) on delete restrict on update cascade,
-#     unique key boost_query_all (group_id) comment '加速查询全部数据'
-# ) ENGINE = InnoDB
-#   ROW_FORMAT = DYNAMIC;
-#
-# CREATE OR REPLACE VIEW view_label_record AS
-# SELECT g.id,
-#        g.uuid,
-#        g.create_time,
-#        g.update_time,
-#        g.modified_count,
-#        (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-#        (SELECT content
-#         FROM string_content AS s
-#         WHERE s.global_id = (SELECT id
-#                              FROM group_record AS s
-#                              WHERE s.global_id = data_src_table.group_id))         AS `group_name`
-# FROM label_record AS data_src_table,
-#      global_data_record AS g
-# WHERE data_src_table.global_id = g.id
-# ORDER BY g.id;
-
-# 启用外键检查
-SET FOREIGN_KEY_CHECKS = 1;
 
 # 大杀器，修改所有表的引擎为 InnoDB 。适用于对MySQL支持不太好的 ORM框架
 # SELECT CONCAT( 'ALTER TABLE ', TABLE_NAME, ' ENGINE=InnoDB;' )

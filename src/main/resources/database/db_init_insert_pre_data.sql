@@ -63,29 +63,22 @@ SELECT insert_string_content(
            '00003011-cb7a-11eb-0000-f828196a1686',
            'auth_account');
 
-# # 注册 label_record 表
-# SELECT insert_string_content(
-#            '0000300a-cb7a-11eb-0000-f828196a1686',
-#            '标签记录表的名称',
-#            '0000300b-cb7a-11eb-0000-f828196a1686',
-#            'label_record');
+
+
+# 添加 以字符串形式存储在字符串中的数字 的 集合 名称
+SELECT insert_string_content(
+           '00003200-cb7a-11eb-0000-f828196a1686',
+           '以字符串形式存储在字符串中的数字的集合的名称',
+           '00003201-cb7a-11eb-0000-f828196a1686',
+           '字符串数字');
 
 INSERT INTO global_data_record (uuid, table_name, description)
-VALUES ('00004004-cb7a-11eb-0000-f828196a1686',
+VALUES ('00004000-cb7a-11eb-0000-f828196a1686',
         (SELECT global_id FROM string_content WHERE content = 'group_record'),
-        (SELECT global_id FROM string_content WHERE content = 'true'));
+        (SELECT global_id FROM string_content WHERE content = '字符串数字'));
 INSERT INTO group_record (global_id, group_name)
-VALUES ((SELECT id FROM global_data_record WHERE uuid = '00004004-cb7a-11eb-0000-f828196a1686'),
-        (SELECT global_id FROM string_content WHERE content = 'true'));
-
-
-INSERT INTO global_data_record (uuid, table_name, description)
-VALUES ('00004005-cb7a-11eb-0000-f828196a1686',
-        (SELECT global_id FROM string_content WHERE content = 'group_record'),
-        (SELECT global_id FROM string_content WHERE content = 'false'));
-INSERT INTO group_record (global_id, group_name)
-VALUES ((SELECT id FROM global_data_record WHERE uuid = '00004005-cb7a-11eb-0000-f828196a1686'),
-        (SELECT global_id FROM string_content WHERE content = 'false'));
+VALUES ((SELECT id FROM global_data_record WHERE uuid = '00004000-cb7a-11eb-0000-f828196a1686'),
+        (SELECT global_id FROM string_content WHERE content = '字符串数字'));
 
 
 
