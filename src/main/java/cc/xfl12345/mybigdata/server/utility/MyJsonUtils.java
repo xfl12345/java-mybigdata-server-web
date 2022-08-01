@@ -23,7 +23,7 @@ public class MyJsonUtils {
      * JSON字符串 转 指定的Java对象
      */
     public static <T> T jsonStr2javaObject(String str, Class<T> cls) {
-        return JSON.parseObject(str).toJavaObject(cls);
+        return JSON.parseObject(str).to(cls);
     }
 
     /**
@@ -44,7 +44,7 @@ public class MyJsonUtils {
      * JSON对象 转 指定的Java对象
      */
     public static <T> T jsonObject2javaObject(JSONObject jsonObject, Class<T> cls) {
-        return JSON.toJavaObject(jsonObject, cls);
+        return JSON.to(cls, jsonObject);
     }
 
 
