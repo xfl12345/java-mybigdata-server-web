@@ -52,7 +52,7 @@ public class CoreTableCache implements InitializingBean {
         for (String s : values) {
             stringBuilder.append(s).append(',');
         }
-        stringBuilder.deleteCharAt(stringBuilder.lastIndexOf(","));
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 
         condition.selectField(StringContentConstant.GLOBAL_ID, StringContentConstant.CONTENT).op(StringContentConstant.CONTENT, Op.in, stringBuilder.toString());
 

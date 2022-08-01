@@ -101,7 +101,7 @@ public class JsonSchemaHandlerImpl extends AbstractCoreTableHandler implements J
 
             stringBuilder.append(stringContentId.toString()).append(',');
         }
-        stringBuilder.deleteCharAt(stringBuilder.length());
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 
         condition
             .op(GroupContentConstant.ITEM, Op.in, stringBuilder.toString())
