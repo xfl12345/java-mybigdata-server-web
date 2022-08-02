@@ -3,13 +3,13 @@ package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.association.StringContentGlobalRecordAssociation;
+import cc.xfl12345.mybigdata.server.model.database.table.association.StringContentGlobalRecordAssociation;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
-import cc.xfl12345.mybigdata.server.model.database.constant.StringContentConstant;
+import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +21,8 @@ import org.teasoft.honey.osql.core.HoneyFactory;
 
 import java.util.Date;
 import java.util.List;
+
+import static cc.xfl12345.mybigdata.server.utility.BeeOrmUtils.getSuidRich;
 
 @Slf4j
 public class StringTypeHandlerImpl extends AbstractCoreTableHandler implements StringTypeHandler {
@@ -152,6 +154,23 @@ public class StringTypeHandlerImpl extends AbstractCoreTableHandler implements S
     }
 
     @Override
+    public List<StringContent> selectStringByPrefix(String prefix, String[] fields) {
+        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
+        Condition condition = new ConditionImpl();
+        condition.op(
+            StringContentConstant.DB_CONTENT,
+            Op.like,
+            StringEscapeUtils.escapeSql4Like("mysql", prefix) + "%"
+        );
+
+        if (fields != null) {
+            condition.selectField(fields);
+        }
+
+        return suid.select(new StringContent(), condition);
+    }
+
+    @Override
     public StringContent selectById(Long globalId, String[] fields) {
         Condition condition = new ConditionImpl();
         if (fields != null) {
@@ -173,33 +192,28 @@ public class StringTypeHandlerImpl extends AbstractCoreTableHandler implements S
 
     @Override
     public void deleteStringByFullText(String value) throws TableOperationException {
-        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
         // 预备一个 StringContent对象 空间
         StringContent stringContent = selectStringByFullText(value, null);
-        // 删除数据
-        int affectedRowCount = suid.delete(stringContent);
-        checkAffectedRowShouldBe1(affectedRowCount, CURD.DELETE, CoreTableNames.STRING_CONTENT.getName());
-
-        GlobalDataRecord globalDataRecord = new GlobalDataRecord();
-        globalDataRecord.setId(stringContent.getGlobalId());
-        affectedRowCount = suid.delete(globalDataRecord);
-        checkAffectedRowShouldBe1(affectedRowCount, CURD.DELETE, CoreTableNames.GLOBAL_DATA_RECORD.getName());
+        delete(stringContent);
     }
 
     @Override
-    public List<StringContent> selectStringByPrefix(String prefix, String[] fields) {
-        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
-        Condition condition = new ConditionImpl();
-        condition.op(
-            StringContentConstant.DB_CONTENT,
-            Op.like,
-            StringEscapeUtils.escapeSql4Like("mysql", prefix) + "%"
-        );
+    public void deleteById(Long globalId) throws TableOperationException {
+        StringContent stringContent = new StringContent();
+        stringContent.setGlobalId(globalId);
+        delete(stringContent);
+    }
 
-        if (fields != null) {
-            condition.selectField(fields);
-        }
+    @Override
+    public void delete(StringContent value) throws TableOperationException {
+        SuidRich suidRich = getSuidRich();
+        // 删除数据
+        int affectedRowCount = suidRich.delete(value);
+        checkAffectedRowShouldBe1(affectedRowCount, CURD.DELETE, CoreTableNames.STRING_CONTENT.getName());
 
-        return suid.select(new StringContent(), condition);
+        GlobalDataRecord globalDataRecord = new GlobalDataRecord();
+        globalDataRecord.setId(value.getGlobalId());
+        affectedRowCount = suidRich.delete(globalDataRecord);
+        checkAffectedRowShouldBe1(affectedRowCount, CURD.DELETE, CoreTableNames.GLOBAL_DATA_RECORD.getName());
     }
 }

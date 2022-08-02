@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
-import cc.xfl12345.mybigdata.server.model.database.table.TableSchemaRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.TableSchemaRecord;
 import com.alibaba.fastjson2.JSONObject;
 
 import java.util.List;

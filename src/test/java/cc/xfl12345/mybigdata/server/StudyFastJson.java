@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server;
 
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;

@@ -33,13 +33,6 @@ public interface CoreTableHandler extends DisposableBean, InitializingBean {
     ExecuteResultBase updateStringById(Long globalId, String value);
 
 
-    SingleDataResultBase addBoolean(Boolean value);
-
-    Boolean getBooleanById(Long globalId);
-
-    ExecuteResultBase updateBooleanById(Long globalId, Boolean value);
-
-
     SingleDataResultBase addArray(List<Long> value);
 
     ExecuteResultBase addArrayItemById(Long globalId, List<Long> items);

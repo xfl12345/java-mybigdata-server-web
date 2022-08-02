@@ -1,9 +1,9 @@
 package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
-import cc.xfl12345.mybigdata.server.model.database.association.StringContentGlobalRecordAssociation;
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.model.database.table.association.StringContentGlobalRecordAssociation;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.sql.SQLUtils;

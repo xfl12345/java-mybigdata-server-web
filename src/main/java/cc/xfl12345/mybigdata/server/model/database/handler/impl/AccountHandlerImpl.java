@@ -5,7 +5,7 @@ import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
 import cc.xfl12345.mybigdata.server.model.database.handler.AccountHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.NumberTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.AuthAccount;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

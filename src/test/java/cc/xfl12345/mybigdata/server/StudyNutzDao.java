@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;

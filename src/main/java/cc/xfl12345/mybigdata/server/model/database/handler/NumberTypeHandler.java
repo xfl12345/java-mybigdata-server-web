@@ -10,7 +10,7 @@ public interface NumberTypeHandler {
      * 插入数字，返回 全局数据记录表 的 ID
      * @return 全局数据记录表 的 ID
      */
-    Long insert(BigDecimal value);
+    Long insert(BigDecimal value) throws Exception;
 
     Long selectId(BigDecimal value) throws TableOperationException;
 

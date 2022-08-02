@@ -25,7 +25,7 @@ public class MyBigDataBeeOrmAssociationPlugin extends PluginAdapter {
     public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         IntrospectedColumn column = introspectedTable.getColumn(KeyWords.KEY_WORD_GLOBAL_ID);
         if (column != null) {
-            String associationClassName = "cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord";
+            String associationClassName = "cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord";
             topLevelClass.addImportedType(new FullyQualifiedJavaType(List.class.getCanonicalName()));
             Field field = new Field();
             field.setVisibility(JavaVisibility.PRIVATE);

@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
-import cc.xfl12345.mybigdata.server.model.database.table.AuthAccount;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import org.teasoft.bee.osql.Condition;
 
 import java.util.List;

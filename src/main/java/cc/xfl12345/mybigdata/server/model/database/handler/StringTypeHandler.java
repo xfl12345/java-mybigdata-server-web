@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.handler;
 
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 
 import java.util.List;
 
@@ -40,6 +40,14 @@ public interface StringTypeHandler {
      */
     StringContent selectStringByFullText(String value, String[] fields);
 
+    /**
+     * 按 前缀匹配 获取关于该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
+     * @param prefix 待查找字符串
+     * @param fields 查询字段控制
+     * @return 返回结果包含 该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
+     */
+    List<StringContent> selectStringByPrefix(String prefix, String[] fields);
+
     StringContent selectById(Long globalId, String[] fields);
 
     Long selectId(String value);
@@ -51,11 +59,7 @@ public interface StringTypeHandler {
      */
     void deleteStringByFullText(String value) throws TableOperationException;
 
-    /**
-     * 按 前缀匹配 获取关于该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
-     * @param prefix 待查找字符串
-     * @param fields 查询字段控制
-     * @return 返回结果包含 该字符串 位于 字符串表 的一行内容，以及 全局数据记录表 的一行内容
-     */
-    List<StringContent> selectStringByPrefix(String prefix, String[] fields);
+    void deleteById(Long globalId) throws TableOperationException;
+
+    void delete(StringContent value) throws TableOperationException;
 }

@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.controller;
 
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
-import cc.xfl12345.mybigdata.server.model.database.constant.GlobalDataRecordConstant;
+import cc.xfl12345.mybigdata.server.model.database.table.constant.GlobalDataRecordConstant;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;

@@ -3,14 +3,17 @@ package cc.xfl12345.mybigdata.server.model.database.handler.impl;
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.appconst.JsonSchemaKeyWords;
-import cc.xfl12345.mybigdata.server.model.database.constant.ObjectContentConstant;
-import cc.xfl12345.mybigdata.server.model.database.constant.ObjectRecordConstant;
+import cc.xfl12345.mybigdata.server.model.database.table.constant.ObjectContentConstant;
+import cc.xfl12345.mybigdata.server.model.database.table.constant.ObjectRecordConstant;
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
 import cc.xfl12345.mybigdata.server.model.database.handler.GroupTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.NumberTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.ObjectTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.*;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.ObjectContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.ObjectRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.TableSchemaRecord;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.schema.JSONSchema;
@@ -57,7 +60,7 @@ public class ObjectTypeHandlerImpl extends AbstractCoreTableHandler implements O
     protected List<ObjectContent> packUpItems(Long globalId, JSONObject jsonObject, JSONObject jsonSchema) throws Exception {
         int itemCount = jsonObject.size();
         List<ObjectContent> keyValuePairs = new ArrayList<>(itemCount + 1);
-        JSONObject prop = jsonSchema.getJSONObject(JsonSchemaKeyWords.PROPERTIES.getName());
+        JSONObject props = jsonSchema.getJSONObject(JsonSchemaKeyWords.PROPERTIES.getName());
         for (String key : jsonObject.keySet()) {
             Object theValue = jsonObject.get(key);
 
@@ -90,8 +93,7 @@ public class ObjectTypeHandlerImpl extends AbstractCoreTableHandler implements O
         TableSchemaRecord tableSchemaRecord = suidRich.selectById(new TableSchemaRecord(), jsonSchemaId);
         JSONObject jsonSchemaInJson = JSONObject.parseObject(tableSchemaRecord.getJsonSchema());
 
-        //TODO 注入 ID 和 schema URL
-
+        // 验证 obj 是否符合要求
         JSONSchema jsonSchema = JSONSchema.parseSchema(jsonSchemaInJson.toJSONString());
         ValidateResult validateResult = jsonSchema.validate(jsonObject);
         if (validateResult.isSuccess()) {

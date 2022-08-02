@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.api.database.result;
 
-import cc.xfl12345.mybigdata.server.model.database.table.IntegerContent;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.IntegerContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import lombok.Getter;
 
 import java.math.BigDecimal;

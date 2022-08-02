@@ -5,14 +5,14 @@ import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
-import cc.xfl12345.mybigdata.server.model.database.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.error.TableDataException;
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
+import cc.xfl12345.mybigdata.server.model.database.handler.GroupTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.NumberTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
-import cc.xfl12345.mybigdata.server.model.database.table.IntegerContent;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.IntegerContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +20,7 @@ import org.teasoft.bee.osql.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import static cc.xfl12345.mybigdata.server.utility.BeeOrmUtils.getSuidRich;
@@ -35,11 +36,18 @@ public class NumberTypeHandlerImpl extends AbstractCoreTableHandler implements N
     @Setter
     protected volatile StringTypeHandler stringTypeHandler = null;
 
+    @Getter
+    @Setter
+    protected volatile GroupTypeHandler groupTypeHandler = null;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
         if (stringTypeHandler == null) {
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("stringTypeHandler"));
+        }
+        if (groupTypeHandler == null) {
+            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("groupTypeHandler"));
         }
         if (sqlErrorHandler == null) {
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("sqlErrorHandler"));
@@ -59,21 +67,16 @@ public class NumberTypeHandlerImpl extends AbstractCoreTableHandler implements N
         return suid.insertAndReturnId(content);
     }
 
-    protected Long insertNumberAsString(BigDecimal value) {
-        Date date = new Date();
-        GlobalDataRecord globalDataRecord = getNewRegisteredGlobalDataRecord(
-            date,
-            coreTableCache.getTableNameCache().getValue(CoreTableNames.STRING_CONTENT.getName())
-        );
-        SuidRich suid = getSuidRich();
-        StringContent content = new StringContent();
-        content.setContent(value.toPlainString());
-        content.setGlobalId(globalDataRecord.getId());
-        return suid.insertAndReturnId(content);
+    protected Long insertNumberAsString(BigDecimal value) throws Exception {
+        Long globalId = stringTypeHandler.insertOrSelect4Id(value.toPlainString());
+        HashSet<Long> hashSet = new HashSet<>();
+        hashSet.add(globalId);
+        groupTypeHandler.insertIntoGroupByGlobalId(coreTableCache.getIdOfNumberStringGroup(), hashSet);
+        return globalId;
     }
 
     @Override
-    public Long insert(BigDecimal value) {
+    public Long insert(BigDecimal value) throws Exception {
         if (isLongInteger(value)) { // 如果是 long型 整数可表示的 数字
             return insertInteger(value.longValue());
         } else { // 如果超出 long型 整数可表示的 数字范围，或者是浮点数，统一做字符串处理

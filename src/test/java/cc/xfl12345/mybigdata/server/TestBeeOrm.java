@@ -1,10 +1,9 @@
 package cc.xfl12345.mybigdata.server;
 
-import cc.xfl12345.mybigdata.server.model.database.table.GlobalDataRecord;
-import cc.xfl12345.mybigdata.server.model.database.table.StringContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
-import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.Condition;
