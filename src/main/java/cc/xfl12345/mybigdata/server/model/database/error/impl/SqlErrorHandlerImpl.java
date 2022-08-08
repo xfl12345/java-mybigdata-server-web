@@ -1,18 +1,14 @@
 package cc.xfl12345.mybigdata.server.model.database.error.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
-import com.alibaba.druid.pool.DruidDataSource;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
+import dev.morphia.experimental.MorphiaSession;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.teasoft.bee.osql.BeeException;
-import org.teasoft.bee.osql.BeeSQLException;
-import org.teasoft.bee.osql.transaction.Transaction;
-import org.teasoft.honey.osql.core.BeeFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -68,39 +64,33 @@ public class SqlErrorHandlerImpl implements SqlErrorHandler, InitializingBean {
     }
 
     @Override
-    public SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(@NonNull BeeException beeException) {
-        Throwable cause = beeException.getCause();
-        if (cause instanceof SQLException sqlException) {
-            int errorCode = sqlException.getErrorCode();
-            BeeFactory beeFactory = BeeFactory.getInstance();
-            DataSource dataSource = beeFactory.getDataSource();
-            if (dataSource instanceof DruidDataSource druidDataSource) {
-                return getSimpleCoreTableCurdResult(druidDataSource.getDbType(), errorCode);
-            } else {
-                try {
-                    return getSimpleCoreTableCurdResult(dataSource, errorCode);
-                } catch (SQLException e) {
-                    log.error(e.getMessage());
-                    return SimpleCoreTableCurdResult.UNKNOWN_FAILED;
-                }
-            }
-        }
+    public SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(@NonNull Exception exception) {
+        // if (exception instanceof SQLException sqlException) {
+        //     int errorCode = sqlException.getErrorCode();
+        //     BeeFactory beeFactory = BeeFactory.getInstance();
+        //     DataSource dataSource = beeFactory.getDataSource();
+        //     if (dataSource instanceof DruidDataSource druidDataSource) {
+        //         return getSimpleCoreTableCurdResult(druidDataSource.getDbType(), errorCode);
+        //     } else {
+        //         try {
+        //             return getSimpleCoreTableCurdResult(dataSource, errorCode);
+        //         } catch (SQLException e) {
+        //             log.error(e.getMessage());
+        //             return SimpleCoreTableCurdResult.UNKNOWN_FAILED;
+        //         }
+        //     }
+        // }
         return SimpleCoreTableCurdResult.UNKNOWN_FAILED;
     }
 
     @Override
-    public void defaultErrorHandler(@NonNull Exception e, @NonNull Transaction transaction, @NonNull ExecuteResultBase result) {
-        transaction.rollback();
+    public void defaultErrorHandler(@NonNull Exception e, @NonNull MorphiaSession session, @NonNull ExecuteResultBase result) {
+        session.abortTransaction();
         result.setSqlException(e);
         if (e instanceof IndexOutOfBoundsException) {
             result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
         } else {
-            if (e instanceof BeeSQLException beeSQLException) {
-                result.setSimpleResult(getSimpleCoreTableCurdResult(beeSQLException));
-            } else {
-                result.setUnknowResultWithException(e);
-                log.error(e.getMessage());
-            }
+            result.setSimpleResult(getSimpleCoreTableCurdResult(e));
         }
     }
 }

@@ -9,7 +9,6 @@ import java.io.Serializable;
 @io.swagger.annotations.ApiModel("")
 @javax.persistence.Table(name = "integer_content")
 @javax.persistence.Entity
-@org.teasoft.bee.osql.annotation.Table("integer_content")
 public class IntegerContent implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
@@ -18,8 +17,6 @@ public class IntegerContent implements Cloneable, Serializable {
     @javax.persistence.GeneratedValue(generator = "JDBC")
     @io.swagger.annotations.ApiModelProperty("当前表所在数据库实例里的全局ID")
     @javax.persistence.Id
-    @org.teasoft.bee.osql.annotation.Column("global_id")
-    @org.teasoft.bee.osql.annotation.PrimaryKey
     private Long globalId;
 
     /**
@@ -27,7 +24,6 @@ public class IntegerContent implements Cloneable, Serializable {
      */
     @javax.persistence.Column(name = "content", nullable = false)
     @io.swagger.annotations.ApiModelProperty("64位带符号的整型数字")
-    @org.teasoft.bee.osql.annotation.Column("content")
     private Long content;
 
     private static final long serialVersionUID = 1L;

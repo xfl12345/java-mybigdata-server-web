@@ -9,7 +9,6 @@ import java.io.Serializable;
 @io.swagger.annotations.ApiModel("")
 @javax.persistence.Table(name = "object_record")
 @javax.persistence.Entity
-@org.teasoft.bee.osql.annotation.Table("object_record")
 public class ObjectRecord implements Cloneable, Serializable {
     /**
      * 对象id
@@ -18,8 +17,6 @@ public class ObjectRecord implements Cloneable, Serializable {
     @javax.persistence.GeneratedValue(generator = "JDBC")
     @io.swagger.annotations.ApiModelProperty("对象id")
     @javax.persistence.Id
-    @org.teasoft.bee.osql.annotation.Column("global_id")
-    @org.teasoft.bee.osql.annotation.PrimaryKey
     private Long globalId;
 
     /**
@@ -27,7 +24,6 @@ public class ObjectRecord implements Cloneable, Serializable {
      */
     @javax.persistence.Column(name = "object_schema", nullable = true)
     @io.swagger.annotations.ApiModelProperty("用于检验该对象的JSON Schema")
-    @org.teasoft.bee.osql.annotation.Column("object_schema")
     private Long objectSchema;
 
     /**
@@ -35,7 +31,6 @@ public class ObjectRecord implements Cloneable, Serializable {
      */
     @javax.persistence.Column(name = "object_name", nullable = false)
     @io.swagger.annotations.ApiModelProperty("对象名称")
-    @org.teasoft.bee.osql.annotation.Column("object_name")
     private Long objectName;
 
     private static final long serialVersionUID = 1L;

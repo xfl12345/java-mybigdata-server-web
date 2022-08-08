@@ -1,5 +1,8 @@
 package cc.xfl12345.mybigdata.server.model.database.table.pojo;
 
+import dev.morphia.annotations.IndexOptions;
+import org.bson.types.ObjectId;
+
 import java.io.Serializable;
 
 /**
@@ -9,7 +12,7 @@ import java.io.Serializable;
 @io.swagger.annotations.ApiModel("")
 @javax.persistence.Table(name = "boolean_content")
 @javax.persistence.Entity
-@org.teasoft.bee.osql.annotation.Table("boolean_content")
+@dev.morphia.annotations.Entity("boolean_content")
 public class BooleanContent implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
@@ -18,16 +21,15 @@ public class BooleanContent implements Cloneable, Serializable {
     @javax.persistence.GeneratedValue(generator = "JDBC")
     @io.swagger.annotations.ApiModelProperty("当前表所在数据库实例里的全局ID")
     @javax.persistence.Id
-    @org.teasoft.bee.osql.annotation.Column("global_id")
-    @org.teasoft.bee.osql.annotation.PrimaryKey
-    private Long globalId;
+    @dev.morphia.annotations.Id
+    private ObjectId globalId;
 
     /**
      * 布尔值
      */
     @javax.persistence.Column(name = "content", nullable = false)
     @io.swagger.annotations.ApiModelProperty("布尔值")
-    @org.teasoft.bee.osql.annotation.Column("content")
+    @dev.morphia.annotations.Indexed(options = @IndexOptions(unique = true))
     private Boolean content;
 
     private static final long serialVersionUID = 1L;

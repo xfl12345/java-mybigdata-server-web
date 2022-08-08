@@ -22,25 +22,17 @@ public class TableDataException extends Exception {
 
     protected String tableName;
 
-    protected Long[] globalIds;
-
     protected String[] uuids;
 
-    public TableDataException(String message, Long[] globalIds, String tableName) {
+    public TableDataException(String message, String tableName) {
         super(message);
-        this.globalIds = globalIds;
         this.tableName = tableName;
     }
 
-    public TableDataException(String message, Long[] globalIds, String[] uuids, String tableName) {
+    public TableDataException(String message, String tableName, String[] uuids) {
         super(message);
-        this.globalIds = globalIds;
+        this.tableName = tableName;
         this.uuids = uuids;
-        this.tableName = tableName;
-    }
-
-    public Long[] getGlobalIds() {
-        return globalIds;
     }
 
     public String[] getUuids() {

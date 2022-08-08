@@ -3,17 +3,15 @@ package cc.xfl12345.mybigdata.server;
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
-import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import com.fasterxml.uuid.Generators;
-import org.teasoft.honey.osql.core.BeeFactory;
 
 public class TestDataHandler {
     public static void main(String[] args) throws Exception {
-        DruidDataSource dataSource = TestLoadDataSource.getDataSource();
-        BeeFactory beeFactory = BeeFactory.getInstance();
-        beeFactory.setDataSource(dataSource);
+        // DruidDataSource dataSource = TestLoadDataSource.getDataSource();
+        // BeeFactory beeFactory = BeeFactory.getInstance();
+        // beeFactory.setDataSource(dataSource);
 
         CoreTableCache coreTableCache = new CoreTableCache();
 

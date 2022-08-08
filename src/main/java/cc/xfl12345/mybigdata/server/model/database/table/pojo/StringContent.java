@@ -1,5 +1,9 @@
 package cc.xfl12345.mybigdata.server.model.database.table.pojo;
 
+import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
+import dev.morphia.annotations.IndexOptions;
+import org.bson.types.ObjectId;
+
 import java.io.Serializable;
 
 /**
@@ -7,9 +11,9 @@ import java.io.Serializable;
 */
 @lombok.Data
 @io.swagger.annotations.ApiModel("")
-@javax.persistence.Table(name = "string_content")
+@javax.persistence.Table(name = CoreTableNames.STRING_CONTENT)
 @javax.persistence.Entity
-@org.teasoft.bee.osql.annotation.Table("string_content")
+@dev.morphia.annotations.Entity(value = CoreTableNames.STRING_CONTENT)
 public class StringContent implements Cloneable, Serializable {
     /**
      * 当前表所在数据库实例里的全局ID
@@ -18,32 +22,16 @@ public class StringContent implements Cloneable, Serializable {
     @javax.persistence.GeneratedValue(generator = "JDBC")
     @io.swagger.annotations.ApiModelProperty("当前表所在数据库实例里的全局ID")
     @javax.persistence.Id
-    @org.teasoft.bee.osql.annotation.Column("global_id")
-    @org.teasoft.bee.osql.annotation.PrimaryKey
-    private Long globalId;
-
-    /**
-     * 字符串结构格式
-     */
-    @javax.persistence.Column(name = "data_format", nullable = true)
-    @io.swagger.annotations.ApiModelProperty("字符串结构格式")
-    @org.teasoft.bee.osql.annotation.Column("data_format")
-    private Long dataFormat;
-
-    /**
-     * 字符串长度
-     */
-    @javax.persistence.Column(name = "content_length", nullable = false)
-    @io.swagger.annotations.ApiModelProperty("字符串长度")
-    @org.teasoft.bee.osql.annotation.Column("content_length")
-    private Short contentLength;
+    @dev.morphia.annotations.Indexed(options = @IndexOptions(unique = true))
+    @dev.morphia.annotations.Id
+    private ObjectId globalId;
 
     /**
      * 字符串内容，最大长度为 768 个字符
      */
     @javax.persistence.Column(name = "content", nullable = false, length = 768)
     @io.swagger.annotations.ApiModelProperty("字符串内容，最大长度为 768 个字符")
-    @org.teasoft.bee.osql.annotation.Column("content")
+    @dev.morphia.annotations.Indexed(options = @IndexOptions(unique = true))
     private String content;
 
     private static final long serialVersionUID = 1L;

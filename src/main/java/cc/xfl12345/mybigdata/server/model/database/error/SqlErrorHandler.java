@@ -2,9 +2,8 @@ package cc.xfl12345.mybigdata.server.model.database.error;
 
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
 import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
+import dev.morphia.experimental.MorphiaSession;
 import lombok.NonNull;
-import org.teasoft.bee.osql.BeeException;
-import org.teasoft.bee.osql.transaction.Transaction;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -15,7 +14,7 @@ public interface SqlErrorHandler extends SqlErrorMapper {
 
     SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(Connection connection, int vendorCode) throws SQLException;
 
-    SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(@NonNull BeeException beeException);
+    SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(@NonNull Exception exception);
 
-    void defaultErrorHandler(@NonNull Exception e, Transaction transaction, ExecuteResultBase result);
+    void defaultErrorHandler(@NonNull Exception e, MorphiaSession session, ExecuteResultBase result);
 }

@@ -1,6 +1,5 @@
 package cc.xfl12345.mybigdata.server.config;
 
-import cc.xfl12345.mybigdata.server.controller.restful.DruidStatController;
 import cc.xfl12345.mybigdata.server.interceptor.ApiRequestInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.DruidStatInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.MySaRouteInterceptor;
@@ -14,14 +13,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.UrlResource;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.Objects;
 
 @Configuration
 public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvcConfigurer, ApplicationContextAware {
@@ -61,13 +57,7 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
-        registry.addResourceHandler(
-            String.format("/%s/**", DruidStatController.servletName)
-        ).addResourceLocations(
-            new UrlResource(Objects.requireNonNull(classLoader.getResource("support/http/resources/")))
-        );
+        // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
     }
 
     @Override

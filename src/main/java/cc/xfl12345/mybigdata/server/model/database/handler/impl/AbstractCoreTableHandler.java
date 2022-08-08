@@ -6,8 +6,8 @@ import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import com.fasterxml.uuid.NoArgGenerator;
 import lombok.Getter;
 import lombok.Setter;
-import org.teasoft.bee.osql.SuidRich;
-import org.teasoft.honey.osql.core.BeeFactory;
+import org.bson.types.ObjectId;
+
 
 import java.util.Date;
 
@@ -36,22 +36,12 @@ public class AbstractCoreTableHandler extends AbstractTableHandler {
         return uuidGenerator.generate().toString();
     }
 
-    public GlobalDataRecord getNewGlobalDataRecord(Date createTime, Long tableNameId) {
-        GlobalDataRecord globalDataRecord = new GlobalDataRecord();
+    public void initNewGlobalDataRecord(GlobalDataRecord globalDataRecord, Date createTime, ObjectId tableNameId) {
         globalDataRecord.setUuid(getUuidInString());
         globalDataRecord.setCreateTime(createTime);
         globalDataRecord.setUpdateTime(createTime);
         globalDataRecord.setModifiedCount(1L);
         globalDataRecord.setTableName(tableNameId);
-        return globalDataRecord;
-    }
-
-    public GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Long tableNameId) {
-        GlobalDataRecord globalDataRecord = getNewGlobalDataRecord(createTime, tableNameId);
-        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
-        Long id = suid.insertAndReturnId(globalDataRecord);
-        globalDataRecord.setId(id);
-        return globalDataRecord;
     }
 
     public TableOperationException getUpdateShouldBe1Exception(int affectedRowsCount, String tableName) {

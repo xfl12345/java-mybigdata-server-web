@@ -1,15 +1,10 @@
 package cc.xfl12345.mybigdata.server.listener;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileSystemManager;
-import org.apache.ibatis.datasource.pooled.PooledDataSource;
-import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,7 +18,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -63,34 +57,6 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         }
     }
 
-    public void contextDestroyed(ServletContextEvent sce) {
-        // AbandonedConnectionCleanupThread.shutdown();
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    AbandonedConnectionCleanupThread.checkedShutdown();
-                    long checkPerMillionSecond = 200L;
-                    int checkRound = 20;
-                    //尝试休眠2秒，等待JDBC驱动完全从内存释放，防止过快被热部署重新注册JDBC驱动
-                    log.info("Wait clean thread task finished...");
-                    for (; checkRound > 0 && AbandonedConnectionCleanupThread.isAlive(); checkRound--) {
-                        AbandonedConnectionCleanupThread.checkedShutdown();
-                        Thread.sleep(checkPerMillionSecond);
-                    }
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                }
-                if (AbandonedConnectionCleanupThread.isAlive()) {
-                    log.info("Clean thread failed.");
-                } else {
-                    log.info("Clean thread succeed.");
-                }
-            }
-        };
-        thread.start();
-    }
-
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();
@@ -109,52 +75,16 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         TreeSet<String> dataSourceBeanNames = new TreeSet<>();
         if (drivers.hasMoreElements()) {
             if (springAppContext != null) {
-                dataSourceBeanNames = new TreeSet<>(List.of(springAppContext.getBeanNamesForType(DataSource.class)));
+                new TreeSet<>(List.of(springAppContext.getBeanNamesForType(DataSource.class)));
             }
             Driver d = null;
-            DataSource dataSource;
             String driverInstanceName;
-            int dataSourceBeanNamesCount = dataSourceBeanNames.size();
-            boolean isOk2DeregisterDriverNormally = springAppContext == null || dataSourceBeanNamesCount == 0;
             while (drivers.hasMoreElements()) {
                 try {
                     d = drivers.nextElement();
-                    //优先卸载JDBC驱动
-                    if (isOk2DeregisterDriverNormally) {
-                        driverInstanceName = d.toString();
-                        DriverManager.deregisterDriver(d);
-                        log.info(String.format("Driver %s deregistered", driverInstanceName));
-                    } else {
-                        // 防止同一个驱动被反复卸载 （一个驱动可能被多个 bean 引用）
-                        boolean isHitAsLeaseOnce = false;
-                        @SuppressWarnings("unchecked")
-                        TreeSet<String> tmpCopy = (TreeSet<String>) dataSourceBeanNames.clone();
-                        for (String beanName : tmpCopy) {
-                            dataSource = springAppContext.getBean(beanName, DataSource.class);
-                            String dataSourceDriverName = "";
-                            if (dataSource instanceof PooledDataSource mybatisDataSource) {
-                                dataSourceDriverName = mybatisDataSource.getDriver();
-                            } else if (dataSource instanceof UnpooledDataSource mybatisDataSource) {
-                                dataSourceDriverName = mybatisDataSource.getDriver();
-                            } else if (dataSource instanceof DruidDataSource druidDataSource) {
-                                dataSourceDriverName = druidDataSource.getDriverClassName();
-                            }
-                            if (d.getClass().getCanonicalName().equals(dataSourceDriverName)) {
-                                driverInstanceName = d.toString();
-                                ((BeanDefinitionRegistry) springAppContext.getAutowireCapableBeanFactory()).removeBeanDefinition(beanName);
-                                log.info(String.format("Bean[%s] has been removed definition from Spring context.", beanName));
-                                if (!isHitAsLeaseOnce) {
-                                    isHitAsLeaseOnce = true;
-                                    DriverManager.deregisterDriver(d);
-                                    log.info(String.format("Driver %s deregistered", driverInstanceName));
-                                }
-                                dataSourceBeanNames.remove(beanName);
-                                dataSourceBeanNamesCount--;
-                            }
-                        }
-                        isOk2DeregisterDriverNormally = dataSourceBeanNamesCount == 0;
-                        Runtime.getRuntime().gc();
-                    }
+                    driverInstanceName = d.toString();
+                    DriverManager.deregisterDriver(d);
+                    log.info(String.format("Driver %s deregistered", driverInstanceName));
                 } catch (SQLException ex) {
                     log.error(String.format("Error deregistering driver %s", d) + ":" + ex);
                 }
@@ -162,7 +92,6 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
                 if (!drivers.hasMoreElements()) {
                     // 如果出现了不认识的 bean ，将会导致 bean 数量无法清零。
                     // 为了防止陷入死循环，允许直接使用常规（暴力）手段卸载
-                    isOk2DeregisterDriverNormally = true;
                     drivers = DriverManager.getDrivers();
                 }
             }
