@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.model.database.handler.impl;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
@@ -6,12 +6,11 @@ import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import com.fasterxml.uuid.NoArgGenerator;
 import lombok.Getter;
 import lombok.Setter;
-import org.teasoft.bee.osql.SuidRich;
-import org.teasoft.honey.osql.core.BeeFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
-public class AbstractCoreTableHandler extends AbstractTableHandler {
+public abstract class AbstractCoreTableHandler extends AbstractTableHandler {
     @Getter
     @Setter
     protected String messageAffectedRowShouldBe1 = "Affected row count should be 1.";
@@ -21,8 +20,12 @@ public class AbstractCoreTableHandler extends AbstractTableHandler {
     protected String messageAffectedRowsCountDoesNotMatch = "Affected rows count does not match.";
 
     @Getter
-    @Setter
     protected volatile NoArgGenerator uuidGenerator;
+
+    @Autowired
+    public void setUuidGenerator(NoArgGenerator uuidGenerator) {
+        this.uuidGenerator = uuidGenerator;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -46,15 +49,9 @@ public class AbstractCoreTableHandler extends AbstractTableHandler {
         return globalDataRecord;
     }
 
-    public GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Long tableNameId) {
-        GlobalDataRecord globalDataRecord = getNewGlobalDataRecord(createTime, tableNameId);
-        SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
-        Long id = suid.insertAndReturnId(globalDataRecord);
-        globalDataRecord.setId(id);
-        return globalDataRecord;
-    }
+    public abstract GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Long tableNameId);
 
-    public TableOperationException getUpdateShouldBe1Exception(int affectedRowsCount, String tableName) {
+    public TableOperationException getUpdateShouldBe1Exception(long affectedRowsCount, String tableName) {
         return getAffectedRowShouldBe1Exception(
             affectedRowsCount,
             CURD.UPDATE,
@@ -62,7 +59,7 @@ public class AbstractCoreTableHandler extends AbstractTableHandler {
         );
     }
 
-    public TableOperationException getAffectedRowShouldBe1Exception(int affectedRowsCount, CURD operation, String tableName) {
+    public TableOperationException getAffectedRowShouldBe1Exception(long affectedRowsCount, CURD operation, String tableName) {
         return new TableOperationException(
             messageAffectedRowShouldBe1,
             affectedRowsCount,
@@ -71,13 +68,13 @@ public class AbstractCoreTableHandler extends AbstractTableHandler {
         );
     }
 
-    public void checkAffectedRowShouldBe1(int affectedRowsCount, CURD operation, String tableName) throws TableOperationException {
+    public void checkAffectedRowShouldBe1(long affectedRowsCount, CURD operation, String tableName) throws TableOperationException {
         if (affectedRowsCount != 1) {
             throw getAffectedRowShouldBe1Exception(affectedRowsCount, operation, tableName);
         }
     }
 
-    public TableOperationException getAffectedRowsCountDoesNotMatch(int affectedRowsCount, CURD operation, String tableName) {
+    public TableOperationException getAffectedRowsCountDoesNotMatch(long affectedRowsCount, CURD operation, String tableName) {
         return new TableOperationException(
             messageAffectedRowsCountDoesNotMatch,
             affectedRowsCount,
@@ -85,4 +82,5 @@ public class AbstractCoreTableHandler extends AbstractTableHandler {
             tableName
         );
     }
+
 }

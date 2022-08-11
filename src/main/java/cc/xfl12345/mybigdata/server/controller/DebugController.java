@@ -1,8 +1,8 @@
 package cc.xfl12345.mybigdata.server.controller;
 
 import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
-import cc.xfl12345.mybigdata.server.model.database.table.constant.GlobalDataRecordConstant;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.constant.GlobalDataRecordConstant;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
@@ -39,7 +39,7 @@ public class DebugController implements ApplicationContextAware {
                 "stringTypeHandler",
                 StringTypeHandler.class
             );
-            log.debug(JSON.toJSONString(stringTypeHandler.selectStringByFullText("text", new String[]{CoreTableNames.GLOBAL_DATA_RECORD.getName() + "." + GlobalDataRecordConstant.DB_ID})));
+            log.debug(JSON.toJSONString(stringTypeHandler.selectId("text")));
 
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.api.database.result;
 
-import cc.xfl12345.mybigdata.server.model.database.table.pojo.IntegerContent;
+import cc.xfl12345.mybigdata.server.model.database.table.pojo.NumberContent;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import lombok.Getter;
 
@@ -14,8 +14,8 @@ public class NumberTypeResult extends SingleDataResultBase {
         this.number = number;
     }
 
-    public void setNumber(IntegerContent integerContent) {
-        number = new BigDecimal(integerContent.getContent());
+    public void setNumber(NumberContent numberContent) {
+        number = new BigDecimal(numberContent.getContent());
     }
 
     public void setNumber(Long integer) {

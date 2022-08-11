@@ -21,6 +21,27 @@
             <property name="swagger" value="true"/>
         </plugin>
 
+        <!-- 生成统一的Mapper接口 -->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+            <property name="targetProject" value="src/test/java"/>
+            <property name="targetPackage" value="cc.xfl12345.a_generate_test.mapper"/>
+            <property name="templatePath" value="mybatis/app_table_handler_interface.ftl"/>
+            <property name="mapperSuffix" value="Handler"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.java"/>
+            <!--默认值是下面这个，可以不配置-->
+            <property name="templateFormatter" value="tk.mybatis.mapper.generator.formatter.FreemarkerTemplateFormatter"/>
+        </plugin>
+        <!-- 生成Mapper接口空壳实现 -->
+        <plugin type="tk.mybatis.mapper.generator.TemplateFilePlugin">
+            <property name="targetProject" value="src/test/java"/>
+            <property name="targetPackage" value="cc.xfl12345.a_generate_test.mapper.impl"/>
+            <property name="templatePath" value="mybatis/app_table_handler_implement.ftl"/>
+            <property name="mapperSuffix" value="HandlerImpl"/>
+            <property name="fileName" value="${tableClass.shortClassName}${mapperSuffix}.java"/>
+            <!--默认值是下面这个，可以不配置-->
+            <property name="templateFormatter" value="tk.mybatis.mapper.generator.formatter.FreemarkerTemplateFormatter"/>
+        </plugin>
+
 
         <!-- 生成类添加 Serializable 接口 -->
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
@@ -48,7 +69,7 @@
 
         <!--MyBatis 生成器只需要生成 Model-->
         <javaModelGenerator targetProject="src/test/java"
-                            targetPackage="cc.xfl12345.a_generate_test"/>
+                            targetPackage="cc.xfl12345.a_generate_test.pojo"/>
 
         <table tableName="global_data_record">
             <generatedKey column="id" sqlStatement="JDBC" identity="true"/>
@@ -62,7 +83,7 @@
         <table tableName="boolean_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
-        <table tableName="integer_content">
+        <table tableName="number_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="group_record">
@@ -81,9 +102,6 @@
             <generatedKey column="account_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="binary_relationship_record">
-            <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
-        </table>
-        <table tableName="tree_struct_record">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
     </context>
@@ -150,7 +168,7 @@
         <table tableName="boolean_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
-        <table tableName="integer_content">
+        <table tableName="number_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="group_record">
@@ -222,7 +240,7 @@
         <table tableName="boolean_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
-        <table tableName="integer_content">
+        <table tableName="number_content">
             <generatedKey column="global_id" sqlStatement="JDBC" identity="true"/>
         </table>
         <table tableName="group_record">

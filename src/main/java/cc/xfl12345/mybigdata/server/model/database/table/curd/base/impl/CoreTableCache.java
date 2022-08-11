@@ -1,6 +1,6 @@
-package cc.xfl12345.mybigdata.server.model.database.handler.impl;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl;
 
-import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
+import cc.xfl12345.mybigdata.server.appconst.CoreTables;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.BooleanContent;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
@@ -143,8 +143,8 @@ public class CoreTableCache implements InitializingBean {
     }
 
     public void refreshCoreTableNameCache() throws Exception {
-        String[] tableNames = Arrays.stream(CoreTableNames.values())
-            .map(CoreTableNames::getName)
+        String[] tableNames = Arrays.stream(CoreTables.values())
+            .map(CoreTables::getName)
             .toArray(String[]::new);
         refreshCoreTableNameCache(tableNames);
         log.info("Cache \"global_id\" for core table name: " + JSONObject.toJSONString(tableNameCache.getKey2ValueMap(), JSONWriter.Feature.PrettyFormat));

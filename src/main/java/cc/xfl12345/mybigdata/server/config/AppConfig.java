@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server.config;
 
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.error.impl.SqlErrorHandlerImpl;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
 import lombok.Getter;
@@ -40,7 +40,7 @@ public class AppConfig {
     }
 
     @Bean("beeFactory")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(BeeFactory.class)
     @ConditionalOnSingleCandidate(DataSource.class)
     public BeeFactory getBeeFactory() {
         BeeFactory beeFactory = BeeFactory.getInstance();
@@ -49,7 +49,7 @@ public class AppConfig {
     }
 
     @Bean("sessionFactory")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(SessionFactory.class)
     @ConditionalOnBean(BeeFactory.class)
     public SessionFactory getSessionFactory() {
         SessionFactory factory = new SessionFactory();
@@ -57,24 +57,21 @@ public class AppConfig {
         return factory;
     }
 
-    @Bean(name = "coreTableCache")
     @DependsOn("sessionFactory")
+    @Bean(name = "coreTableCache")
+    @ConditionalOnMissingBean(CoreTableCache.class)
     public CoreTableCache getCoreTableCache() throws Exception {
         return new CoreTableCache();
     }
 
-
     @Bean("sqlErrorHandler")
+    @ConditionalOnMissingBean(SqlErrorHandler.class)
     public SqlErrorHandler getSqlErrorHandler() {
         return new SqlErrorHandlerImpl();
     }
 
     @Bean("stringTypeHandler")
     public StringTypeHandler getStringTypeHandler() throws Exception {
-        StringTypeHandlerImpl stringTypeHandler = new StringTypeHandlerImpl();
-        stringTypeHandler.setSqlErrorHandler(getSqlErrorHandler());
-        stringTypeHandler.setUuidGenerator(independenceBeansConfig.getTimeBasedGenerator());
-        stringTypeHandler.setCoreTableCache(getCoreTableCache());
-        return stringTypeHandler;
+        return new StringTypeHandlerImpl();
     }
 }

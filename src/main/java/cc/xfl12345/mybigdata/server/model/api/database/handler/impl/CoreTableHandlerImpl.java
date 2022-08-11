@@ -5,7 +5,8 @@ import cc.xfl12345.mybigdata.server.model.api.database.handler.CoreTableHandler;
 import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.api.database.result.SingleDataResultBase;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +49,7 @@ public class CoreTableHandlerImpl implements CoreTableHandler, DisposableBean, I
 
     @Getter
     @Setter
-    protected volatile AccountHandler accountHandler;
+    protected volatile AuthAccountHandler authAccountHandler;
 
 
     @Getter
@@ -87,7 +88,7 @@ public class CoreTableHandlerImpl implements CoreTableHandler, DisposableBean, I
         if (jsonSchemaHandler == null) {
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("jsonSchemaHandler"));
         }
-        if (accountHandler == null) {
+        if (authAccountHandler == null) {
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("accountHandler"));
         }
     }

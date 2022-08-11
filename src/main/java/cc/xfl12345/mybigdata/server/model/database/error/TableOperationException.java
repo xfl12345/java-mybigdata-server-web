@@ -27,7 +27,7 @@ public class TableOperationException extends Exception {
 
     protected String tableName;
 
-    protected int affectedRowsCount;
+    protected long affectedRowsCount;
 
     // public TableOperationException(String message, CURD operation, String tableName) {
     //     super(message);
@@ -35,7 +35,7 @@ public class TableOperationException extends Exception {
     //     this.tableName = tableName;
     // }
 
-    public TableOperationException(String message, int affectedRowsCount, CURD operation, String tableName) {
+    public TableOperationException(String message, long affectedRowsCount, CURD operation, String tableName) {
         super(message);
         this.affectedRowsCount = affectedRowsCount;
         this.operation = operation;

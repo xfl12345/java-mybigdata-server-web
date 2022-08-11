@@ -1,12 +1,12 @@
 package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
-import com.fasterxml.uuid.Generators;
 import org.teasoft.honey.osql.core.BeeFactory;
 
 public class TestDataHandler {
@@ -17,12 +17,12 @@ public class TestDataHandler {
 
         CoreTableCache coreTableCache = new CoreTableCache();
 
-        StringTypeHandlerImpl stringTypeHandler = new StringTypeHandlerImpl();
-        stringTypeHandler.setUuidGenerator(Generators.timeBasedGenerator());
-        stringTypeHandler.setCoreTableCache(coreTableCache);
-        stringTypeHandler.afterPropertiesSet();
+        StringTypeHandler stringTypeHandler = new StringTypeHandlerImpl();
+        // stringTypeHandler.setUuidGenerator(Generators.timeBasedGenerator());
+        // stringTypeHandler.setCoreTableCache(coreTableCache);
+        // stringTypeHandler.afterPropertiesSet();
 
-        printJSON(stringTypeHandler.selectStringByPrefix("t", null));
+        printJSON(stringTypeHandler.selectStringByPrefix("t"));
 
         // StringTypeResult stringTypeResult = stringTypeHandler.selectStringByFullText("text", null);
         // printJSON(stringTypeResult);
@@ -32,7 +32,7 @@ public class TestDataHandler {
         // }
 
 
-        stringTypeHandler.destroy();
+        // stringTypeHandler.destroy();
 
         ContextFinalizer.deregisterJdbcDriver(null);
     }

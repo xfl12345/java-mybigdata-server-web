@@ -200,31 +200,18 @@ ORDER BY `g`.id;
 
 /**
   专门记录 “数字” 的表
-  不过 integer_content 表只记 64位带符号的整型数字
-  如果是超长整数、浮点数，则通过 字符串 存在 string_content 里
  */
-CREATE TABLE integer_content
+CREATE TABLE number_content
 (
-    `global_id` bigint NOT NULL comment '当前表所在数据库实例里的全局ID',
-    `content`   bigint NOT NULL comment '64位带符号的整型数字',
+    `global_id`     bigint NOT NULL comment '当前表所在数据库实例里的全局ID',
+    `numberIsInteger`  boolean NOT NULL comment '是否为整数（无论长度）',
+    `numberIs64bit` boolean NOT NULL comment '是否为64bit整数',
+    `content`       varchar(760) NOT NULL comment '字符串形式的十进制数字（最多760个字符）',
     foreign key (global_id) references global_data_record (id) on delete restrict on update cascade,
     unique key unique_global_id (global_id) comment '确保每一行数据对应一个相对于数据库唯一的global_id',
-    unique key index_content (content) comment '加速查询全部数据'
+    unique key boost_query_all (numberIsInteger, numberIs64bit, content) comment '加速查询全部数据'
 ) ENGINE = InnoDB
   ROW_FORMAT = DYNAMIC;
-
-CREATE OR REPLACE VIEW view_integer_content AS
-SELECT g.id,
-       g.uuid,
-       g.create_time,
-       g.update_time,
-       g.modified_count,
-       (SELECT content FROM string_content AS s WHERE s.global_id = g.description) AS `description`,
-       data_src_table.content                                                      AS content
-FROM integer_content AS data_src_table,
-     global_data_record AS g
-WHERE data_src_table.global_id = g.id
-ORDER BY g.id;
 
 /**
   MyBigData 特色功能之一，就是使用JSON Schema完成对MySQL模型化操作
