@@ -3,14 +3,10 @@ package cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl;
 import cc.xfl12345.mybigdata.server.appconst.CoreTables;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.BooleanContent;
-import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
-import cc.xfl12345.mybigdata.server.pojo.StringIdCache;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.Condition;
 import org.teasoft.bee.osql.Op;
@@ -26,53 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
-public class CoreTableCache implements InitializingBean {
-    @Getter
-    protected StringIdCache tableNameCache;
-
-    @Getter
-    protected Long idOfTrue;
-
-    @Getter
-    protected Long idOfFalse;
-
-    @Getter
-    protected Long idOfNumberStringGroup;
-
+public class CoreTableCache extends AbstractCoreTableCache<Long, String> {
     public CoreTableCache() {
-        tableNameCache = new StringIdCache(6);
+        super();
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        refreshNumberStringGroupCache();
-        refreshBooleanCache();
-        refreshCoreTableNameCache();
-    }
-
-    public void refreshNumberStringGroupCache() throws Exception {
-        // 开启事务
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
-
-            // 查询数据
-            GlobalDataRecord globalDataRecord = new GlobalDataRecord();
-            globalDataRecord.setUuid("00004000-cb7a-11eb-0000-f828196a1686");
-            globalDataRecord = suid.selectOne(globalDataRecord);
-            idOfNumberStringGroup = globalDataRecord.getId();
-
-            transaction.commit();
-        } catch (BeeException e) {
-            log.error(e.getMessage());
-            transaction.rollback();
-            throw e;
-        }
-        log.info("Cache \"global_id\" for \"number in string\" group <---> " + idOfNumberStringGroup);
-    }
-
     public void refreshBooleanCache() throws Exception {
         // 开启事务
         Transaction transaction = SessionFactory.getTransaction();
@@ -109,7 +64,8 @@ public class CoreTableCache implements InitializingBean {
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 
-        condition.selectField(StringContentConstant.GLOBAL_ID, StringContentConstant.CONTENT).op(StringContentConstant.CONTENT, Op.in, stringBuilder.toString());
+        condition.selectField(StringContentConstant.GLOBAL_ID, StringContentConstant.CONTENT)
+            .op(StringContentConstant.CONTENT, Op.in, stringBuilder.toString());
 
         // 开启事务
         Transaction transaction = SessionFactory.getTransaction();
@@ -142,6 +98,7 @@ public class CoreTableCache implements InitializingBean {
         }
     }
 
+    @Override
     public void refreshCoreTableNameCache() throws Exception {
         String[] tableNames = Arrays.stream(CoreTables.values())
             .map(CoreTables::getName)

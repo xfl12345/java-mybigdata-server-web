@@ -1,9 +1,8 @@
 package cc.xfl12345.mybigdata.server.model.database.table.curd.impl;
 
-import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.StringContentHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.BeeOrmCoreTableHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
 import org.teasoft.bee.osql.Condition;
@@ -14,25 +13,12 @@ import org.teasoft.honey.osql.core.ConditionImpl;
 
 import java.util.List;
 
-public class StringContentHandlerImpl extends BeeOrmCoreTableHandler<StringContent> implements StringContentHandler {
+public class StringContentHandlerImpl
+    extends AbstractAppTableHandler<StringContent>
+    implements StringContentHandler {
     @Override
-    protected String getTableName() {
-        return CoreTableNames.STRING_CONTENT;
-    }
-
-    @Override
-    protected String getIdFieldName() {
-        return StringContentConstant.GLOBAL_ID;
-    }
-
-    @Override
-    protected Long getId(StringContent value) {
-        return value.getGlobalId();
-    }
-
-    @Override
-    protected StringContent getNewPojoInstance() {
-        return new StringContent();
+    public Class<StringContent> getTablePojoType() {
+        return StringContent.class;
     }
 
     @Override

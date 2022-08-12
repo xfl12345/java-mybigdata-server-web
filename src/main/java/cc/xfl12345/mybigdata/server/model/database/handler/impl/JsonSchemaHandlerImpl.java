@@ -8,7 +8,7 @@
 // import cc.xfl12345.mybigdata.server.model.database.handler.GroupTypeHandler;
 // import cc.xfl12345.mybigdata.server.model.database.handler.JsonSchemaHandler;
 // import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-// import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.BeeOrmCoreTableHandler;
+// import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableHandler;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.TableSchemaRecord;
 // import com.alibaba.fastjson2.JSONObject;
@@ -24,7 +24,7 @@
 // import java.util.HashSet;
 // import java.util.List;
 //
-// public class JsonSchemaHandlerImpl extends BeeOrmCoreTableHandler implements JsonSchemaHandler {
+// public class JsonSchemaHandlerImpl extends AbstractAppTableHandler implements JsonSchemaHandler {
 //
 //     @Getter
 //     @Setter

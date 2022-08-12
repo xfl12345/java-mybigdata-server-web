@@ -1,10 +1,10 @@
 package cc.xfl12345.mybigdata.server.config;
 
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
-import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.error.impl.SqlErrorHandlerImpl;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
+import cc.xfl12345.mybigdata.server.model.generator.impl.RandomCodeGeneratorImpl;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -70,8 +70,11 @@ public class AppConfig {
         return new SqlErrorHandlerImpl();
     }
 
-    @Bean("stringTypeHandler")
-    public StringTypeHandler getStringTypeHandler() throws Exception {
-        return new StringTypeHandlerImpl();
+    @Bean("randomCodeGenerator")
+    @ConditionalOnMissingBean(RandomCodeGenerator.class)
+    public RandomCodeGenerator getRandomCodeGenerator() {
+        return new RandomCodeGeneratorImpl();
     }
+
+
 }

@@ -1,11 +1,12 @@
-package cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.orm;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
 import cc.xfl12345.mybigdata.server.model.database.error.BeeOrmExceptionHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.BeeOrmCurdHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.ConditionSweet;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.TableCurdHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractTypedTableHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.config.BeeOrmTableHandlerConfig;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.config.BeeOrmTableHandlerConfigGenerator;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,14 @@ import org.teasoft.honey.osql.core.ConditionImpl;
 import java.util.Date;
 import java.util.List;
 
-public abstract class BeeOrmCoreTableHandler<TablePojoType>
-    extends AbstractCoreTableHandler implements BeeOrmCurdHandler<TablePojoType> {
+public abstract class BeeOrmTableHandler<TablePojoType>
+    extends AbstractTypedTableHandler<TablePojoType> implements BeeOrmCurdHandler<TablePojoType> {
+    @Getter
+    protected BeeOrmTableHandlerConfig<TablePojoType> handlerConfig;
 
-    protected abstract String getTableName();
-
-    protected abstract String getIdFieldName();
-
-    protected abstract Long getId(TablePojoType value);
-
-    protected abstract TablePojoType getNewPojoInstance();
+    public void setHandlerConfig(BeeOrmTableHandlerConfig<TablePojoType> handlerConfig) {
+        this.handlerConfig = handlerConfig;
+    }
 
     @Getter
     protected BeeOrmExceptionHandler beeOrmExceptionHandler;
@@ -47,7 +46,11 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("beeOrmExceptionHandler"));
         }
 
-        selectIdFieldOnly = new String[]{getIdFieldName()};
+        if (handlerConfig == null) {
+            handlerConfig = BeeOrmTableHandlerConfigGenerator.getConfig(getTablePojoType());
+        }
+
+        selectIdFieldOnly = new String[]{ handlerConfig.getIdFieldName() };
     }
 
     @Override
@@ -67,14 +70,14 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
 
     @Override
     public List<TablePojoType> select(Condition condition) throws Exception {
-        return getSuidRich().select(getNewPojoInstance(), condition);
+        return getSuidRich().select(handlerConfig.getNewPojoInstance(), condition);
     }
 
     @Override
     public TablePojoType selectOne(TablePojoType value, String[] fields) throws Exception {
         List<TablePojoType> items = getSuidRich().select(value, getConditionWithSelectedFields(fields));
         if (items.size() != 1) {
-            throw getAffectedRowShouldBe1Exception(items.size(), CURD.RETRIEVE, getTableName());
+            throw getAffectedRowShouldBe1Exception(items.size(), CURD.RETRIEVE, handlerConfig.getTableName());
         }
 
         return items.get(0);
@@ -84,9 +87,9 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
     public TablePojoType selectById(Long globalId, String[] fields) throws Exception {
         Condition condition = getConditionWithSelectedFields(fields);
         addId2Condition(condition, globalId);
-        List<TablePojoType> items = getSuidRich().select(getNewPojoInstance(), condition);
+        List<TablePojoType> items = getSuidRich().select(handlerConfig.getNewPojoInstance(), condition);
         if (items.size() != 1) {
-            throw getAffectedRowShouldBe1Exception(items.size(), CURD.RETRIEVE, getTableName());
+            throw getAffectedRowShouldBe1Exception(items.size(), CURD.RETRIEVE, handlerConfig.getTableName());
         }
 
         return items.get(0);
@@ -95,7 +98,7 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
     @Override
     public Long selectId(TablePojoType value) throws Exception {
         TablePojoType item = selectOne(value, selectIdFieldOnly);
-        return getId(item);
+        return handlerConfig.getId(item);
     }
 
     @Override
@@ -126,7 +129,7 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
         long affectedRowCount = 0;
         affectedRowCount = getSuidRich().update(value, getConditionWithId(globalId));
         if (affectedRowCount != 1) {
-            throw getUpdateShouldBe1Exception(affectedRowCount, getTableName());
+            throw getUpdateShouldBe1Exception(affectedRowCount, handlerConfig.getTableName());
         }
     }
 
@@ -138,9 +141,9 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
     @Override
     public void deleteById(Long globalId) throws Exception {
         long affectedRowCount = 0;
-        affectedRowCount = getSuidRich().delete(getNewPojoInstance(), getConditionWithId(globalId));
+        affectedRowCount = getSuidRich().delete(handlerConfig.getNewPojoInstance(), getConditionWithId(globalId));
         if (affectedRowCount != 1) {
-            throw getAffectedRowShouldBe1Exception(affectedRowCount, CURD.DELETE, getTableName());
+            throw getAffectedRowShouldBe1Exception(affectedRowCount, CURD.DELETE, handlerConfig.getTableName());
         }
     }
 
@@ -180,6 +183,6 @@ public abstract class BeeOrmCoreTableHandler<TablePojoType>
 
     @Override
     public void addId2Condition(Condition condition, Long id) {
-        condition.op(getIdFieldName(), Op.eq, id);
+        condition.op(handlerConfig.getIdFieldName(), Op.eq, id);
     }
 }

@@ -2,12 +2,15 @@ package cc.xfl12345.mybigdata.server.service;
 
 
 import cc.xfl12345.mybigdata.server.appconst.CommonConst;
+import cc.xfl12345.mybigdata.server.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.appconst.api.result.LoginApiResult;
 import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
 import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
+import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.AuthAccountConstant;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
@@ -17,6 +20,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.Condition;
@@ -40,11 +44,28 @@ import org.teasoft.honey.osql.core.SessionFactory;
 @Service("tbAccountService")
 public class AccountService implements InitializingBean {
     @Getter
-    @Setter
     protected SqlErrorHandler sqlErrorHandler;
+
+    @Autowired
+    public void setSqlErrorHandler(SqlErrorHandler sqlErrorHandler) {
+        this.sqlErrorHandler = sqlErrorHandler;
+    }
+
     @Getter
-    @Setter
     protected RandomCodeGenerator randomCodeGenerator;
+
+    @Autowired
+    public void setRandomCodeGenerator(RandomCodeGenerator randomCodeGenerator) {
+        this.randomCodeGenerator = randomCodeGenerator;
+    }
+
+    @Getter
+    protected AuthAccountHandler authAccountHandler;
+
+    @Autowired
+    public void setAuthAccountHandler(AuthAccountHandler authAccountHandler) {
+        this.authAccountHandler = authAccountHandler;
+    }
 
     @Getter
     @Setter
@@ -169,10 +190,13 @@ public class AccountService implements InitializingBean {
     }
 
 
-    public boolean resetPassword(String passwordHash) {
+    public JsonCommonApiResponseObject resetPassword(String passwordHash) {
+        JsonCommonApiResponseObject responseObject = new JsonCommonApiResponseObject(
+            getJsonApiVersion()
+        );
         Long accountId = (Long) StpUtil.getLoginId();
         if (accountId == null) {
-            return false;
+            responseObject.setApiResult(JsonApiResult.FAILED);
         } else {
             String passwordSalt = generatePasswordSalt();
             String encryptedPasswordHash = passwordHashEncrypt(passwordHash, passwordSalt);
@@ -181,8 +205,16 @@ public class AccountService implements InitializingBean {
             account.setAccountId(accountId);
             account.setPasswordSalt(passwordSalt);
             account.setPasswordHash(encryptedPasswordHash);
-            return updateById(account);
+            // TODO 事务操作
+            try {
+                authAccountHandler.updateById(account, accountId);
+                responseObject.setApiResult(JsonApiResult.SUCCEED);
+            } catch (Exception e) {
+                // TODO 异常转HTTP响应文本
+            }
         }
+
+        return responseObject;
     }
 
 
@@ -281,133 +313,5 @@ public class AccountService implements InitializingBean {
     //     return this.tbAccountDao.queryValidationInformationByUsername(username);
     // }
 
-    /**
-     * 新增数据
-     *
-     * @param account 实例对象
-     * @return 实例对象
-     */
-    public boolean insert(AuthAccount account) {
-        boolean result = false;
 
-        // TODO 实现账号创建之后，自动关联所有数据。包括账号ID、时间等等其它重要数据。
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            // 插入数据
-            int affectedRowCount = 0;
-            affectedRowCount = suid.insert(account);
-            if (affectedRowCount == 1) {
-                transaction.commit();
-                result = true;
-            } else {
-                transaction.rollback();
-            }
-        } catch (BeeException | NullPointerException ignored) {
-            transaction.rollback();
-        }
-
-        return result;
-    }
-
-    /**
-     * 通过主键删除数据
-     *
-     * @param accountId 主键
-     * @return 是否成功
-     */
-    public boolean deleteById(Long accountId) {
-        boolean result = false;
-
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            // 删除数据
-            int affectedRowCount = 0;
-            affectedRowCount = suid.deleteById(AuthAccount.class, accountId);
-            if (affectedRowCount == 1) {
-                transaction.commit();
-                result = true;
-            } else {
-                transaction.rollback();
-            }
-        } catch (BeeException | NullPointerException ignored) {
-            transaction.rollback();
-        }
-
-        return result;
-    }
-
-    /**
-     * 根据账号ID，修改账号数据
-     *
-     * @param account 实例对象
-     * @return 实例对象
-     */
-    public boolean updateById(AuthAccount account) {
-        if (account.getAccountId() == null) {
-            return false;
-        }
-        boolean result = false;
-
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            // 更新数据
-            int affectedRowCount = 0;
-            affectedRowCount = suid.update(account);
-            if (affectedRowCount == 1) {
-                transaction.commit();
-                result = true;
-            } else {
-                transaction.rollback();
-            }
-        } catch (BeeException | NullPointerException ignored) {
-            transaction.rollback();
-        }
-
-        return result;
-    }
-
-    /**
-     * 通过ID查询单条数据
-     *
-     * @param accountId 主键
-     * @return 实例对象
-     */
-    public AuthAccount queryById(Long accountId) {
-        AuthAccount result = null;
-
-        Transaction transaction = SessionFactory.getTransaction();
-        try {
-            transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-            HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-            SuidRich suid = honeyFactory.getSuidRich();
-
-            // 查询数据
-            result = suid.selectById(new AuthAccount(), accountId);
-            if (result != null) {
-                transaction.commit();
-            } else {
-                transaction.rollback();
-            }
-        } catch (BeeException | NullPointerException ignored) {
-            transaction.rollback();
-        }
-
-        return result;
-    }
 }

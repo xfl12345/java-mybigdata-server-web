@@ -10,7 +10,7 @@
 // import cc.xfl12345.mybigdata.server.model.database.handler.NumberTypeHandler;
 // import cc.xfl12345.mybigdata.server.model.database.handler.ObjectTypeHandler;
 // import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-// import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.BeeOrmCoreTableHandler;
+// import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableHandler;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.ObjectContent;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.ObjectRecord;
@@ -28,7 +28,7 @@
 //
 // import java.util.*;
 //
-// public class ObjectTypeHandlerImpl extends BeeOrmCoreTableHandler implements ObjectTypeHandler {
+// public class ObjectTypeHandlerImpl extends AbstractAppTableHandler implements ObjectTypeHandler {
 //     @Getter
 //     @Setter
 //     protected StringTypeHandler stringTypeHandler;

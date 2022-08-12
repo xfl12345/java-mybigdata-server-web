@@ -49,12 +49,12 @@ SELECT insert_string_content(
            '0000300d-cb7a-11eb-0000-f828196a1686',
            'object_content');
 
-# 注册 integer_content 表
+# 注册 number_content 表
 SELECT insert_string_content(
            '0000300e-cb7a-11eb-0000-f828196a1686',
-           '整数记录表的名称',
+           '数字记录表的名称',
            '0000300f-cb7a-11eb-0000-f828196a1686',
-           'integer_content');
+           'number_content');
 
 # 注册 auth_account 表
 SELECT insert_string_content(
@@ -63,22 +63,6 @@ SELECT insert_string_content(
            '00003011-cb7a-11eb-0000-f828196a1686',
            'auth_account');
 
-
-
-# 添加 以字符串形式存储在字符串中的数字 的 集合 名称
-SELECT insert_string_content(
-           '00003200-cb7a-11eb-0000-f828196a1686',
-           '以字符串形式存储在字符串中的数字的集合的名称',
-           '00003201-cb7a-11eb-0000-f828196a1686',
-           '字符串数字');
-
-INSERT INTO global_data_record (uuid, table_name, description)
-VALUES ('00004000-cb7a-11eb-0000-f828196a1686',
-        (SELECT global_id FROM string_content WHERE content = 'group_record'),
-        (SELECT global_id FROM string_content WHERE content = '字符串数字'));
-INSERT INTO group_record (global_id, group_name)
-VALUES ((SELECT id FROM global_data_record WHERE uuid = '00004000-cb7a-11eb-0000-f828196a1686'),
-        (SELECT global_id FROM string_content WHERE content = '字符串数字'));
 
 
 

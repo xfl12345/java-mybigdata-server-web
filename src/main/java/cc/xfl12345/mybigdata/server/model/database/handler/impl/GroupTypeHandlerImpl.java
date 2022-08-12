@@ -9,7 +9,7 @@
 // import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
 // import cc.xfl12345.mybigdata.server.model.database.handler.GroupTypeHandler;
 // import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-// import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.BeeOrmCoreTableHandler;
+// import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableHandler;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.GroupContent;
 // import cc.xfl12345.mybigdata.server.model.database.table.pojo.GroupRecord;
@@ -23,7 +23,7 @@
 //
 // import java.util.*;
 //
-// public class GroupTypeHandlerImpl extends BeeOrmCoreTableHandler implements GroupTypeHandler {
+// public class GroupTypeHandlerImpl extends AbstractAppTableHandler implements GroupTypeHandler {
 //
 //     @Getter
 //     @Setter
