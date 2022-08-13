@@ -8,7 +8,6 @@ import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
 import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
-import cc.xfl12345.mybigdata.server.model.database.table.constant.AuthAccountConstant;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
@@ -22,16 +21,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.teasoft.bee.osql.BeeException;
-import org.teasoft.bee.osql.Condition;
-import org.teasoft.bee.osql.Op;
-import org.teasoft.bee.osql.SuidRich;
-import org.teasoft.bee.osql.transaction.Transaction;
-import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
-import org.teasoft.honey.osql.core.BeeFactory;
-import org.teasoft.honey.osql.core.ConditionImpl;
-import org.teasoft.honey.osql.core.HoneyFactory;
-import org.teasoft.honey.osql.core.SessionFactory;
 
 
 /**
@@ -87,26 +76,8 @@ public class AccountService implements InitializingBean {
     }
 
     public AuthAccount queryByUsername(String username) {
-        AuthAccount account = null;
-        Condition condition = new ConditionImpl();
-        // TODO 目前仅支持单用户。尝试支持多用户
-        if (AccountField.ROOT_USERNAME.equals(username)) {
-            // 开启事务
-            Transaction transaction = SessionFactory.getTransaction();
-            try {
-                transaction.begin();
-                transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
-                HoneyFactory honeyFactory = BeeFactory.getHoneyFactory();
-                SuidRich suid = honeyFactory.getSuidRich();
-                condition.op(AuthAccountConstant.ACCOUNT_ID, Op.eq, AccountField.ROOT_ACCOUNT_ID);
-                account = suid.select(new AuthAccount(), condition).get(0);
-                transaction.commit();
-            } catch (Exception e) {
-                transaction.rollback();
-            }
-        }
-
-        return account;
+        // 暂不支持
+        return null;
     }
 
 

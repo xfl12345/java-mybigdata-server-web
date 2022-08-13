@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server.model.database.table.curd.orm;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.error.BeeOrmExceptionHandler;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.BeeOrmCurdHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractTypedTableHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.config.BeeOrmTableHandlerConfig;
@@ -30,11 +30,11 @@ public abstract class BeeOrmTableHandler<TablePojoType>
     }
 
     @Getter
-    protected BeeOrmExceptionHandler beeOrmExceptionHandler;
+    protected SqlErrorHandler sqlErrorHandler;
 
     @Autowired
-    public void setBeeOrmExceptionHandler(BeeOrmExceptionHandler beeOrmExceptionHandler) {
-        this.beeOrmExceptionHandler = beeOrmExceptionHandler;
+    public void setSqlErrorHandler(SqlErrorHandler sqlErrorHandler) {
+        this.sqlErrorHandler = sqlErrorHandler;
     }
 
     protected String[] selectIdFieldOnly;
@@ -42,8 +42,8 @@ public abstract class BeeOrmTableHandler<TablePojoType>
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        if (beeOrmExceptionHandler == null) {
-            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("beeOrmExceptionHandler"));
+        if (sqlErrorHandler == null) {
+            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("sqlErrorHandler"));
         }
 
         if (handlerConfig == null) {
@@ -108,7 +108,7 @@ public abstract class BeeOrmTableHandler<TablePojoType>
         try {
             id = insert(value);
         } catch (BeeException beeException) {
-            SimpleCoreTableCurdResult curdResult = getBeeOrmExceptionHandler().getSimpleCoreTableCurdResult(beeException);
+            SimpleCoreTableCurdResult curdResult = getSqlErrorHandler().getSimpleCoreTableCurdResult(beeException);
             if (curdResult.equals(SimpleCoreTableCurdResult.DUPLICATE)) {
                 id = selectId(value);
             } else {

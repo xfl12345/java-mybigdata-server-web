@@ -3,15 +3,14 @@ package cc.xfl12345.mybigdata.server.model.database.error.impl;
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
 import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
+import cc.xfl12345.mybigdata.server.model.transaction.Transaction;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.BeeSQLException;
-import org.teasoft.bee.osql.transaction.Transaction;
 import org.teasoft.honey.osql.core.BeeFactory;
 
 import javax.sql.DataSource;
@@ -68,8 +67,8 @@ public class SqlErrorHandlerImpl implements SqlErrorHandler, InitializingBean {
     }
 
     @Override
-    public SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(@NonNull BeeException beeException) {
-        Throwable cause = beeException.getCause();
+    public SimpleCoreTableCurdResult getSimpleCoreTableCurdResult(@NonNull Exception exception) {
+        Throwable cause = exception.getCause();
         if (cause instanceof SQLException sqlException) {
             int errorCode = sqlException.getErrorCode();
             BeeFactory beeFactory = BeeFactory.getInstance();

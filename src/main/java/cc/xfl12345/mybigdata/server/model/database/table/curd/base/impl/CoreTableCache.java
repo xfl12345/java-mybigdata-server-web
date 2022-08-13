@@ -4,18 +4,19 @@ import cc.xfl12345.mybigdata.server.appconst.CoreTables;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.BooleanContent;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
+import cc.xfl12345.mybigdata.server.model.transaction.Transaction;
+import cc.xfl12345.mybigdata.server.model.transaction.impl.TransactionFactory;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.Condition;
 import org.teasoft.bee.osql.Op;
 import org.teasoft.bee.osql.SuidRich;
-import org.teasoft.bee.osql.transaction.Transaction;
-import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 import org.teasoft.honey.osql.core.BeeFactory;
 import org.teasoft.honey.osql.core.ConditionImpl;
-import org.teasoft.honey.osql.core.SessionFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,17 +24,35 @@ import java.util.List;
 
 @Slf4j
 public class CoreTableCache extends AbstractCoreTableCache<Long, String> {
+    @Getter
+    @Setter
+    protected String fieldCanNotBeNullMessageTemplate = "Property [%s] can not be null!";
+
     public CoreTableCache() {
         super();
+    }
+
+    @Getter
+    protected TransactionFactory transactionFactory;
+
+    public void setTransactionFactory(TransactionFactory transactionFactory) {
+        this.transactionFactory = transactionFactory;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        if (transactionFactory == null) {
+            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("transactionFactory"));
+        }
     }
 
     @Override
     public void refreshBooleanCache() throws Exception {
         // 开启事务
-        Transaction transaction = SessionFactory.getTransaction();
+        Transaction transaction = transactionFactory.getTransaction();
         try {
             transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
 
             // 查询数据
@@ -68,10 +87,9 @@ public class CoreTableCache extends AbstractCoreTableCache<Long, String> {
             .op(StringContentConstant.CONTENT, Op.in, stringBuilder.toString());
 
         // 开启事务
-        Transaction transaction = SessionFactory.getTransaction();
+        Transaction transaction = transactionFactory.getTransaction();
         try {
             transaction.begin();
-            transaction.setTransactionIsolation(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ);
             SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
 
             // 查询数据
