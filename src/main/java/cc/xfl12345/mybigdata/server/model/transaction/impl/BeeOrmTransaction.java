@@ -3,7 +3,6 @@ package cc.xfl12345.mybigdata.server.model.transaction.impl;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.InitializingBean;
 import org.teasoft.bee.osql.Condition;
 import org.teasoft.bee.osql.SuidRich;
 import org.teasoft.bee.osql.transaction.Transaction;
@@ -13,17 +12,18 @@ import org.teasoft.honey.osql.core.ConditionImpl;
 import org.teasoft.honey.osql.core.SessionFactory;
 
 public class BeeOrmTransaction
-    implements cc.xfl12345.mybigdata.server.model.transaction.Transaction, InitializingBean {
-    private Transaction transaction;
+    implements cc.xfl12345.mybigdata.server.model.transaction.Transaction {
+    private final Transaction transaction;
 
     @Getter
     @Setter
     private TransactionParam transactionParam = null;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    public BeeOrmTransaction() {
         transaction = SessionFactory.getTransaction();
+    }
 
+    private void init() throws Exception {
         if (transactionParam != null) {
             Boolean readOnly = transactionParam.getReadOnly();
             Integer timeout = transactionParam.getTimeout();
@@ -47,8 +47,9 @@ public class BeeOrmTransaction
 
 
     @Override
-    public void begin() {
+    public void begin() throws Exception {
         transaction.begin();
+        init();
     }
 
     @Override

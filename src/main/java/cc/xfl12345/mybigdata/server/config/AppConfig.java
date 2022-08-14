@@ -5,6 +5,8 @@ import cc.xfl12345.mybigdata.server.model.database.error.impl.SqlErrorHandlerImp
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.model.generator.impl.RandomCodeGeneratorImpl;
+import cc.xfl12345.mybigdata.server.model.transaction.impl.TransactionFactory;
+import cc.xfl12345.mybigdata.server.model.transaction.impl.TransactionParam;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -14,6 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 import org.teasoft.honey.osql.core.BeeFactory;
 import org.teasoft.honey.osql.core.SessionFactory;
 import org.teasoft.spring.boot.config.BeeAutoConfiguration;
@@ -57,11 +60,28 @@ public class AppConfig {
         return factory;
     }
 
+
+
     @DependsOn("sessionFactory")
-    @Bean(name = "coreTableCache")
+    @Bean("transactionFactory")
+    @ConditionalOnMissingBean(TransactionFactory.class)
+    public TransactionFactory getTransactionFactory() throws Exception {
+        TransactionFactory transactionFactory = new TransactionFactory();
+        transactionFactory.setDefaultTransactionParam(
+            TransactionParam.Builder.aBuilder()
+                .withTransactionIsolationLevel(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ.getLevel())
+                .build()
+        );
+        return transactionFactory;
+    }
+
+    @DependsOn("sessionFactory")
+    @Bean("coreTableCache")
     @ConditionalOnMissingBean(CoreTableCache.class)
     public CoreTableCache getCoreTableCache() throws Exception {
-        return new CoreTableCache();
+        CoreTableCache coreTableCache = new CoreTableCache();
+        coreTableCache.setTransactionFactory(getTransactionFactory());
+        return coreTableCache;
     }
 
     @Bean("sqlErrorHandler")

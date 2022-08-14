@@ -16,29 +16,29 @@ public class TransactionParam {
     @Setter
     private Integer transactionIsolationLevel;
 
-    public static final class TransactionParamBuilder {
+    public static final class Builder {
         private Boolean readOnly;
         private Integer timeout;
         private Integer transactionIsolationLevel;
 
-        private TransactionParamBuilder() {
+        private Builder() {
         }
 
-        public static TransactionParamBuilder aTransactionParam() {
-            return new TransactionParamBuilder();
+        public static Builder aBuilder() {
+            return new Builder();
         }
 
-        public TransactionParamBuilder withReadOnly(Boolean readOnly) {
+        public Builder withReadOnly(Boolean readOnly) {
             this.readOnly = readOnly;
             return this;
         }
 
-        public TransactionParamBuilder withTimeout(Integer timeout) {
+        public Builder withTimeout(Integer timeout) {
             this.timeout = timeout;
             return this;
         }
 
-        public TransactionParamBuilder withTransactionIsolationLevel(Integer transactionIsolationLevel) {
+        public Builder withTransactionIsolationLevel(Integer transactionIsolationLevel) {
             this.transactionIsolationLevel = transactionIsolationLevel;
             return this;
         }

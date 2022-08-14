@@ -9,11 +9,11 @@ public class TransactionFactory {
     @Setter
     private TransactionParam defaultTransactionParam = null;
 
-    public Transaction getTransaction() {
+    public Transaction getTransaction() throws Exception {
         return getTransaction(this.defaultTransactionParam);
     }
 
-    public Transaction getTransaction(TransactionParam transactionParam) {
+    public Transaction getTransaction(TransactionParam transactionParam) throws Exception {
         BeeOrmTransaction transaction = new BeeOrmTransaction();
         transaction.setTransactionParam(transactionParam);
 
