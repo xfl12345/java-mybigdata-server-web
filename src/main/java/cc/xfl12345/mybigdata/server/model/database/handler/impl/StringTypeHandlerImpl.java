@@ -5,6 +5,7 @@ import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.StringContentHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,21 @@ public class StringTypeHandlerImpl extends BaseDataHandler implements StringType
         return stringContent;
     }
 
+    public StringTypeHandlerImpl() {
+        insertAndReturnId.setDefaultAction(
+            (value) -> {
+                StringContent stringContent = (StringContent) value.get("value");
+                return stringContentHandler.insertOrSelect4Id(stringContent);
+            }
+        );
+    }
+
 
     @Override
     public Long insertAndReturnId(String value) throws Exception {
-        return stringContentHandler.insertAndReturnId(getPojo(value));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("value", getPojo(value));
+        return (Long) insertAndReturnId.execute(jsonObject);
     }
 
     @Override
