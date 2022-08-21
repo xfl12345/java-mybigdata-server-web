@@ -34,12 +34,6 @@ public interface TableCurdHandler <IdType, ValueType, ConditionType> {
     IdType selectId(ValueType value) throws Exception;
 
     /**
-     * 插入或检索目标数据，返回 全局数据记录表 的 ID。适用于需要无脑获取 全局ID 的情况。
-     * @return 全局数据记录表 的 ID
-     */
-    IdType insertOrSelect4Id(ValueType value) throws Exception;
-
-    /**
      * 按 条件 更新数据。失败则抛出异常。
      * @return 影响行数
      */

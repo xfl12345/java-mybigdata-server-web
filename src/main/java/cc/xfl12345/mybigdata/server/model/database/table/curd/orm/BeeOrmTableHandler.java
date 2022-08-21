@@ -1,16 +1,12 @@
 package cc.xfl12345.mybigdata.server.model.database.table.curd.orm;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
-import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.BeeOrmCurdHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractTypedTableHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.config.BeeOrmTableHandlerConfig;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.config.BeeOrmTableHandlerConfigGenerator;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.teasoft.bee.osql.BeeException;
 import org.teasoft.bee.osql.Condition;
 import org.teasoft.bee.osql.Op;
 import org.teasoft.bee.osql.SuidRich;
@@ -29,22 +25,11 @@ public abstract class BeeOrmTableHandler<TablePojoType>
         this.handlerConfig = handlerConfig;
     }
 
-    @Getter
-    protected SqlErrorAnalyst sqlErrorAnalyst;
-
-    public void setSqlErrorAnalyst(SqlErrorAnalyst sqlErrorAnalyst) {
-        this.sqlErrorAnalyst = sqlErrorAnalyst;
-    }
-
     protected String[] selectIdFieldOnly;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        if (sqlErrorAnalyst == null) {
-            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("sqlErrorAnalyst"));
-        }
-
         if (handlerConfig == null) {
             handlerConfig = BeeOrmTableHandlerConfigGenerator.getConfig(getTablePojoType());
         }
@@ -98,24 +83,6 @@ public abstract class BeeOrmTableHandler<TablePojoType>
     public Long selectId(TablePojoType value) throws Exception {
         TablePojoType item = selectOne(value, selectIdFieldOnly);
         return handlerConfig.getId(item);
-    }
-
-    @Override
-    public Long insertOrSelect4Id(TablePojoType value) throws Exception {
-        Long id;
-
-        try {
-            id = insert(value);
-        } catch (BeeException beeException) {
-            SimpleCoreTableCurdResult curdResult = getSqlErrorAnalyst().getSimpleCoreTableCurdResult(beeException);
-            if (curdResult.equals(SimpleCoreTableCurdResult.DUPLICATE)) {
-                id = selectId(value);
-            } else {
-                throw beeException;
-            }
-        }
-
-        return id;
     }
 
     @Override

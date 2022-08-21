@@ -16,9 +16,9 @@ public class StudyGenerateMapperConfig {
             System.out.println("\n" +
                 "    @Bean\n" +
                 "    @ConditionalOnMissingBean(" + handlerInterfaceClassName + ".class)\n" +
-                "    public " + handlerInterfaceClassName + " get"  + handlerInterfaceClassName + "(SqlErrorAnalyst sqlErrorAnalyst)" +
+                "    public " + handlerInterfaceClassName + " get"  + handlerInterfaceClassName + "()" +
                 " throws Exception {\n" +
-                "        return (" + handlerInterfaceClassName + ") getHandler(" + pojoSimpleName + ".class, sqlErrorAnalyst);\n" +
+                "        return (" + handlerInterfaceClassName + ") getHandler(" + pojoSimpleName + ".class);\n" +
                 "    }"
             );
         }

@@ -1,6 +1,5 @@
 package cc.xfl12345.mybigdata.server.config;
 
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.*;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.GlobalDataRecordHandlerImpl;
@@ -22,68 +21,67 @@ public class MapperConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> AbstractAppTableHandler<T> getHandler(Class<T> cls, SqlErrorAnalyst sqlErrorAnalyst)
+    public <T> AbstractAppTableHandler<T> getHandler(Class<T> cls)
         throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<AbstractAppTableHandler<T>> handlerClass = (Class<AbstractAppTableHandler<T>>) Class.forName(
             GlobalDataRecordHandlerImpl.class.getPackageName() + "." + cls.getSimpleName() + "HandlerImpl"
         );
         AbstractAppTableHandler<T> handler = handlerClass.getDeclaredConstructor().newInstance();
         handler.setHandlerConfig(getHandlerConfig(cls));
-        handler.setSqlErrorAnalyst(sqlErrorAnalyst);
         return handler;
     }
 
     @Bean
     @ConditionalOnMissingBean(AuthAccountHandler.class)
-    public AuthAccountHandler getAuthAccountHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (AuthAccountHandler) getHandler(AuthAccount.class, sqlErrorAnalyst);
+    public AuthAccountHandler getAuthAccountHandler() throws Exception {
+        return (AuthAccountHandler) getHandler(AuthAccount.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(GlobalDataRecordHandler.class)
-    public GlobalDataRecordHandler getGlobalDataRecordHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (GlobalDataRecordHandler) getHandler(GlobalDataRecord.class, sqlErrorAnalyst);
+    public GlobalDataRecordHandler getGlobalDataRecordHandler() throws Exception {
+        return (GlobalDataRecordHandler) getHandler(GlobalDataRecord.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(GroupContentHandler.class)
-    public GroupContentHandler getGroupContentHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (GroupContentHandler) getHandler(GroupContent.class, sqlErrorAnalyst);
+    public GroupContentHandler getGroupContentHandler() throws Exception {
+        return (GroupContentHandler) getHandler(GroupContent.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(GroupRecordHandler.class)
-    public GroupRecordHandler getGroupRecordHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (GroupRecordHandler) getHandler(GroupRecord.class, sqlErrorAnalyst);
+    public GroupRecordHandler getGroupRecordHandler() throws Exception {
+        return (GroupRecordHandler) getHandler(GroupRecord.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(NumberContentHandler.class)
-    public NumberContentHandler getNumberContentHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (NumberContentHandler) getHandler(NumberContent.class, sqlErrorAnalyst);
+    public NumberContentHandler getNumberContentHandler() throws Exception {
+        return (NumberContentHandler) getHandler(NumberContent.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(ObjectContentHandler.class)
-    public ObjectContentHandler getObjectContentHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (ObjectContentHandler) getHandler(ObjectContent.class, sqlErrorAnalyst);
+    public ObjectContentHandler getObjectContentHandler() throws Exception {
+        return (ObjectContentHandler) getHandler(ObjectContent.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(ObjectRecordHandler.class)
-    public ObjectRecordHandler getObjectRecordHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (ObjectRecordHandler) getHandler(ObjectRecord.class, sqlErrorAnalyst);
+    public ObjectRecordHandler getObjectRecordHandler() throws Exception {
+        return (ObjectRecordHandler) getHandler(ObjectRecord.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(StringContentHandler.class)
-    public StringContentHandler getStringContentHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (StringContentHandler) getHandler(StringContent.class, sqlErrorAnalyst);
+    public StringContentHandler getStringContentHandler() throws Exception {
+        return (StringContentHandler) getHandler(StringContent.class);
     }
 
     @Bean
     @ConditionalOnMissingBean(TableSchemaRecordHandler.class)
-    public TableSchemaRecordHandler getTableSchemaRecordHandler(SqlErrorAnalyst sqlErrorAnalyst) throws Exception {
-        return (TableSchemaRecordHandler) getHandler(TableSchemaRecord.class, sqlErrorAnalyst);
+    public TableSchemaRecordHandler getTableSchemaRecordHandler() throws Exception {
+        return (TableSchemaRecordHandler) getHandler(TableSchemaRecord.class);
     }
 }
