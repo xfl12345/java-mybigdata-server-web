@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.config;
 
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
-import cc.xfl12345.mybigdata.server.model.database.error.impl.SqlErrorHandlerImpl;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
+import cc.xfl12345.mybigdata.server.model.database.error.impl.SqlErrorAnalystImpl;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.model.generator.impl.RandomCodeGeneratorImpl;
@@ -85,9 +85,9 @@ public class AppConfig {
     }
 
     @Bean("sqlErrorHandler")
-    @ConditionalOnMissingBean(SqlErrorHandler.class)
-    public SqlErrorHandler getSqlErrorHandler() {
-        return new SqlErrorHandlerImpl();
+    @ConditionalOnMissingBean(SqlErrorAnalyst.class)
+    public SqlErrorAnalyst getSqlErrorHandler() {
+        return new SqlErrorAnalystImpl();
     }
 
     @Bean("randomCodeGenerator")

@@ -8,7 +8,7 @@ import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
 import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
@@ -33,11 +33,11 @@ import org.springframework.stereotype.Service;
 @Service("tbAccountService")
 public class AccountService implements InitializingBean {
     @Getter
-    protected SqlErrorHandler sqlErrorHandler;
+    protected SqlErrorAnalyst sqlErrorAnalyst;
 
     @Autowired
-    public void setSqlErrorHandler(SqlErrorHandler sqlErrorHandler) {
-        this.sqlErrorHandler = sqlErrorHandler;
+    public void setSqlErrorAnalyst(SqlErrorAnalyst sqlErrorAnalyst) {
+        this.sqlErrorAnalyst = sqlErrorAnalyst;
     }
 
     @Getter

@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.database.error;
 
-public class TableDataException extends Exception {
+public class TableDataException extends RuntimeException {
     public TableDataException() {
     }
 

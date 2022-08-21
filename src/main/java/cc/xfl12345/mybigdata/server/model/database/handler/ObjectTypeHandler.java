@@ -14,7 +14,7 @@ public interface ObjectTypeHandler {
      */
     Long insert(String name, Object obj, Long jsonSchemaId) throws Exception;
 
-    JSONObject select(Long globalId);
+    Map<String, Object> select(Long globalId);
 
     void update(Map<String, Long> keyValuePairs, Long globalId) throws TableOperationException;
 

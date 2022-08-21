@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server.model.database.error;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 
-public class TableOperationException extends Exception {
+public class TableOperationException extends RuntimeException {
     public TableOperationException() {
     }
 

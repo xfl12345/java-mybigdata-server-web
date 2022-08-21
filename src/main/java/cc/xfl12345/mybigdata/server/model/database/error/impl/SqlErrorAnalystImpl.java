@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.error.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.transaction.Transaction;
 import com.alibaba.druid.pool.DruidDataSource;
@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
-public class SqlErrorHandlerImpl implements SqlErrorHandler, InitializingBean {
+public class SqlErrorAnalystImpl implements SqlErrorAnalyst, InitializingBean {
     @Getter
     @Setter
     protected Map<String, Map<Integer, SimpleCoreTableCurdResult>> coreTableResultMap = null;

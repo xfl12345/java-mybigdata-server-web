@@ -4,7 +4,7 @@ import cc.xfl12345.mybigdata.server.model.database.handler.*;
 import cc.xfl12345.mybigdata.server.model.api.database.handler.CoreTableHandler;
 import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
 import cc.xfl12345.mybigdata.server.model.api.database.result.SingleDataResultBase;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountHandler;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import com.alibaba.fastjson2.JSONObject;
@@ -58,15 +58,15 @@ public class CoreTableHandlerImpl implements CoreTableHandler, DisposableBean, I
 
     @Getter
     @Setter
-    protected volatile SqlErrorHandler sqlErrorHandler = null;
+    protected volatile SqlErrorAnalyst sqlErrorAnalyst = null;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         if (coreTableCache == null) {
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("coreTableCache"));
         }
-        if (sqlErrorHandler == null) {
-            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("sqlErrorHandler"));
+        if (sqlErrorAnalyst == null) {
+            throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("sqlErrorAnalyst"));
         }
 
 
