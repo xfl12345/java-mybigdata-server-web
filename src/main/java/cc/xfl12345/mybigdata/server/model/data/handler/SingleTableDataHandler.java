@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-public abstract class SingleTableDataHandler<ValueType, PojoType> extends BaseDataHandler {
+public abstract class SingleTableDataHandler<ValueType> extends BaseDataHandler {
     @Getter
     @Setter
     protected DataService<ValueType> dataService;
@@ -18,9 +18,6 @@ public abstract class SingleTableDataHandler<ValueType, PojoType> extends BaseDa
             throw new IllegalArgumentException(fieldCanNotBeNullMessageTemplate.formatted("dataService"));
         }
     }
-
-    protected abstract PojoType getPojo(ValueType value);
-    protected abstract ValueType getValue(PojoType pojo);
 
     @SuppressWarnings("unchecked")
     public SingleTableDataHandler() {
