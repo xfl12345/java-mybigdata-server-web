@@ -2,15 +2,12 @@ package cc.xfl12345.mybigdata.server.model.database.error.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
-import cc.xfl12345.mybigdata.server.model.api.database.result.ExecuteResultBase;
-import cc.xfl12345.mybigdata.server.model.transaction.Transaction;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.teasoft.bee.osql.BeeSQLException;
 import org.teasoft.honey.osql.core.BeeFactory;
 
 import javax.sql.DataSource;
@@ -85,21 +82,5 @@ public class SqlErrorAnalystImpl implements SqlErrorAnalyst, InitializingBean {
             }
         }
         return SimpleCoreTableCurdResult.UNKNOWN_FAILED;
-    }
-
-    @Override
-    public void defaultErrorHandler(@NonNull Exception e, @NonNull Transaction transaction, @NonNull ExecuteResultBase result) {
-        transaction.rollback();
-        result.setSqlException(e);
-        if (e instanceof IndexOutOfBoundsException) {
-            result.setSimpleResult(SimpleCoreTableCurdResult.FAILED_NOT_FOUND);
-        } else {
-            if (e instanceof BeeSQLException beeSQLException) {
-                result.setSimpleResult(getSimpleCoreTableCurdResult(beeSQLException));
-            } else {
-                result.setUnknowResultWithException(e);
-                log.error(e.getMessage());
-            }
-        }
     }
 }

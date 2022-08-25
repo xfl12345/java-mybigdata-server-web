@@ -1,8 +1,6 @@
 package cc.xfl12345.mybigdata.server.controller;
 
-import cc.xfl12345.mybigdata.server.appconst.CoreTableNames;
-import cc.xfl12345.mybigdata.server.model.database.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.constant.GlobalDataRecordConstant;
+import cc.xfl12345.mybigdata.server.model.database.service.StringTypeService;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
@@ -35,9 +33,9 @@ public class DebugController implements ApplicationContextAware {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String debugView() {
         try {
-            StringTypeHandler stringTypeHandler = applicationContext.getBean(
+            StringTypeService stringTypeHandler = applicationContext.getBean(
                 "stringTypeHandler",
-                StringTypeHandler.class
+                StringTypeService.class
             );
             log.debug(JSON.toJSONString(stringTypeHandler.selectId("text")));
 

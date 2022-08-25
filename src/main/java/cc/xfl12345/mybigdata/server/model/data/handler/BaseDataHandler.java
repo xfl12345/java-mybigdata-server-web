@@ -54,9 +54,6 @@ public class BaseDataHandler implements InitializingBean {
     public final DataHandlerInterceptorManager insertAndReturnId =
         new DataHandlerInterceptorManager();
 
-    public final DataHandlerInterceptorManager insertOrSelect4Id =
-        new DataHandlerInterceptorManager();
-
     public final DataHandlerInterceptorManager insert =
         new DataHandlerInterceptorManager();
 

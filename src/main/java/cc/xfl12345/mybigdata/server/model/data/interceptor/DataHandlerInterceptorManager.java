@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.data.interceptor;
 
-import cc.xfl12345.mybigdata.server.model.database.handler.FunctionWithException;
+import cc.xfl12345.mybigdata.server.model.database.service.FunctionWithException;
 import lombok.Getter;
 import lombok.Setter;
 

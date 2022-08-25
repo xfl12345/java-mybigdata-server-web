@@ -9,7 +9,7 @@ import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountMapper;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
@@ -49,11 +49,11 @@ public class AccountService implements InitializingBean {
     }
 
     @Getter
-    protected AuthAccountHandler authAccountHandler;
+    protected AuthAccountMapper authAccountMapper;
 
     @Autowired
-    public void setAuthAccountHandler(AuthAccountHandler authAccountHandler) {
-        this.authAccountHandler = authAccountHandler;
+    public void setAuthAccountMapper(AuthAccountMapper authAccountMapper) {
+        this.authAccountMapper = authAccountMapper;
     }
 
     @Getter
@@ -178,7 +178,7 @@ public class AccountService implements InitializingBean {
             account.setPasswordHash(encryptedPasswordHash);
             // TODO 事务操作
             try {
-                authAccountHandler.updateById(account, accountId);
+                authAccountMapper.updateById(account, accountId);
                 responseObject.setApiResult(JsonApiResult.SUCCEED);
             } catch (Exception e) {
                 // TODO 异常转HTTP响应文本
