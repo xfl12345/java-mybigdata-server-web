@@ -6,10 +6,10 @@ import lombok.Setter;
 
 import java.util.List;
 
-public abstract class SingleTableDataHandler<IdType, ValueType, PojoType> extends BaseDataHandler {
+public abstract class SingleTableDataHandler<ValueType, PojoType> extends BaseDataHandler {
     @Getter
     @Setter
-    protected DataService<IdType, ValueType> dataService;
+    protected DataService<ValueType> dataService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -28,14 +28,14 @@ public abstract class SingleTableDataHandler<IdType, ValueType, PojoType> extend
         insert.setDefaultAction(valueType -> dataService.insert((ValueType) valueType));
         insertBatch.setDefaultAction(param -> dataService.insertBatch((List<ValueType>) param));
         selectId.setDefaultAction(valueType -> dataService.selectId((ValueType) valueType));
-        selectById.setDefaultAction(idType -> dataService.selectById((IdType) idType));
+        selectById.setDefaultAction(idType -> dataService.selectById(idType));
         updateById.setDefaultAction(param -> {
-            IdAndValue<IdType, ValueType> idAndValue = (IdAndValue<IdType, ValueType>) param;
+            IdAndValue<ValueType> idAndValue = (IdAndValue<ValueType>) param;
             dataService.updateById(idAndValue.value, idAndValue.id);
             return null;
         });
         deleteById.setDefaultAction(param -> {
-            dataService.deleteById((IdType) param);
+            dataService.deleteById(param);
             return null;
         });
     }

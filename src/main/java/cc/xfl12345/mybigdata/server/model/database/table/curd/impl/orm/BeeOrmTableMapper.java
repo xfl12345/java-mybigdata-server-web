@@ -48,7 +48,7 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public Long insertAndReturnId(TablePojoType value) throws Exception {
+    public Object insertAndReturnId(TablePojoType value) throws Exception {
         return getSuidRich().insertAndReturnId(value);
     }
 
@@ -68,7 +68,7 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public TablePojoType selectById(Long globalId, String[] fields) throws Exception {
+    public TablePojoType selectById(Object globalId, String[] fields) throws Exception {
         Condition condition = getConditionWithSelectedFields(fields);
         addId2Condition(condition, globalId);
         List<TablePojoType> items = getSuidRich().select(mapperConfig.getNewPojoInstance(), condition);
@@ -80,7 +80,7 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public Long selectId(TablePojoType value) throws Exception {
+    public Object selectId(TablePojoType value) throws Exception {
         TablePojoType item = selectOne(value, selectIdFieldOnly);
         return mapperConfig.getId(item);
     }
@@ -91,7 +91,7 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public void updateById(TablePojoType value, Long globalId) throws Exception {
+    public void updateById(TablePojoType value, Object globalId) throws Exception {
         long affectedRowCount = 0;
         affectedRowCount = getSuidRich().update(value, getConditionWithId(globalId));
         if (affectedRowCount != 1) {
@@ -105,7 +105,7 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public void deleteById(Long globalId) throws Exception {
+    public void deleteById(Object globalId) throws Exception {
         long affectedRowCount = 0;
         affectedRowCount = getSuidRich().delete(mapperConfig.getNewPojoInstance(), getConditionWithId(globalId));
         if (affectedRowCount != 1) {
@@ -114,11 +114,11 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Long tableNameId) {
+    public GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Object tableNameId) {
         GlobalDataRecord globalDataRecord = getNewGlobalDataRecord(createTime, tableNameId);
         SuidRich suid = BeeFactory.getHoneyFactory().getSuidRich();
-        Long id = suid.insertAndReturnId(globalDataRecord);
-        globalDataRecord.setId(id);
+        Object id = suid.insertAndReturnId(globalDataRecord);
+        globalDataRecord.setId(idTypeConverter.cast(id));
         return globalDataRecord;
     }
 
@@ -141,14 +141,14 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     }
 
     @Override
-    public Condition getConditionWithId(Long id) {
+    public Condition getConditionWithId(Object id) {
         Condition condition = new ConditionImpl();
         addId2Condition(condition, id);
         return condition;
     }
 
     @Override
-    public void addId2Condition(Condition condition, Long id) {
+    public void addId2Condition(Condition condition, Object id) {
         condition.op(mapperConfig.getIdFieldName(), Op.eq, id);
     }
 }

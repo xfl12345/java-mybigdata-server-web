@@ -5,15 +5,15 @@ import cc.xfl12345.mybigdata.server.model.database.table.curd.base.TableCurdMapp
 
 import java.util.List;
 
-public abstract class SingleTableDataService<IdType, ValueType, PojoType, ConditionType> implements DataService<IdType, ValueType> {
-    public abstract <MapperType extends TableCurdMapper<IdType, PojoType, ConditionType>> MapperType getMapper();
+public abstract class SingleTableDataService<ValueType, PojoType, ConditionType> implements DataService<ValueType> {
+    public abstract <MapperType extends TableCurdMapper<PojoType, ConditionType>> MapperType getMapper();
 
     protected abstract PojoType getPojo(ValueType valueType);
     protected abstract ValueType getValue(PojoType pojoType);
     protected abstract String[] getSelectContentFieldOnly();
 
     @Override
-    public IdType insertAndReturnId(ValueType value) throws Exception {
+    public Object insertAndReturnId(ValueType value) throws Exception {
         return getMapper().insertAndReturnId(getPojo(value));
     }
 
@@ -28,22 +28,22 @@ public abstract class SingleTableDataService<IdType, ValueType, PojoType, Condit
     }
 
     @Override
-    public IdType selectId(ValueType value) throws Exception {
+    public Object selectId(ValueType value) throws Exception {
         return getMapper().selectId(getPojo(value));
     }
 
     @Override
-    public ValueType selectById(IdType globalId) throws Exception {
+    public ValueType selectById(Object globalId) throws Exception {
         return getValue(getMapper().selectById(globalId, getSelectContentFieldOnly()));
     }
 
     @Override
-    public void updateById(ValueType value, IdType globalId) throws Exception {
+    public void updateById(ValueType value, Object globalId) throws Exception {
         getMapper().updateById(getPojo(value), globalId);
     }
 
     @Override
-    public void deleteById(IdType globalId) throws Exception {
+    public void deleteById(Object globalId) throws Exception {
         getMapper().deleteById(globalId);
     }
 }

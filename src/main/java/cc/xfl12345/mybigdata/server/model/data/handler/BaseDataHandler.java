@@ -46,8 +46,8 @@ public class BaseDataHandler implements InitializingBean {
     }
 
 
-    public class IdAndValue<IdType, ValueType> {
-        public IdType id;
+    public class IdAndValue<ValueType> {
+        public Object id;
         public ValueType value;
     }
 

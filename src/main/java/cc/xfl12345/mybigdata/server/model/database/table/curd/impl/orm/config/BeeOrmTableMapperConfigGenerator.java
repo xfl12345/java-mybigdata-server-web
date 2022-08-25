@@ -36,7 +36,7 @@ public class BeeOrmTableMapperConfigGenerator {
                     try {
                         return (Long) method.invoke(value);
                     } catch (Exception e) {
-                        return null;
+                        throw  new RuntimeException(e);
                     }
                 };
 
@@ -50,7 +50,7 @@ public class BeeOrmTableMapperConfigGenerator {
             try {
                 return constructor.newInstance();
             } catch (Exception e) {
-                return null;
+                throw  new RuntimeException(e);
             }
         };
 

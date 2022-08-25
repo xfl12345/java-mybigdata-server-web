@@ -2,13 +2,13 @@ package cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
 import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
+import cc.xfl12345.mybigdata.server.model.database.table.converter.IdTypeConverter;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import com.fasterxml.uuid.NoArgGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
@@ -25,9 +25,8 @@ public abstract class AbstractTableMapper implements DisposableBean, Initializin
     protected String messageAffectedRowsCountDoesNotMatch = "Affected rows count does not match.";
 
     @Getter
-    protected volatile NoArgGenerator uuidGenerator;
+    protected volatile NoArgGenerator uuidGenerator = null;
 
-    @Autowired
     public void setUuidGenerator(NoArgGenerator uuidGenerator) {
         this.uuidGenerator = uuidGenerator;
     }
@@ -35,9 +34,15 @@ public abstract class AbstractTableMapper implements DisposableBean, Initializin
     @Getter
     protected volatile CoreTableCache coreTableCache = null;
 
-    @Autowired
     public void setCoreTableCache(CoreTableCache coreTableCache) {
         this.coreTableCache = coreTableCache;
+    }
+
+    @Getter
+    protected volatile IdTypeConverter<Long> idTypeConverter = null;
+
+    public void setIdTypeConverter(IdTypeConverter<Long> idTypeConverter) {
+        this.idTypeConverter = idTypeConverter;
     }
 
     @Override
@@ -58,17 +63,17 @@ public abstract class AbstractTableMapper implements DisposableBean, Initializin
         return uuidGenerator.generate().toString();
     }
 
-    public GlobalDataRecord getNewGlobalDataRecord(Date createTime, Long tableNameId) {
+    public GlobalDataRecord getNewGlobalDataRecord(Date createTime, Object tableNameId) {
         GlobalDataRecord globalDataRecord = new GlobalDataRecord();
         globalDataRecord.setUuid(getUuidInString());
         globalDataRecord.setCreateTime(createTime);
         globalDataRecord.setUpdateTime(createTime);
         globalDataRecord.setModifiedCount(1L);
-        globalDataRecord.setTableName(tableNameId);
+        globalDataRecord.setTableName(idTypeConverter.cast(tableNameId));
         return globalDataRecord;
     }
 
-    public abstract GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Long tableNameId);
+    public abstract GlobalDataRecord getNewRegisteredGlobalDataRecord(Date createTime, Object tableNameId);
 
     public TableOperationException getUpdateShouldBe1Exception(long affectedRowsCount, String tableName) {
         return getAffectedRowShouldBe1Exception(

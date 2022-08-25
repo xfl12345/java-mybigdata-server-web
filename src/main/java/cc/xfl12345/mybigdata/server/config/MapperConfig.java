@@ -1,11 +1,15 @@
 package cc.xfl12345.mybigdata.server.config;
 
+import cc.xfl12345.mybigdata.server.model.database.table.converter.IdTypeConverter;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.*;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableMapper;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.GlobalDataRecordMapperImpl;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config.BeeOrmTableMapperConfig;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config.BeeOrmTableMapperConfigGenerator;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.*;
+import com.fasterxml.uuid.NoArgGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +18,26 @@ import java.lang.reflect.InvocationTargetException;
 
 @Configuration
 public class MapperConfig {
+
+    protected NoArgGenerator uuidGenerator;
+
+    @Autowired
+    public void setUuidGenerator(NoArgGenerator uuidGenerator) {
+        this.uuidGenerator = uuidGenerator;
+    }
+
+    protected CoreTableCache coreTableCache;
+
+    @Autowired
+    public void setCoreTableCache(CoreTableCache coreTableCache) {
+        this.coreTableCache = coreTableCache;
+    }
+
+    @Bean
+    public IdTypeConverter<Long> idTypeConverter() {
+        return new IdTypeConverter<>(Long.class);
+    }
+
     @Bean
     public <TablePojoType> BeeOrmTableMapperConfig<TablePojoType> getHandlerConfig(Class<TablePojoType> cls)
         throws NoSuchMethodException {
@@ -26,9 +50,13 @@ public class MapperConfig {
         Class<AbstractAppTableMapper<T>> mapperClass = (Class<AbstractAppTableMapper<T>>) Class.forName(
             GlobalDataRecordMapperImpl.class.getPackageName() + "." + cls.getSimpleName() + "MapperImpl"
         );
-        AbstractAppTableMapper<T> handler = mapperClass.getDeclaredConstructor().newInstance();
-        handler.setMapperConfig(getHandlerConfig(cls));
-        return handler;
+        AbstractAppTableMapper<T> mapper = mapperClass.getDeclaredConstructor().newInstance();
+        mapper.setIdTypeConverter(idTypeConverter());
+        mapper.setCoreTableCache(coreTableCache);
+        mapper.setUuidGenerator(uuidGenerator);
+        mapper.setMapperConfig(getHandlerConfig(cls));
+
+        return mapper;
     }
 
     @Bean

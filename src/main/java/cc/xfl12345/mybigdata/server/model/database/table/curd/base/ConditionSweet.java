@@ -1,11 +1,11 @@
 package cc.xfl12345.mybigdata.server.model.database.table.curd.base;
 
-public interface ConditionSweet<IdType, ConditionType> {
+public interface ConditionSweet<ConditionType> {
     ConditionType getConditionWithSelectedFields(String... fields);
 
     void addFields2Condition(ConditionType condition, String... fields);
 
-    ConditionType getConditionWithId(IdType id);
+    ConditionType getConditionWithId(Object id);
 
-    void addId2Condition(ConditionType condition, IdType id);
+    void addId2Condition(ConditionType condition, Object id);
 }

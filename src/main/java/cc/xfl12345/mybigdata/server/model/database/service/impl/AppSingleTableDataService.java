@@ -15,7 +15,7 @@ public abstract class AppSingleTableDataService<ValueType, PojoType> implements 
     protected abstract PojoType getPojo(ValueType valueType);
 
     @Override
-    public Long insertAndReturnId(ValueType value) throws Exception {
+    public Object insertAndReturnId(ValueType value) throws Exception {
         return getMapper().insertAndReturnId(getPojo(value));
     }
 
@@ -30,22 +30,22 @@ public abstract class AppSingleTableDataService<ValueType, PojoType> implements 
     }
 
     @Override
-    public Long selectId(ValueType value) throws Exception {
+    public Object selectId(ValueType value) throws Exception {
         return getMapper().selectId(getPojo(value));
     }
 
     @Override
-    public ValueType selectById(Long globalId) throws Exception {
+    public ValueType selectById(Object globalId) throws Exception {
         return getValue(getMapper().selectById(globalId, getSelectContentFieldOnly()));
     }
 
     @Override
-    public void updateById(ValueType value, Long globalId) throws Exception {
+    public void updateById(ValueType value, Object globalId) throws Exception {
         getMapper().updateById(getPojo(value), globalId);
     }
 
     @Override
-    public void deleteById(Long globalId) throws Exception {
+    public void deleteById(Object globalId) throws Exception {
         getMapper().deleteById(globalId);
     }
 }

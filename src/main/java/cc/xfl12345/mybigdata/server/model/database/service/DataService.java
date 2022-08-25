@@ -2,13 +2,13 @@ package cc.xfl12345.mybigdata.server.model.database.service;
 
 import java.util.List;
 
-public interface DataService<IdType, ValueType> {
+public interface DataService<ValueType> {
     /**
      * 插入数据，返回 全局数据记录表 的 ID
      *
      * @return 全局数据记录表 的 ID
      */
-    IdType insertAndReturnId(ValueType value) throws Exception;
+    Object insertAndReturnId(ValueType value) throws Exception;
 
     /**
      * 插入数据。失败则抛出异常。
@@ -29,18 +29,18 @@ public interface DataService<IdType, ValueType> {
      *
      * @return 全局数据记录表 的 ID
      */
-    IdType selectId(ValueType value) throws Exception;
+    Object selectId(ValueType value) throws Exception;
 
-    ValueType selectById(IdType globalId) throws Exception;
+    ValueType selectById(Object globalId) throws Exception;
 
 
     /**
      * 按 全局ID 更新数据。失败则抛出异常。
      */
-    void updateById(ValueType value, IdType globalId) throws Exception;
+    void updateById(ValueType value, Object globalId) throws Exception;
 
     /**
      * 按 全局ID 删除数据。失败则抛出异常。
      */
-    void deleteById(IdType globalId) throws Exception;
+    void deleteById(Object globalId) throws Exception;
 }
