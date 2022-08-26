@@ -1,11 +1,11 @@
 package cc.xfl12345.mybigdata.server.model.database.service.impl;
 
-import cc.xfl12345.mybigdata.server.model.database.service.AppDataService;
+import cc.xfl12345.mybigdata.server.model.database.service.DataService;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.AppTableCurdMapper;
 
 import java.util.List;
 
-public abstract class AppSingleTableDataService<ValueType, PojoType> implements AppDataService<ValueType> {
+public abstract class AppSingleTableDataService<ValueType, PojoType> implements DataService<ValueType> {
     public abstract AppTableCurdMapper<PojoType> getMapper();
 
     protected abstract String[] getSelectContentFieldOnly();
