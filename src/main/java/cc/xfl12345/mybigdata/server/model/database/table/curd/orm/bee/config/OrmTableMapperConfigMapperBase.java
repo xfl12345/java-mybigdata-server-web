@@ -1,16 +1,17 @@
-package cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OrmTableMapperConfigMapperBase<ConfigType> implements OrmTableMapperConfigMapper<ConfigType> {
-    protected ConcurrentHashMap<Class<?>, ConfigType> map;
+    protected Map<Class<?>, ConfigType> map;
 
     public OrmTableMapperConfigMapperBase() {
-        map = new ConcurrentHashMap<>();
+        map = new HashMap<>();
     }
 
     public OrmTableMapperConfigMapperBase(int initialCapacity) {
-        map = new ConcurrentHashMap<>(initialCapacity);
+        map = new HashMap<>(initialCapacity);
     }
 
 

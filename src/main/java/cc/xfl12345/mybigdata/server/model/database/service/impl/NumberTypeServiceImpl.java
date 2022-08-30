@@ -9,7 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-public class NumberTypeServiceImpl extends AppSingleTableDataService<BigDecimal, NumberContent> implements NumberTypeService {
+public class NumberTypeServiceImpl extends SingleTableDataService<BigDecimal, NumberContent> implements NumberTypeService {
     @Setter
     protected NumberContentMapper mapper;
 

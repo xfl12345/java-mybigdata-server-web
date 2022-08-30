@@ -7,7 +7,7 @@ import cc.xfl12345.mybigdata.server.model.database.table.curd.base.AppTableCurdM
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import lombok.Setter;
 
-public class StringTypeServiceImpl extends AppSingleTableDataService<String, StringContent> implements StringTypeService {
+public class StringTypeServiceImpl extends SingleTableDataService<String, StringContent> implements StringTypeService {
     @Setter
     protected StringContentMapper mapper;
 

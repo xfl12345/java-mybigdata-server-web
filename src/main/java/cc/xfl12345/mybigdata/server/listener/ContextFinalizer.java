@@ -64,31 +64,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
-        // AbandonedConnectionCleanupThread.shutdown();
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    AbandonedConnectionCleanupThread.checkedShutdown();
-                    long checkPerMillionSecond = 200L;
-                    int checkRound = 20;
-                    //尝试休眠2秒，等待JDBC驱动完全从内存释放，防止过快被热部署重新注册JDBC驱动
-                    log.info("Wait clean thread task finished...");
-                    for (; checkRound > 0 && AbandonedConnectionCleanupThread.isAlive(); checkRound--) {
-                        AbandonedConnectionCleanupThread.checkedShutdown();
-                        Thread.sleep(checkPerMillionSecond);
-                    }
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                }
-                if (AbandonedConnectionCleanupThread.isAlive()) {
-                    log.info("Clean thread failed.");
-                } else {
-                    log.info("Clean thread succeed.");
-                }
-            }
-        };
-        thread.start();
+        AbandonedConnectionCleanupThread.checkedShutdown();
     }
 
     @Override

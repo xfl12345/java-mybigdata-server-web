@@ -5,8 +5,8 @@ import cc.xfl12345.mybigdata.server.model.database.table.curd.*;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableMapper;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.GlobalDataRecordMapperImpl;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config.BeeOrmTableMapperConfig;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config.BeeOrmTableMapperConfigGenerator;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config.BeeTableMapperConfig;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config.BeeTableMapperConfigGenerator;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.*;
 import com.fasterxml.uuid.NoArgGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +39,9 @@ public class MapperConfig {
     }
 
     @Bean
-    public <TablePojoType> BeeOrmTableMapperConfig<TablePojoType> getHandlerConfig(Class<TablePojoType> cls)
+    public <TablePojoType> BeeTableMapperConfig<TablePojoType> getHandlerConfig(Class<TablePojoType> cls)
         throws NoSuchMethodException {
-        return BeeOrmTableMapperConfigGenerator.getConfig(cls);
+        return BeeTableMapperConfigGenerator.getConfig(cls);
     }
 
     @SuppressWarnings("unchecked")

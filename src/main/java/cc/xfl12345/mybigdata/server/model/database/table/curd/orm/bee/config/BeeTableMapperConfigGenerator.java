@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config;
 
 import cc.xfl12345.mybigdata.server.appconst.KeyWords;
 
@@ -10,9 +10,9 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BeeOrmTableMapperConfigGenerator {
+public class BeeTableMapperConfigGenerator {
 
-    public static <TablePojoType> BeeOrmTableMapperConfig<TablePojoType> getConfig(Class<TablePojoType> cls) throws NoSuchMethodException {
+    public static <TablePojoType> BeeTableMapperConfig<TablePojoType> getConfig(Class<TablePojoType> cls) throws NoSuchMethodException {
         String tableName;
         String idFieldName = KeyWords.KEY_WORD_GLOBAL_ID;
         Function<TablePojoType, Long> idGetter = (value) -> null;
@@ -54,7 +54,7 @@ public class BeeOrmTableMapperConfigGenerator {
             }
         };
 
-        SimpleBeeOrmTableMapperConfig<TablePojoType> config = new SimpleBeeOrmTableMapperConfig<>();
+        SimpleBeeTableMapperConfig<TablePojoType> config = new SimpleBeeTableMapperConfig<>();
         config.setTableName(tableName);
         config.setIdFieldName(idFieldName);
         config.setIdGetter(idGetter);

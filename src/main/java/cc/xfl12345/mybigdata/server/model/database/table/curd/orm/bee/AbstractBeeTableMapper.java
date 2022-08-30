@@ -1,10 +1,9 @@
-package cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.BeeOrmCurdMapper;
 import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractTypedTableMapper;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config.BeeOrmTableMapperConfig;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config.BeeOrmTableMapperConfigGenerator;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config.BeeTableMapperConfig;
+import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config.BeeTableMapperConfigGenerator;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import lombok.Getter;
 import org.teasoft.bee.osql.Condition;
@@ -16,12 +15,12 @@ import org.teasoft.honey.osql.core.ConditionImpl;
 import java.util.Date;
 import java.util.List;
 
-public abstract class BeeOrmTableMapper<TablePojoType>
-    extends AbstractTypedTableMapper<TablePojoType> implements BeeOrmCurdMapper<TablePojoType> {
+public abstract class AbstractBeeTableMapper<TablePojoType>
+    extends AbstractTypedTableMapper<TablePojoType> implements BeeTableMapper<TablePojoType> {
     @Getter
-    protected BeeOrmTableMapperConfig<TablePojoType> mapperConfig;
+    protected BeeTableMapperConfig<TablePojoType> mapperConfig;
 
-    public void setMapperConfig(BeeOrmTableMapperConfig<TablePojoType> mapperConfig) {
+    public void setMapperConfig(BeeTableMapperConfig<TablePojoType> mapperConfig) {
         this.mapperConfig = mapperConfig;
     }
 
@@ -31,7 +30,7 @@ public abstract class BeeOrmTableMapper<TablePojoType>
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
         if (mapperConfig == null) {
-            mapperConfig = BeeOrmTableMapperConfigGenerator.getConfig(getTablePojoType());
+            mapperConfig = BeeTableMapperConfigGenerator.getConfig(getTablePojoType());
         }
 
         selectIdFieldOnly = new String[]{ mapperConfig.getIdFieldName() };

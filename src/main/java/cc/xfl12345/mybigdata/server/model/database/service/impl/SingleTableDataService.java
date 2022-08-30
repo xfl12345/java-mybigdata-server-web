@@ -5,7 +5,7 @@ import cc.xfl12345.mybigdata.server.model.database.table.curd.base.AppTableCurdM
 
 import java.util.List;
 
-public abstract class AppSingleTableDataService<ValueType, PojoType> implements DataService<ValueType> {
+public abstract class SingleTableDataService<ValueType, PojoType> implements DataService<ValueType> {
     public abstract AppTableCurdMapper<PojoType> getMapper();
 
     protected abstract String[] getSelectContentFieldOnly();

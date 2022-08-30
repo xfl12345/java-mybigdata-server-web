@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config;
 
 public interface OrmTableMapperConfigMapper<ConfigType> {
     <TablePojoType> void putConfig(Class<TablePojoType> cls, ConfigType config);

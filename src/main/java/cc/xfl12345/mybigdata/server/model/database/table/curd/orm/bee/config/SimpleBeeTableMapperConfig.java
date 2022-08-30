@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.model.database.table.curd.impl.orm.config;
+package cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SimpleBeeOrmTableMapperConfig<TablePojoType> implements BeeOrmTableMapperConfig<TablePojoType> {
+public class SimpleBeeTableMapperConfig<TablePojoType> implements BeeTableMapperConfig<TablePojoType> {
     @Getter
     @Setter
     protected String tableName;
