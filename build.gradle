@@ -1,6 +1,6 @@
 plugins {
-    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'org.springframework.boot' version '2.7.3'
     id 'java'
     id 'war'
 }
@@ -47,12 +47,12 @@ dependencies {
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
 
 
-    def springBootVersion = '2.7.2'
+    def springBootVersion = '2.7.3'
     def lombokVersion = '1.18.24'
-    def victools_jsonschema = '4.25.0'
+    def victools_jsonschema = '4.26.0'
     def apacheCommonsVFS2Version = '2.9.0'
     def saTokenVersion = '1.30.0'
-    def hutoolVersion = '5.8.4'
+    def hutoolVersion = '5.8.5'
 
     def springBootDependencies = [
         //'starter-thymeleaf',
@@ -78,7 +78,7 @@ dependencies {
 
     // MongoDB 官方推荐的 ODM 框架 morphia
     // https://mvnrepository.com/artifact/dev.morphia.morphia/morphia-core
-    implementation group: 'dev.morphia.morphia', name: 'morphia-core', version: '2.2.7'
+    implementation group: 'dev.morphia.morphia', name: 'morphia-core', version: '2.2.8'
 
     // Sa-Token 框架
     // https://mvnrepository.com/artifact/cn.dev33/sa-token-spring-boot-starter
@@ -87,7 +87,7 @@ dependencies {
 
     // SpringDoc 框架
     // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.9'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
 
     // WebDAV 支持
 //    // https://mvnrepository.com/artifact/com.seanox/seanox-spring-webdav
@@ -132,7 +132,7 @@ dependencies {
 //    // https://mvnrepository.com/artifact/com.alibaba/fastjson
 //    implementation group: 'com.alibaba', name: 'fastjson', version: '2.0.3'
     // https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2
-    implementation group: 'com.alibaba.fastjson2', name: 'fastjson2', version: '2.0.10'
+    implementation group: 'com.alibaba.fastjson2', name: 'fastjson2', version: '2.0.12'
 
 
     // https://mvnrepository.com/artifact/org.json/json
@@ -206,7 +206,7 @@ dependencies {
 
     // XML support
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
-    implementation group: 'org.jsoup', name: 'jsoup', version: '1.15.2'
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.15.3'
 
 //    // https://mvnrepository.com/artifact/org.dom4j/dom4j
 //    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
