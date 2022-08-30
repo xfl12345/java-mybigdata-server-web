@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
 import cc.xfl12345.mybigdata.server.model.data.handler.StringTypeHandler;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.impl.CoreTableCache;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;

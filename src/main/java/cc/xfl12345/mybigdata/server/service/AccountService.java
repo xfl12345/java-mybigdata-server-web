@@ -9,7 +9,7 @@ import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.AuthAccountMapper;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.AuthAccountMapper;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;

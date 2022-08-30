@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.service.impl;
 
 import cc.xfl12345.mybigdata.server.model.database.service.DataService;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.AppTableCurdMapper;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.AppTableCurdMapper;
 
 import java.util.List;
 

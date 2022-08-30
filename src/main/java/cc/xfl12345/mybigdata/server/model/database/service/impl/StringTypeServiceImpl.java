@@ -2,8 +2,8 @@ package cc.xfl12345.mybigdata.server.model.database.service.impl;
 
 import cc.xfl12345.mybigdata.server.model.database.service.StringTypeService;
 import cc.xfl12345.mybigdata.server.model.database.table.constant.StringContentConstant;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.StringContentMapper;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.AppTableCurdMapper;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.StringContentMapper;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.AppTableCurdMapper;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent;
 import lombok.Setter;
 

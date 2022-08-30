@@ -1,12 +1,12 @@
 package cc.xfl12345.mybigdata.server.config;
 
 import cc.xfl12345.mybigdata.server.model.database.table.converter.IdTypeConverter;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.*;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.AbstractAppTableMapper;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.impl.GlobalDataRecordMapperImpl;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config.BeeTableMapperConfig;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.orm.bee.config.BeeTableMapperConfigGenerator;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.*;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.impl.AbstractAppTableMapper;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.impl.GlobalDataRecordMapperImpl;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.orm.bee.config.BeeTableMapperConfig;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.orm.bee.config.BeeTableMapperConfigGenerator;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.*;
 import com.fasterxml.uuid.NoArgGenerator;
 import org.springframework.beans.factory.annotation.Autowired;

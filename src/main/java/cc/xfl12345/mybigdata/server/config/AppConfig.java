@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server.config;
 
 import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.model.database.error.impl.SqlErrorAnalystImpl;
-import cc.xfl12345.mybigdata.server.model.database.table.curd.base.impl.CoreTableCache;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.impl.CoreTableCache;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.model.generator.impl.RandomCodeGeneratorImpl;
 import cc.xfl12345.mybigdata.server.model.transaction.impl.TransactionFactory;
