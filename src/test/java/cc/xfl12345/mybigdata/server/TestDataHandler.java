@@ -1,8 +1,8 @@
 package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.listener.ContextFinalizer;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.CoreTableCache;
-import cc.xfl12345.mybigdata.server.model.database.handler.impl.StringTypeHandlerImpl;
+import cc.xfl12345.mybigdata.server.model.data.handler.StringTypeHandler;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.base.impl.CoreTableCache;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import com.fasterxml.uuid.Generators;
@@ -15,12 +15,14 @@ public class TestDataHandler {
 
         CoreTableCache coreTableCache = new CoreTableCache();
 
-        StringTypeHandlerImpl stringTypeHandler = new StringTypeHandlerImpl();
-        stringTypeHandler.setUuidGenerator(Generators.timeBasedGenerator());
-        stringTypeHandler.setCoreTableCache(coreTableCache);
-        stringTypeHandler.afterPropertiesSet();
 
-        printJSON(stringTypeHandler.selectStringByPrefix("t", null));
+
+        StringTypeHandler stringTypeHandler = new StringTypeHandler();
+        // stringTypeHandler.setUuidGenerator(Generators.timeBasedGenerator());
+        // stringTypeHandler.setCoreTableCache(coreTableCache);
+        // stringTypeHandler.afterPropertiesSet();
+
+        // printJSON(stringTypeHandler.selectStringByPrefix("t"));
 
         // StringTypeResult stringTypeResult = stringTypeHandler.selectStringByFullText("text", null);
         // printJSON(stringTypeResult);
@@ -30,7 +32,7 @@ public class TestDataHandler {
         // }
 
 
-        stringTypeHandler.destroy();
+        // stringTypeHandler.destroy();
 
         ContextFinalizer.deregisterJdbcDriver(null);
     }

@@ -41,7 +41,7 @@ repositories {
 
 
 dependencies {
-//    compileOnly 'org.jetbrains:annotations:23.0.0'
+    // compileOnly 'org.jetbrains:annotations:23.0.0'
 
     // https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'

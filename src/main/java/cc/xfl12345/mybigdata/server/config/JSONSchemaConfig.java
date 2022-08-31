@@ -33,6 +33,11 @@ public class JSONSchemaConfig {
         this.standardFileSystemManager = standardFileSystemManager;
     }
 
+    public static URI createJsonSchemFileURI(String resourcePath) {
+        return URI.create("resource:/" + resourcePath);
+    }
+
+
     @Bean(name = "jsonObjectMapper")
     public ObjectMapper getObjectMapper() {
         return new ObjectMapper();
@@ -48,8 +53,10 @@ public class JSONSchemaConfig {
 
         HashMap<String, String> mapping = new HashMap<String, String>();
         for (JsonNode jsonNode : mapper.readTree(mappingsURL)) {
-            mapping.put(jsonNode.get("publicURL").asText(),
-                "resource:/" + jsonNode.get("localPath").asText());
+            mapping.put(
+                jsonNode.get("publicURL").asText(),
+                createJsonSchemFileURI(jsonNode.get("localPath").asText()).toString()
+            );
         }
 
 
@@ -83,7 +90,9 @@ public class JSONSchemaConfig {
     public JsonChecker getBaseRequestObjectChecker() throws IOException {
         return new JsonChecker(
             getObjectMapper(),
-            getJsonSchemaFactory().getSchema(URI.create("resource:/" + "json/schema/base_request_object.json"))
+            getJsonSchemaFactory().getSchema(
+                createJsonSchemFileURI("json/schema/base_request_object.json")
+            )
         );
     }
 
@@ -91,7 +100,9 @@ public class JSONSchemaConfig {
     public JsonChecker getMybatisRowBoundsObjectChecker() throws IOException {
         return new JsonChecker(
             getObjectMapper(),
-            getJsonSchemaFactory().getSchema(URI.create("resource:/" + "json/schema/mybatis_row_bounds_object.json"))
+            getJsonSchemaFactory().getSchema(
+                createJsonSchemFileURI("json/schema/mybatis_row_bounds_object.json")
+            )
         );
     }
 

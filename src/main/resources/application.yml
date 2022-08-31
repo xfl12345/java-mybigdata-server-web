@@ -85,7 +85,7 @@ logging:
 app:
     service:
         vfs-webdav:
-#            enable-server: false
-            root-path: "C:/bigtmp/"
+            enable-server: false
+#            root-path: "C:/bigtmp/"
 
 

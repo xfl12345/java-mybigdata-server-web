@@ -6,7 +6,7 @@ public class CoreTableNames {
 
     public static final String STRING_CONTENT = "string_content";
     public static final String BOOLEAN_CONTENT = "boolean_content";
-    public static final String INTEGER_CONTENT = "integer_content";
+    public static final String NUMBER_CONTENT = "number_content";
 
     public static final String GROUP_RECORD = "group_record";
     public static final String GROUP_CONTENT = "group_content";

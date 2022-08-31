@@ -2,11 +2,14 @@ package cc.xfl12345.mybigdata.server.service;
 
 
 import cc.xfl12345.mybigdata.server.appconst.CommonConst;
+import cc.xfl12345.mybigdata.server.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.appconst.api.result.LoginApiResult;
 import cc.xfl12345.mybigdata.server.appconst.api.result.LogoutApiResult;
 import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
+import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
 import cc.xfl12345.mybigdata.server.model.checker.RegisterFieldChecker;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorHandler;
+import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
+import cc.xfl12345.mybigdata.server.model.database.table.mapper.AuthAccountMapper;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.AuthAccount;
 import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
@@ -16,6 +19,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -29,11 +33,28 @@ import org.springframework.stereotype.Service;
 @Service("tbAccountService")
 public class AccountService implements InitializingBean {
     @Getter
-    @Setter
-    protected SqlErrorHandler sqlErrorHandler;
+    protected SqlErrorAnalyst sqlErrorAnalyst;
+
+    @Autowired
+    public void setSqlErrorAnalyst(SqlErrorAnalyst sqlErrorAnalyst) {
+        this.sqlErrorAnalyst = sqlErrorAnalyst;
+    }
+
     @Getter
-    @Setter
     protected RandomCodeGenerator randomCodeGenerator;
+
+    @Autowired
+    public void setRandomCodeGenerator(RandomCodeGenerator randomCodeGenerator) {
+        this.randomCodeGenerator = randomCodeGenerator;
+    }
+
+    @Getter
+    protected AuthAccountMapper authAccountMapper;
+
+    @Autowired
+    public void setAuthAccountMapper(AuthAccountMapper authAccountMapper) {
+        this.authAccountMapper = authAccountMapper;
+    }
 
     @Getter
     @Setter
@@ -55,9 +76,8 @@ public class AccountService implements InitializingBean {
     }
 
     public AuthAccount queryByUsername(String username) {
-        AuthAccount account = null;
-
-        return account;
+        // 暂不支持
+        return null;
     }
 
 
@@ -141,10 +161,13 @@ public class AccountService implements InitializingBean {
     }
 
 
-    public boolean resetPassword(String passwordHash) {
+    public JsonCommonApiResponseObject resetPassword(String passwordHash) {
+        JsonCommonApiResponseObject responseObject = new JsonCommonApiResponseObject(
+            getJsonApiVersion()
+        );
         Long accountId = (Long) StpUtil.getLoginId();
         if (accountId == null) {
-            return false;
+            responseObject.setApiResult(JsonApiResult.FAILED);
         } else {
             String passwordSalt = generatePasswordSalt();
             String encryptedPasswordHash = passwordHashEncrypt(passwordHash, passwordSalt);
@@ -153,8 +176,16 @@ public class AccountService implements InitializingBean {
             account.setAccountId(accountId);
             account.setPasswordSalt(passwordSalt);
             account.setPasswordHash(encryptedPasswordHash);
-            return updateById(account);
+            // TODO 事务操作
+            try {
+                authAccountMapper.updateById(account, accountId);
+                responseObject.setApiResult(JsonApiResult.SUCCEED);
+            } catch (Exception e) {
+                // TODO 异常转HTTP响应文本
+            }
         }
+
+        return responseObject;
     }
 
 
@@ -253,54 +284,5 @@ public class AccountService implements InitializingBean {
     //     return this.tbAccountDao.queryValidationInformationByUsername(username);
     // }
 
-    /**
-     * 新增数据
-     *
-     * @param account 实例对象
-     * @return 实例对象
-     */
-    public boolean insert(AuthAccount account) {
-        boolean result = false;
-        return result;
-    }
 
-    /**
-     * 通过主键删除数据
-     *
-     * @param accountId 主键
-     * @return 是否成功
-     */
-    public boolean deleteById(Long accountId) {
-        boolean result = false;
-
-
-        return result;
-    }
-
-    /**
-     * 根据账号ID，修改账号数据
-     *
-     * @param account 实例对象
-     * @return 实例对象
-     */
-    public boolean updateById(AuthAccount account) {
-        if (account.getAccountId() == null) {
-            return false;
-        }
-        boolean result = false;
-
-        return result;
-    }
-
-    /**
-     * 通过ID查询单条数据
-     *
-     * @param accountId 主键
-     * @return 实例对象
-     */
-    public AuthAccount queryById(Long accountId) {
-        AuthAccount result = null;
-
-        return result;
-    }
 }

@@ -57,6 +57,10 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
         }
     }
 
+    public void contextDestroyed(ServletContextEvent sce) {
+        AbandonedConnectionCleanupThread.checkedShutdown();
+    }
+
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();

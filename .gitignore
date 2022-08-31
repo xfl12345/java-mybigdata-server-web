@@ -6,6 +6,7 @@ build/
 
 
 /src/test/java/cc/xfl12345/a_generate_test/
+application.properties
 
 
 ### STS ###
