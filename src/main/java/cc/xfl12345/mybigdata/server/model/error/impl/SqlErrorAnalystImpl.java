@@ -1,7 +1,7 @@
-package cc.xfl12345.mybigdata.server.model.database.error.impl;
+package cc.xfl12345.mybigdata.server.model.error.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.SimpleCoreTableCurdResult;
-import cc.xfl12345.mybigdata.server.model.database.error.SqlErrorAnalyst;
+import cc.xfl12345.mybigdata.server.model.error.SqlErrorAnalyst;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Getter;
 import lombok.NonNull;

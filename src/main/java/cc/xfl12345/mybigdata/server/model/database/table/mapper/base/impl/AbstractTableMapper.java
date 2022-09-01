@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.model.database.table.mapper.base.impl;
 
 import cc.xfl12345.mybigdata.server.appconst.CURD;
-import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
+import cc.xfl12345.mybigdata.server.model.error.TableOperationException;
 import cc.xfl12345.mybigdata.server.model.database.table.converter.IdTypeConverter;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import com.fasterxml.uuid.NoArgGenerator;

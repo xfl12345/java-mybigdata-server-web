@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.database.service;
 
-import cc.xfl12345.mybigdata.server.model.database.error.TableOperationException;
+import cc.xfl12345.mybigdata.server.model.error.TableOperationException;
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.TableSchemaRecord;
 import com.alibaba.fastjson2.JSONObject;
 

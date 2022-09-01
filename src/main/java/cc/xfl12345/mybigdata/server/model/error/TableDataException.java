@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.model.database.error;
+package cc.xfl12345.mybigdata.server.model.error;
 
 public class TableDataException extends RuntimeException {
     public TableDataException() {
