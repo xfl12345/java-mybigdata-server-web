@@ -1,10 +1,6 @@
 package cc.xfl12345.mybigdata.server;
 
 import lombok.SneakyThrows;
-import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs2.impl.StandardFileSystemManager;
-import org.apache.commons.vfs2.provider.zip.ZipFileSystem;
-import org.apache.ibatis.io.Resources;
 
 import java.io.File;
 import java.io.IOException;

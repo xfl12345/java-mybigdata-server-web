@@ -1,7 +1,6 @@
 package cc.xfl12345.mybigdata.server.config;
 
 import cc.xfl12345.mybigdata.server.interceptor.ApiRequestInterceptor;
-import cc.xfl12345.mybigdata.server.interceptor.DruidStatInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.MySaRouteInterceptor;
 import cc.xfl12345.mybigdata.server.interceptor.UploadInterceptor;
 import lombok.NonNull;
@@ -46,12 +45,6 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
         return new ApiRequestInterceptor();
     }
 
-    @Bean("druidStatInterceptor")
-    @Scope("singleton")
-    public DruidStatInterceptor getDruidStatInterceptor() {
-        return new DruidStatInterceptor();
-    }
-
 
 
 
@@ -72,7 +65,5 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
             .addPathPatterns("/upload/**");
         registry.addInterceptor(applicationContext.getBean("apiRequestInterceptor", HandlerInterceptor.class))
             .addPathPatterns("/api/**");
-        registry.addInterceptor(applicationContext.getBean("druidStatInterceptor", HandlerInterceptor.class))
-            .addPathPatterns("/druid/**");
     }
 }

@@ -14,8 +14,8 @@ public class TransactionFactory {
     }
 
     public Transaction getTransaction(TransactionParam transactionParam) throws Exception {
-        BeeOrmTransaction transaction = new BeeOrmTransaction();
-        transaction.setTransactionParam(transactionParam);
+        // TODO 待完善
+        Transaction transaction = null;
 
         return transaction;
     }
