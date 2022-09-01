@@ -51,14 +51,13 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
 
     public void handle(Signal signal) {
         String signalName = signal.getName();
-        log.info(signalName+":"+signal.getNumber());
-        if(signalName.equals("INT") || signalName.equals("TERM")) {
+        log.info(signalName + ":" + signal.getNumber());
+        if (signalName.equals("INT") || signalName.equals("TERM")) {
             SpringApplication.exit(applicationContext);
         }
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
-        AbandonedConnectionCleanupThread.checkedShutdown();
     }
 
     @Override
@@ -81,6 +80,7 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
             if (springAppContext != null) {
                 new TreeSet<>(List.of(springAppContext.getBeanNamesForType(DataSource.class)));
             }
+
             Driver d = null;
             String driverInstanceName;
             while (drivers.hasMoreElements()) {
@@ -91,15 +91,18 @@ public class ContextFinalizer implements ServletContextListener, ApplicationList
                     log.info(String.format("Driver %s deregistered", driverInstanceName));
                 } catch (SQLException ex) {
                     log.error(String.format("Error deregistering driver %s", d) + ":" + ex);
+                    break;
                 }
+
                 //像队列一样遍历列表。循环到队列为空的时候才退出
-                if (!drivers.hasMoreElements()) {
-                    // 如果出现了不认识的 bean ，将会导致 bean 数量无法清零。
-                    // 为了防止陷入死循环，允许直接使用常规（暴力）手段卸载
+                if (drivers.hasMoreElements()) {
                     drivers = DriverManager.getDrivers();
                 }
             }
-            log.info("JDBC driver clean.");
+
+            if (!drivers.hasMoreElements()) {
+                log.info("JDBC driver clean.");
+            }
         }
     }
 }
