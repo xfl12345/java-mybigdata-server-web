@@ -29,6 +29,8 @@ public class MongoConfig {
             cc.xfl12345.mybigdata.server.model.database.table.pojo.StringContent.class.getPackageName()
         );
 
+        datastore.ensureIndexes();
+
         return datastore;
     }
 
