@@ -29,8 +29,8 @@ import java.util.Objects;
 @Configuration
 @Slf4j
 public class VFSConfig {
-    @Bean(name = "fileSystemOptions")
-    public FileSystemOptions getFileSystemOptions() throws FileSystemException {
+    @Bean
+    public FileSystemOptions fileSystemOptions() throws FileSystemException {
         FileSystemOptions fileSystemOptions = new FileSystemOptions();
 
         ZipFileSystemConfigBuilder zipBuilder = ZipFileSystemConfigBuilder.getInstance();
@@ -62,8 +62,8 @@ public class VFSConfig {
         return fileSystemOptions;
     }
 
-    @Bean(name = "apacheVfsFileSystemManager")
-    public StandardFileSystemManager getStandardFileSystemManager() throws IOException {
+    @Bean
+    public StandardFileSystemManager apacheVfsFileSystemManager() throws IOException {
         // 修复一些BUG，让SpringBoot APP哪怕以JAR包运行也能正常读取resource资源
         SpringBootResourceFileProvider resourceFileProvider = new SpringBootResourceFileProvider();
 
@@ -110,18 +110,20 @@ public class VFSConfig {
         return fileSystemManager;
     }
 
-    @Bean(name = "ramFileSystem")
-    public RamFileSystem getRamFileSystem() throws IOException {
-        FileObject fileObject = getStandardFileSystemManager().resolveFile("ram:/");
+    @Bean
+    public RamFileSystem ramFileSystem(FileSystemManager fileSystemManager) throws IOException {
+        FileObject fileObject = fileSystemManager.resolveFile("ram:/");
         return (RamFileSystem) fileObject.getFileSystem();
     }
 
-    @Bean(name = "vfsWebDavService")
+    @Bean
     @ConfigurationProperties(prefix = "app.service.vfs-webdav")
-    public VfsWebDavService getVfsWebDavService() throws IOException {
+    public VfsWebDavService vfsWebDavService(
+        FileSystemManager fileSystemManager,
+        FileSystemOptions fileSystemOptions) throws IOException {
         VfsWebDavService vfsWebDavService = new VfsWebDavService();
-        vfsWebDavService.setFileSystemManager(getStandardFileSystemManager());
-        vfsWebDavService.setFileSystemOptions(getFileSystemOptions());
+        vfsWebDavService.setFileSystemManager(fileSystemManager);
+        vfsWebDavService.setFileSystemOptions(fileSystemOptions);
         return vfsWebDavService;
     }
 }

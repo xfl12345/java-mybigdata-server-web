@@ -12,9 +12,6 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaVersion;
 import com.networknt.schema.JsonMetaSchema;
 import com.networknt.schema.JsonSchemaFactory;
-import lombok.Getter;
-import org.apache.commons.vfs2.impl.StandardFileSystemManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,29 +22,20 @@ import java.util.HashMap;
 
 @Configuration
 public class JSONSchemaConfig {
-    @Getter
-    protected StandardFileSystemManager standardFileSystemManager;
-
-    @Autowired
-    public void setStandardFileSystemManager(StandardFileSystemManager standardFileSystemManager) {
-        this.standardFileSystemManager = standardFileSystemManager;
-    }
 
     public static URI createJsonSchemFileURI(String resourcePath) {
         return URI.create("resource:/" + resourcePath);
     }
 
 
-    @Bean(name = "jsonObjectMapper")
-    public ObjectMapper getObjectMapper() {
+    @Bean
+    public ObjectMapper jsonObjectMapper() {
         return new ObjectMapper();
     }
 
 
-    @Bean(name = "jsonSchemaFactory")
-    public JsonSchemaFactory getJsonSchemaFactory() throws IOException {
-        ObjectMapper mapper = getObjectMapper();
-
+    @Bean
+    public JsonSchemaFactory jsonSchemaFactory(ObjectMapper mapper) throws IOException {
         URL mappingsURL = Thread.currentThread().getContextClassLoader()
             .getResource("json/conf/json_schema_validator_uri_mapping.json");
 
@@ -76,43 +64,43 @@ public class JSONSchemaConfig {
         return factory;
     }
 
-    @Bean(name = "jsonSchemaChecker")
-    public JsonChecker getJsonSchemaChecker() throws IOException {
+    @Bean
+    public JsonChecker jsonSchemaChecker(ObjectMapper jsonObjectMapper, JsonSchemaFactory jsonSchemaFactory) {
         return new JsonChecker(
-            getObjectMapper(),
-            getJsonSchemaFactory().getSchema(URI.create(
-                new DraftV202012HyperSchema().getInstance().getUri()
-            ))
+            jsonObjectMapper,
+            jsonSchemaFactory.getSchema(
+                URI.create(new DraftV202012HyperSchema().getInstance().getUri())
+            )
         );
     }
 
-    @Bean(name = "baseRequestObjectChecker")
-    public JsonChecker getBaseRequestObjectChecker() throws IOException {
+    @Bean
+    public JsonChecker baseRequestObjectChecker(ObjectMapper jsonObjectMapper, JsonSchemaFactory jsonSchemaFactory) {
         return new JsonChecker(
-            getObjectMapper(),
-            getJsonSchemaFactory().getSchema(
+            jsonObjectMapper,
+            jsonSchemaFactory.getSchema(
                 createJsonSchemFileURI("json/schema/base_request_object.json")
             )
         );
     }
 
-    @Bean(name = "mybatisRowBoundsObjectChecker")
-    public JsonChecker getMybatisRowBoundsObjectChecker() throws IOException {
+    @Bean
+    public JsonChecker mybatisRowBoundsObjectChecker(ObjectMapper jsonObjectMapper, JsonSchemaFactory jsonSchemaFactory) {
         return new JsonChecker(
-            getObjectMapper(),
-            getJsonSchemaFactory().getSchema(
+            jsonObjectMapper,
+            jsonSchemaFactory.getSchema(
                 createJsonSchemFileURI("json/schema/mybatis_row_bounds_object.json")
             )
         );
     }
 
-    @Bean(name = "schemaGeneratorConfigBuilder")
-    public SchemaGeneratorConfigBuilder getSchemaGeneratorConfigBuilder() {
+    @Bean
+    public SchemaGeneratorConfigBuilder schemaGeneratorConfigBuilder() {
         return new SchemaGeneratorConfigBuilder(SchemaVersion.DRAFT_2020_12, OptionPreset.PLAIN_JSON);
     }
 
-    @Bean(name = "schemaGenerator")
-    public SchemaGenerator getSchemaGenerator() {
-        return new SchemaGenerator(getSchemaGeneratorConfigBuilder().build());
+    @Bean
+    public SchemaGenerator schemaGenerator() {
+        return new SchemaGenerator(schemaGeneratorConfigBuilder().build());
     }
 }

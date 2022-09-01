@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@AutoConfigureAfter({MapperConfig.class})
 public class DataServiceConfig {
     @Bean
     public StringTypeService stringTypeService(StringContentMapper mapper) {

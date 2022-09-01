@@ -2,6 +2,7 @@ package cc.xfl12345.mybigdata.server;
 
 import cc.xfl12345.mybigdata.server.model.database.table.pojo.GlobalDataRecord;
 import cc.xfl12345.mybigdata.server.utility.MyReflectUtils;
+import strman.Strman;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,14 +12,15 @@ public class StudyGenerateMapperConfig {
         List<Class<?>> pojoList = MyReflectUtils.getClasses(GlobalDataRecord.class.getPackageName(), false);
         for (Class<?> pojoClass : pojoList) {
             String pojoSimpleName = pojoClass.getSimpleName();
-            String handlerInterfaceClassName = String.format("%sHandler", pojoSimpleName);
+            String mapperInterfaceClassName = String.format("%sMapper", pojoSimpleName);
+            String mapperInterfaceClassNameCamelCase = Strman.toCamelCase(mapperInterfaceClassName);
 
             System.out.println("\n" +
                 "    @Bean\n" +
-                "    @ConditionalOnMissingBean(" + handlerInterfaceClassName + ".class)\n" +
-                "    public " + handlerInterfaceClassName + " get"  + handlerInterfaceClassName + "()" +
+                "    @ConditionalOnMissingBean\n" +
+                "    public " + mapperInterfaceClassName + " "  + mapperInterfaceClassNameCamelCase + "()" +
                 " throws Exception {\n" +
-                "        return (" + handlerInterfaceClassName + ") getHandler(" + pojoSimpleName + ".class);\n" +
+                "        return (" + mapperInterfaceClassName + ") getMapper(" + pojoSimpleName + ".class);\n" +
                 "    }"
             );
         }

@@ -33,15 +33,13 @@ public class MySpringMvcConfig extends WebMvcAutoConfiguration implements WebMvc
     }
 
 
-    @Bean("uploadInterceptor")
-    @Scope("singleton")
-    public UploadInterceptor getUploadInterceptor() {
+    @Bean
+    public UploadInterceptor uploadInterceptor() {
         return new UploadInterceptor();
     }
 
-    @Bean("apiRequestInterceptor")
-    @Scope("singleton")
-    public ApiRequestInterceptor getApiRequestInterceptor() {
+    @Bean
+    public ApiRequestInterceptor apiRequestInterceptor() {
         return new ApiRequestInterceptor();
     }
 
