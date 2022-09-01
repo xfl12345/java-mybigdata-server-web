@@ -9,7 +9,6 @@ import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Slf4j
 public class MongoConfig {
-    @Bean(name = "mongoDatastore")
-    public Datastore getDatastore(MongoClient mongoClient, MongoProperties mongoProperties) {
+    @Bean
+    public Datastore mongoDatastore(MongoClient mongoClient, MongoProperties mongoProperties) {
         Datastore datastore = Morphia.createDatastore(
             mongoClient,
             mongoProperties.getMongoClientDatabase()
@@ -34,8 +33,8 @@ public class MongoConfig {
         return datastore;
     }
 
-    @Bean(name = "mongodbDefaultTransactionOptions")
-    public TransactionOptions getTransactionOptions(MongoClient mongoClient) {
+    @Bean
+    public TransactionOptions mongodbDefaultTransactionOptions(MongoClient mongoClient) {
         TransactionOptions.Builder builder = TransactionOptions.builder();
         try {
             Document replSetGetStatus = mongoClient.getDatabase("admin").runCommand(
