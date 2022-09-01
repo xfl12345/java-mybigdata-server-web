@@ -11,33 +11,33 @@ import java.util.SimpleTimeZone;
 
 @Configuration
 public class IndependenceBeansConfig {
-    @Bean(name = "defaultTimeZone")
-    public SimpleTimeZone getDefaultTimeZone() {
+    @Bean
+    public SimpleTimeZone defaultTimeZone() {
         return new SimpleTimeZone(28800000, "China Standard Time");
     }
 
-    @Bean(name = "defaultDateFormat")
-    public SimpleDateFormat getDefaultDateFormat() {
+    @Bean
+    public SimpleDateFormat defaultDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
-    @Bean(name = "millisecondFormatter")
-    public SimpleDateFormat getMillisecondFormatter() {
+    @Bean
+    public SimpleDateFormat millisecondFormatter() {
         return new SimpleDateFormat("SSS");
     }
 
-    @Bean(name = "fullDateFormat")
-    public SimpleDateFormat getFullDateFormat() {
+    @Bean
+    public SimpleDateFormat fullDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     }
 
-    @Bean(name = "uuidGenerator")
-    public TimeBasedGenerator getTimeBasedGenerator() {
+    @Bean
+    public TimeBasedGenerator uuidGenerator() {
         return Generators.timeBasedGenerator();
     }
 
-    @Bean(name = "resourceCacheMapBean")
-    public ResourceCacheMapBean getResourceCacheBean() {
+    @Bean
+    public ResourceCacheMapBean resourceCacheMapBean() {
         return new ResourceCacheMapBean();
     }
 }

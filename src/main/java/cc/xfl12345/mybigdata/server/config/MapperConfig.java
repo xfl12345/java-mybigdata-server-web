@@ -60,56 +60,56 @@ public class MapperConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(AuthAccountMapper.class)
-    public AuthAccountMapper getAuthAccountMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public AuthAccountMapper authAccountMapper() throws Exception {
         return (AuthAccountMapper) getMapper(AuthAccount.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(GlobalDataRecordMapper.class)
-    public GlobalDataRecordMapper getGlobalDataRecordMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public GlobalDataRecordMapper globalDataRecordMapper() throws Exception {
         return (GlobalDataRecordMapper) getMapper(GlobalDataRecord.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(GroupContentMapper.class)
-    public GroupContentMapper getGroupContentMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public GroupContentMapper groupContentMapper() throws Exception {
         return (GroupContentMapper) getMapper(GroupContent.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(GroupRecordMapper.class)
-    public GroupRecordMapper getGroupRecordMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public GroupRecordMapper groupRecordMapper() throws Exception {
         return (GroupRecordMapper) getMapper(GroupRecord.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(NumberContentMapper.class)
-    public NumberContentMapper getNumberContentMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public NumberContentMapper numberContentMapper() throws Exception {
         return (NumberContentMapper) getMapper(NumberContent.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(ObjectContentMapper.class)
-    public ObjectContentMapper getObjectContentMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public ObjectContentMapper objectContentMapper() throws Exception {
         return (ObjectContentMapper) getMapper(ObjectContent.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(ObjectRecordMapper.class)
-    public ObjectRecordMapper getObjectRecordMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public ObjectRecordMapper objectRecordMapper() throws Exception {
         return (ObjectRecordMapper) getMapper(ObjectRecord.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(StringContentMapper.class)
-    public StringContentMapper getStringContentMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public StringContentMapper stringContentMapper() throws Exception {
         return (StringContentMapper) getMapper(StringContent.class);
     }
 
     @Bean
-    @ConditionalOnMissingBean(TableSchemaRecordMapper.class)
-    public TableSchemaRecordMapper getTableSchemaRecordMapper() throws Exception {
+    @ConditionalOnMissingBean
+    public TableSchemaRecordMapper tableSchemaRecordMapper() throws Exception {
         return (TableSchemaRecordMapper) getMapper(TableSchemaRecord.class);
     }
 }

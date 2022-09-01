@@ -6,9 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ApacheTikaConfig {
-
-    @Bean(name = "tika")
-    public Tika getTika() {
+    @Bean
+    public Tika tika() {
         Tika tika = new Tika();
         tika.setMaxStringLength(Integer.MAX_VALUE);
         return tika;

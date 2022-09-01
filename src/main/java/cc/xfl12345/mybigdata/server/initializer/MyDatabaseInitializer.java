@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-@Component("myDatabaseInitializer")
 @Slf4j
 public class MyDatabaseInitializer implements InitializingBean {
 

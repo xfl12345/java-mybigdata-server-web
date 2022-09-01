@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
  * @since 2021-04-19 16:00:51
  */
 @Slf4j
-@Service("tbAccountService")
+@Service("accountService")
 public class AccountService implements InitializingBean {
     @Getter
     protected SqlErrorAnalyst sqlErrorAnalyst;
