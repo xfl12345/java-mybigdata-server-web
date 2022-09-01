@@ -1,3 +1,26 @@
+buildscript {
+    repositories {
+        // mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/central'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/spring'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/spring-plugin'
+        }
+    }
+}
+
 plugins {
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'org.springframework.boot' version '2.7.3'
@@ -5,7 +28,7 @@ plugins {
     id 'war'
 }
 
-group = 'cc.xfl12345'
+group = 'cc.xfl12345.mybigdata'
 version = '0.0.1'
 sourceCompatibility = '17'
 apply from: 'config.gradle'
@@ -17,8 +40,9 @@ gradle.projectsEvaluated {
     }
 }
 
+
 repositories {
-//    mavenLocal()
+    // mavenLocal()
     mavenCentral()
     gradlePluginPortal()
     maven {
@@ -37,7 +61,6 @@ repositories {
         url 'https://maven.aliyun.com/repository/spring-plugin'
     }
 }
-
 
 
 dependencies {
@@ -61,6 +84,7 @@ dependencies {
     def beeSpringBootStarterVersion = '1.11.boot2.6.7'
 
     def springBootDependencies = [
+        'gradle-plugin',
         //'starter-thymeleaf',
         'starter-web',
         'starter-aop',
