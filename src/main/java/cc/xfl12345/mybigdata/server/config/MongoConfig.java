@@ -17,10 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Slf4j
 public class MongoConfig {
-
-
     @Bean(name = "mongoDatastore")
-    @Autowired
     public Datastore getDatastore(MongoClient mongoClient, MongoProperties mongoProperties) {
         Datastore datastore = Morphia.createDatastore(
             mongoClient,
@@ -36,7 +33,6 @@ public class MongoConfig {
     }
 
     @Bean(name = "mongodbDefaultTransactionOptions")
-    @Autowired
     public TransactionOptions getTransactionOptions(MongoClient mongoClient) {
         TransactionOptions.Builder builder = TransactionOptions.builder();
         try {

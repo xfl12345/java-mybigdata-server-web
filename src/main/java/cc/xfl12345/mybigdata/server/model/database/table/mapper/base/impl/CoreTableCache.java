@@ -46,6 +46,13 @@ public class CoreTableCache extends AbstractCoreTableCache<ObjectId, String> {
         this.transactionFactory = transactionFactory;
     }
 
+    @Getter
+    protected Datastore datastore;
+
+    public void setDatastore(Datastore datastore) {
+        this.datastore = datastore;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
@@ -84,7 +91,7 @@ public class CoreTableCache extends AbstractCoreTableCache<ObjectId, String> {
             }
 
             transaction.commit();
-        } catch (BeeException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             transaction.rollback();
             throw e;

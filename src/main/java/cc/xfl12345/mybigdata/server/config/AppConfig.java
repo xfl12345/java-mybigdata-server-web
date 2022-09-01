@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.teasoft.bee.osql.transaction.TransactionIsolationLevel;
 
 @Configuration
 public class AppConfig {
@@ -21,13 +20,12 @@ public class AppConfig {
         TransactionFactory transactionFactory = new TransactionFactory();
         transactionFactory.setDefaultTransactionParam(
             TransactionParam.Builder.aBuilder()
-                .withTransactionIsolationLevel(TransactionIsolationLevel.TRANSACTION_REPEATABLE_READ.getLevel())
                 .build()
         );
         return transactionFactory;
     }
 
-    @DependsOn("sessionFactory")
+    @DependsOn("mongoDatastore")
     @Bean
     @ConditionalOnMissingBean
     public CoreTableCache coreTableCache(TransactionFactory transactionFactory) throws Exception {

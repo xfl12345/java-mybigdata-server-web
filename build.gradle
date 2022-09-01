@@ -62,6 +62,7 @@ dependencies {
         'starter-web',
         'starter-aop',
         //'devtools',
+        'starter-data-jdbc',
         'configuration-processor',
         'starter-data-mongodb'
     ]
