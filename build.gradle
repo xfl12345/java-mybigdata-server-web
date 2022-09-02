@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        // mavenLocal()
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven {
@@ -41,6 +41,17 @@ gradle.projectsEvaluated {
         // options.setFailOnError(false)
     }
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact("build/libs/${archivesBaseName}-${version}.war") {
+                extension 'war'
+            }
+        }
+    }
+}
+
 
 
 repositories {
