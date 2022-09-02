@@ -38,6 +38,7 @@ gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
         options.compilerArgs << '-Xlint:unchecked'
         options.encoding = 'UTF-8'
+        options.setFailOnError(false)
     }
 }
 
@@ -112,7 +113,10 @@ dependencies {
 
     // 阿里巴巴 Druid Datasource
     // https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter
-    implementation group: 'com.alibaba', name: 'druid-spring-boot-starter', version: '1.2.11'
+    implementation (group: 'com.alibaba', name: 'druid-spring-boot-starter', version: '1.2.11') {
+        // exclude group: 'com.sun', module: 'tools'
+        // exclude group: 'com.sun', module: 'jconsole'
+    }
 
     // 国产ORM框架 bee
     // https://mvnrepository.com/artifact/org.teasoft/bee-spring-boot-starter
