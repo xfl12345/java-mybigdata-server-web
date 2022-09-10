@@ -1,7 +1,5 @@
 package cc.xfl12345.mybigdata.server.model.checker;
 
-import org.apache.ibatis.session.RowBounds;
-
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -49,10 +47,6 @@ public class RowBoundsHelper {
 
     public void setLimit(Integer limit) {
         this.limit = limit;
-    }
-
-    public RowBounds generateRowBounds() {
-        return new RowBounds(offset, limit);
     }
 
     public Map<String, Object> getMap() {

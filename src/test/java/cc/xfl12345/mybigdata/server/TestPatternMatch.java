@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server;
 
 
-import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
+import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 

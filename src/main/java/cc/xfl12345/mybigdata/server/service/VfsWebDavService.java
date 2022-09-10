@@ -16,9 +16,9 @@
  */
 package cc.xfl12345.mybigdata.server.service;
 
+import cc.xfl12345.mybigdata.server.common.utility.StringEscapeUtils;
 import cc.xfl12345.mybigdata.server.plugin.apache.jackrabbit.webdav.MyOutputContextImpl;
 import cc.xfl12345.mybigdata.server.plugin.apache.jackrabbit.webdav.MyVfsDavResourceFactory;
-import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
 import com.github.alanger.webdav.Text;
 import com.github.alanger.webdav.VfsDavLocatorFactory;
 import com.github.alanger.webdav.VfsDavSessionProvider;

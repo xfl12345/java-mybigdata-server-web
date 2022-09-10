@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.alpha.beans;
 
-import cc.xfl12345.mybigdata.server.pojo.NameCasePack;
+import cc.xfl12345.mybigdata.server.common.pojo.NameCasePack;
 import lombok.Getter;
 
 import java.lang.reflect.*;

@@ -4,7 +4,7 @@ package cc.xfl12345.mybigdata.server.model.checker;
 import cc.xfl12345.mybigdata.server.appconst.api.request.RegisterRequestField;
 import cc.xfl12345.mybigdata.server.appconst.api.result.RegisterApiResult;
 import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
-import cc.xfl12345.mybigdata.server.utility.MyStrIsOK;
+import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -90,7 +90,6 @@ public class RegisterFieldChecker {
     }
 
     public static boolean isEmailUnderLegal(String email) {
-//        return (email.equals("")) || MyStrIsOK.isEmail(email);
         return MyStrIsOK.isEmailAddress(email);
     }
 

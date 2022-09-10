@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.controller;
 
-import cc.xfl12345.mybigdata.server.model.database.service.StringTypeService;
+import cc.xfl12345.mybigdata.server.common.data.source.StringTypeSource;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
@@ -33,11 +33,10 @@ public class DebugController implements ApplicationContextAware {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String debugView() {
         try {
-            StringTypeService stringTypeHandler = applicationContext.getBean(
-                "stringTypeHandler",
-                StringTypeService.class
+            StringTypeSource stringTypeSource = applicationContext.getBean(
+                StringTypeSource.class
             );
-            log.debug(JSON.toJSONString(stringTypeHandler.selectId("text")));
+            log.debug(JSON.toJSONString(stringTypeSource.selectId("text")));
 
         } catch (Exception e) {
             log.error(e.getMessage());

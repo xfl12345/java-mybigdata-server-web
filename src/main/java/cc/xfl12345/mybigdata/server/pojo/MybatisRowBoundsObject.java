@@ -1,4 +1,4 @@
-package cc.xfl12345.mybigdata.server.model.database;
+package cc.xfl12345.mybigdata.server.pojo;
 
 import com.fasterxml.jackson.annotation.*;
 

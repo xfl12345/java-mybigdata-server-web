@@ -1,10 +1,6 @@
 package cc.xfl12345.mybigdata.server;
 
 import lombok.SneakyThrows;
-import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs2.impl.StandardFileSystemManager;
-import org.apache.commons.vfs2.provider.zip.ZipFileSystem;
-import org.apache.ibatis.io.Resources;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +14,6 @@ import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
@@ -63,8 +58,7 @@ public class StudyJarFile {
     private void copyJarResourcesFileToTemp(URI path, String tempPath, String filePrefix) {
         try {
             List<Map.Entry<ZipEntry, InputStream>> collect =
-                readJarFile(new JarFile(path.getPath()), filePrefix)
-                    .collect(Collectors.toList());
+                readJarFile(new JarFile(path.getPath()), filePrefix).toList();
             for (Map.Entry<ZipEntry, InputStream> entry : collect) {
                 // 文件相对路径
                 String key = entry.getKey().getName();

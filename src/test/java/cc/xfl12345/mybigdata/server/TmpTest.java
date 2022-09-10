@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server;
 
-import cc.xfl12345.mybigdata.server.utility.StringEscapeUtils;
+import cc.xfl12345.mybigdata.server.common.utility.StringEscapeUtils;
 
 public class TmpTest {
     public static void main(String[] args) throws Exception {
