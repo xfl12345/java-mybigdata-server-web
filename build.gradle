@@ -37,6 +37,7 @@ plugins {
 group = 'cc.xfl12345.mybigdata'
 version = '0.0.1'
 sourceCompatibility = '17'
+apply from: 'config.gradle'
 
 eclipse {
     classpath {

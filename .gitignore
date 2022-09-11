@@ -4,6 +4,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 localDevMode
+config.gradle
 
 
 /src/test/java/cc/xfl12345/a_generate_test/
