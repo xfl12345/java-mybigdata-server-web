@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.model.checker;
 
-import cc.xfl12345.mybigdata.server.appconst.JsonSchemaKeyWords;
+import cc.xfl12345.mybigdata.server.common.appconst.JsonSchemaKeyWords;
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchema;
