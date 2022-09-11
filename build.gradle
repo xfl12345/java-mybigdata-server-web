@@ -151,7 +151,7 @@ dependencies {
     def victools_jsonschema = '4.26.0'
     def apacheCommonsVFS2Version = '2.9.0'
     def saTokenVersion = '1.30.0'
-    def hutoolVersion = '5.8.5'
+    def hutoolVersion = '5.8.6'
 
     def springBootDependencies = [
         // 'gradle-plugin',
@@ -201,7 +201,34 @@ dependencies {
 //    }
 
 
-    project.ext.myDiyConf.dependencies.each {
+    def org_apache_poi_version = '5.2.2'
+    def tomcatVersion = '9.0.65'
+    def jackrabbitVersion = '2.21.11'
+    def uni_dependencies = [
+        // poi
+        'org.apache.poi' : [
+            "$org_apache_poi_version": [
+                'poi',
+                'poi-ooxml-full'
+            ]
+        ],
+        // JSP support
+        'org.apache.tomcat': [
+            "$tomcatVersion": [
+                'tomcat-jsp-api',
+                'tomcat-jasper',
+                'tomcat-servlet-api'
+            ]
+        ],
+        'org.apache.jackrabbit': [
+            "$jackrabbitVersion": [
+                'jackrabbit-core',
+                'jackrabbit-webdav'
+            ]
+        ]
+    ]
+
+    uni_dependencies.each {
         groupId, groupEntry ->
             {
                 groupEntry.each {
