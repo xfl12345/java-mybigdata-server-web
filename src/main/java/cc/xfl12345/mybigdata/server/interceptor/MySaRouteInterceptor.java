@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.interceptor;
 
-import cc.xfl12345.mybigdata.server.appconst.field.FileOperationField;
+import cc.xfl12345.mybigdata.server.common.appconst.field.FileOperationField;
 import cn.dev33.satoken.interceptor.SaRouteInterceptor;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
@@ -11,9 +11,6 @@ public class MySaRouteInterceptor extends SaRouteInterceptor {
         super();
         function = (req, res, handler)->{
             // 根据路由划分模块，不同模块不同鉴权
-            SaRouter.match("/upload/**", r -> {
-                StpUtil.checkPermission(FileOperationField.UPLOAD);
-            });
             SaRouter.match("/upload/**", r -> {
                 StpUtil.checkPermission(FileOperationField.UPLOAD);
             });

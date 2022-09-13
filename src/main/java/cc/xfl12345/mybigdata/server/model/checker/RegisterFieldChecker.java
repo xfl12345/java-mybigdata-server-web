@@ -1,9 +1,9 @@
 package cc.xfl12345.mybigdata.server.model.checker;
 
 
-import cc.xfl12345.mybigdata.server.appconst.api.request.RegisterRequestField;
-import cc.xfl12345.mybigdata.server.appconst.api.result.RegisterApiResult;
-import cc.xfl12345.mybigdata.server.appconst.field.AccountField;
+import cc.xfl12345.mybigdata.server.common.appconst.api.request.RegisterRequestField;
+import cc.xfl12345.mybigdata.server.common.appconst.api.result.RegisterApiResult;
+import cc.xfl12345.mybigdata.server.common.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;

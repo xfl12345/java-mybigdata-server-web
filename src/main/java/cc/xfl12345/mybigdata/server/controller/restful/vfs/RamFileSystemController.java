@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.controller.restful.vfs;
 
-import cc.xfl12345.mybigdata.server.appconst.api.result.JsonApiResult;
-import cc.xfl12345.mybigdata.server.model.api.response.JsonCommonApiResponseObject;
+import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
+import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.model.uri.URIRelativize;
 import cn.hutool.core.io.CharsetDetector;
@@ -40,8 +40,8 @@ public class RamFileSystemController {
     protected URIRelativize uriRelativize = new JarFileURIRelativizeImpl();
 
     @GetMapping("files/**")
-    public JsonCommonApiResponseObject list(HttpServletRequest request) {
-        JsonCommonApiResponseObject responseObject = new JsonCommonApiResponseObject(
+    public JsonApiResponseData list(HttpServletRequest request) {
+        JsonApiResponseData responseObject = new JsonApiResponseData(
             version
         );
         // String[] requestPaths = StringUtils.split(request.getServletPath(), '/');

@@ -26,7 +26,6 @@ buildscript {
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'org.springframework.boot' version '2.7.3'
     id 'maven-publish'
     id 'java-library'
@@ -132,28 +131,17 @@ dependencies {
         api group: 'cc.xfl12345.mybigdata', name: 'server-mysql-spring-boot-starter', version: depsParentVersion
         // api group: 'cc.xfl12345.mybigdata', name: 'server-mysql-spring-boot-starter', version: depsParentVersion, ext: 'pom'
     } else {
-        def depsParentVersion = 'e4af43463a'
+        def depsParentVersion = '513d8adec4'
         api platform(group: 'com.github.xfl12345', name: 'java-mybigdata-server-deps-parent', version: depsParentVersion)
         annotationProcessor platform(group: 'com.github.xfl12345', name: 'java-mybigdata-server-deps-parent', version: depsParentVersion)
         testAnnotationProcessor platform(group: 'com.github.xfl12345', name: 'java-mybigdata-server-deps-parent', version: depsParentVersion)
         testImplementation platform(group: 'com.github.xfl12345', name: 'java-mybigdata-server-deps-parent', version: depsParentVersion)
 
-        def parentModuleVersion = '3544affc6b'
+        def parentModuleVersion = '41db03e61c'
         // https://jitpack.io/#xfl12345/java-mybigdata-server-mysql-spring-boot-starter
-        api group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion
-        // api group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion, ext: 'pom'
+        implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion
+        // implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion, ext: 'pom'
     }
-
-    // https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api
-    implementation group: 'javax.persistence', name: 'javax.persistence-api'
-
-    // https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api
-    implementation group: 'javax.annotation', name: 'javax.annotation-api'
-
-    def victools_jsonschema = '4.26.0'
-    def apacheCommonsVFS2Version = '2.9.0'
-    def saTokenVersion = '1.30.0'
-    def hutoolVersion = '5.8.6'
 
     def springBootDependencies = [
         // 'gradle-plugin',
@@ -181,6 +169,10 @@ dependencies {
     }
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+
+    def saTokenVersion = '1.30.0'
+    def hutoolVersion = '5.8.6'
+    def apacheCommonsVFS2Version = '2.9.0'
 
     // Sa-Token 框架
     // https://mvnrepository.com/artifact/cn.dev33/sa-token-spring-boot-starter
@@ -257,7 +249,7 @@ dependencies {
 
     // JSON Schema support
     // https://mvnrepository.com/artifact/com.github.victools/jsonschema-generator
-    implementation group: 'com.github.victools', name: 'jsonschema-generator', version: victools_jsonschema
+    implementation group: 'com.github.victools', name: 'jsonschema-generator', version: '4.26.0'
 
     // https://github.com/jimblackler/jsonschemafriend
     // https://jitpack.io/#net.jimblackler/jsonschemafriend

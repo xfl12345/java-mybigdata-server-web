@@ -1,8 +1,12 @@
 package cc.xfl12345.mybigdata.server.config;
 
+import cc.xfl12345.mybigdata.server.model.generator.RandomCodeGenerator;
+import cc.xfl12345.mybigdata.server.model.generator.impl.RandomCodeGeneratorImpl;
 import cc.xfl12345.mybigdata.server.pojo.ResourceCacheMapBean;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
+import org.apache.tika.Tika;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,5 +43,19 @@ public class IndependenceBeansConfig {
     @Bean
     public ResourceCacheMapBean resourceCacheMapBean() {
         return new ResourceCacheMapBean();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Tika tika() {
+        Tika tika = new Tika();
+        tika.setMaxStringLength(Integer.MAX_VALUE);
+        return tika;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RandomCodeGenerator randomCodeGenerator() {
+        return new RandomCodeGeneratorImpl();
     }
 }

@@ -54,7 +54,7 @@ public class RandomCodeGeneratorOptions {
         private Builder() {
         }
 
-        public static Builder aRandomCodeGeneratorOptions() {
+        public static Builder builder() {
             return new Builder();
         }
 
