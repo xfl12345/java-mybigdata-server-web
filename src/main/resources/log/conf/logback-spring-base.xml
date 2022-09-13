@@ -223,17 +223,17 @@
 
 
 
-    <logger name="cc.xfl12345.mybigdata.server.controller" level="DEBUG" additivity="false">
+    <logger name="cc.xfl12345.mybigdata.server.web.controller" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="fileDebugAppender"/>
         <appender-ref ref="fileErrorAppender"/>
     </logger>
-    <logger name="cc.xfl12345.mybigdata.server.initializer" level="DEBUG" additivity="false">
+    <logger name="cc.xfl12345.mybigdata.server.web.initializer" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="fileDebugAppender"/>
         <appender-ref ref="fileErrorAppender"/>
     </logger>
-    <logger name="cc.xfl12345.mybigdata.server.listener" level="DEBUG" additivity="false">
+    <logger name="cc.xfl12345.mybigdata.server.web.listener" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="fileDebugAppender"/>
         <appender-ref ref="fileErrorAppender"/>

@@ -1,7 +1,7 @@
 {
     "properties": [
         {
-            "sourceType": "cc.xfl12345.mybigdata.server.service.VfsWebDavService",
+            "sourceType": "cc.xfl12345.mybigdata.server.web.service.VfsWebDavService",
             "name": "app.service.vfs-webdav.root-path",
             "description": "设置用于Webdav访问的本地存储路径"
         }
