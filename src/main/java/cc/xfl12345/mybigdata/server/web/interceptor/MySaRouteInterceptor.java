@@ -6,7 +6,6 @@ import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 
 public class MySaRouteInterceptor extends SaRouteInterceptor {
-
     public MySaRouteInterceptor() {
         super();
         function = (req, res, handler)->{
