@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @Slf4j
 @RequestMapping("spring")
-public class SpringAppController implements ApplicationContextAware {
+public class SpringFrameworkController implements ApplicationContextAware {
 
     protected ConfigurableApplicationContext applicationContext;
 
@@ -49,6 +49,7 @@ public class SpringAppController implements ApplicationContextAware {
             log.info("Root webApplicationContext was not found.");
             applicationContext.refresh();
         }
+
         return "success";
     }
 
@@ -56,6 +57,7 @@ public class SpringAppController implements ApplicationContextAware {
     @ResponseBody
     public String reloadSpringContext() {
         applicationContext.refresh();
+
         return "success";
     }
 
