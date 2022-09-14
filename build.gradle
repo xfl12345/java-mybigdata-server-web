@@ -143,7 +143,7 @@ dependencies {
         depsParentVersion = 'b6a6d54f71'
         applyPlatform2All(group: 'com.github.xfl12345', name: 'java-mybigdata-server-deps-parent', version: depsParentVersion)
 
-        def parentModuleVersion = '21762a20c2'
+        def parentModuleVersion = '90c9b6be89'
         // https://jitpack.io/#xfl12345/java-mybigdata-server-mysql-spring-boot-starter
         implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion
         // implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion, ext: 'pom'
