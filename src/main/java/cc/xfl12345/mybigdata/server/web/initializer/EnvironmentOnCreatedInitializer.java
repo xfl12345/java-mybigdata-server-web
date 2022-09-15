@@ -27,7 +27,7 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
         }
 
         MutablePropertySources propertySources = environment.getPropertySources();
-        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("myDynamicLog4j2Config",properties);
+        PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("myDynamicLogConfig",properties);
         propertySources.addFirst(propertiesPropertySource);
     }
 
