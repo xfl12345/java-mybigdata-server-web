@@ -1,6 +1,5 @@
 package com.github.alanger.webdav;
 
-import com.github.alanger.webdav.Text;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
 import org.slf4j.Logger;
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class VfsDavLocatorFactory implements DavLocatorFactory {
 
     /** the default logger */
-    private static final Logger log = LoggerFactory.getLogger(com.github.alanger.webdav.VfsDavLocatorFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(VfsDavLocatorFactory.class);
 
     private final String repositoryPrefix;
 
@@ -117,7 +116,7 @@ public class VfsDavLocatorFactory implements DavLocatorFactory {
         /**
          * Returns the same as {@link #getResourcePath()}. No encoding is performed at
          * all.
-         *
+         * 
          * @see DavResourceLocator#getRepositoryPath()
          */
         public String getRepositoryPath() {

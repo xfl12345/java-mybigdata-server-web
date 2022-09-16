@@ -1,9 +1,5 @@
 package com.github.alanger.webdav;
 
-import com.github.alanger.webdav.Text;
-import com.github.alanger.webdav.VfsDavLocatorFactory;
-import com.github.alanger.webdav.VfsDavResourceFactory;
-import com.github.alanger.webdav.VfsDavSessionProvider;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs2.cache.SoftRefFilesCache;
@@ -42,8 +38,8 @@ public class VfsWebDavServlet extends AbstractWebdavServlet {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String VERSION = com.github.alanger.webdav.VfsWebDavServlet.class.getPackage().getImplementationVersion() != null
-            ? com.github.alanger.webdav.VfsWebDavServlet.class.getPackage().getImplementationVersion()
+    public static final String VERSION = VfsWebDavServlet.class.getPackage().getImplementationVersion() != null
+            ? VfsWebDavServlet.class.getPackage().getImplementationVersion()
             : "unknown";
     public static final String INIT_PARAM_ROOTPATH = "rootpath";
     public static final String INIT_PARAM_DOMAIN = "domain";

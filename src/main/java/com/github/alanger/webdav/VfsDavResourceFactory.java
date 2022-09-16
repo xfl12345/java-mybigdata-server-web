@@ -1,6 +1,5 @@
 package com.github.alanger.webdav;
 
-import com.github.alanger.webdav.VfsDavResource;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.jackrabbit.webdav.*;
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class VfsDavResourceFactory implements DavResourceFactory {
 
-    private static Logger log = LoggerFactory.getLogger(com.github.alanger.webdav.VfsDavResourceFactory.class);
+    private static Logger log = LoggerFactory.getLogger(VfsDavResourceFactory.class);
 
     private final LockManager lockMgr;
     private final FileObject root;

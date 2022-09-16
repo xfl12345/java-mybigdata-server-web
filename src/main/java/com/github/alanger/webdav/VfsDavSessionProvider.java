@@ -1,6 +1,5 @@
 package com.github.alanger.webdav;
 
-import com.github.alanger.webdav.VfsDavSession;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;

@@ -38,7 +38,7 @@ public final class IOUtil {
      * @see HttpDateFormat#modificationDateFormat()
      */
     public static String getLastModified(long modificationTime) {
-        if (modificationTime <= UNDEFINED_TIME) {
+        if (modificationTime <= IOUtil.UNDEFINED_TIME) {
             modificationTime = new Date().getTime();
         }
         return HttpDateFormat.modificationDateFormat().format(new Date(modificationTime));
@@ -51,7 +51,7 @@ public final class IOUtil {
      * @see HttpDateFormat#creationDateFormat()
      */
     public static String getCreated(long createdTime) {
-        if (createdTime <= UNDEFINED_TIME) {
+        if (createdTime <= IOUtil.UNDEFINED_TIME) {
             createdTime = 0;
         }
         return HttpDateFormat.creationDateFormat().format(new Date(createdTime));

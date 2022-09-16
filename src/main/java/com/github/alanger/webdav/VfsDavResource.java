@@ -1,8 +1,5 @@
 package com.github.alanger.webdav;
 
-import com.github.alanger.webdav.IOUtil;
-import com.github.alanger.webdav.Text;
-import com.github.alanger.webdav.VfsDavResourceFactory;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
@@ -25,7 +22,7 @@ import java.util.*;
  */
 public class VfsDavResource implements DavResource {
 
-    private static final Logger log = LoggerFactory.getLogger(com.github.alanger.webdav.VfsDavResource.class);
+    private static final Logger log = LoggerFactory.getLogger(VfsDavResource.class);
 
     public static final String METHODS = DavResource.METHODS;
 
