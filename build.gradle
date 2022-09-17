@@ -61,6 +61,18 @@ java {
     // withJavadocJar()
 }
 
+sourceSets {
+    main {
+        java {
+            // 忽略所有的 src/main/java/test目录
+            exclude 'test/**'
+        }
+        resources {
+            exclude 'application.properties'
+        }
+    }
+}
+
 javadoc {
     options.encoding = 'UTF-8'
 }
