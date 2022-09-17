@@ -5,6 +5,7 @@ import cc.xfl12345.mybigdata.server.web.http.HttpRangeParser;
 import com.github.alanger.webdav.VfsDavResource;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.io.input.RandomAccessFileInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
@@ -27,10 +28,13 @@ import java.util.List;
 /**
  * See org.apache.jackrabbit.webdav.simple.DavResourceImpl
  */
-public class MyVfsDavResource extends VfsDavResource {
+public class MyVfsDavResource extends VfsDavResource implements Closeable {
+    protected volatile boolean keepGoing = true;
+
     protected DavServletRequest davServletRequest;
+
     protected FileObject fileObject;
-    //    protected List<HttpRange> ranges = new ArrayList<>();
+
     protected static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     protected static Tika tika = new Tika();
@@ -59,7 +63,7 @@ public class MyVfsDavResource extends VfsDavResource {
 
         int size = (int) Math.min(outputBufferSize, remaining);
         byte[] skipBuffer = new byte[size];
-        while (remaining > 0) {
+        while (keepGoing && remaining > 0) {
             nr = is.read(skipBuffer, 0, (int) Math.min(size, remaining));
             if (nr < 0) {
                 break;
@@ -71,83 +75,74 @@ public class MyVfsDavResource extends VfsDavResource {
     }
 
 
+    protected void sentRangeBytesLoop(InputStream is, OutputStream os, long rangeSize, boolean autoCloseInputStream) throws IOException {
+        try {
+            byte[] buffer = new byte[outputBufferSize];
+            int bytesRead;
+            long toRead = rangeSize;
+            while (keepGoing && (bytesRead = is.read(buffer)) > 0) {
+                if (!keepGoing) {
+                    break;
+                }
+
+                if ((toRead -= bytesRead) > 0) {
+                    os.write(buffer, 0, bytesRead);
+                    // os.flush();
+                } else {
+                    os.write(buffer, 0, (int) toRead + bytesRead);
+                    // os.flush();
+                    break;
+                }
+            }
+        } finally {
+            if (autoCloseInputStream) {
+                is.close();
+            }
+        }
+    }
+
     protected void sentRangeBytes(LocalFile file, OutputStream os, HttpRange httpRange, long fileSize) throws IOException {
         RandomAccessContent randomAccessContent = file.getRandomAccessContent(RandomAccessMode.READ);
         long rangeStart = httpRange.getRangeStart(fileSize);
         long rangeEnd = httpRange.getRangeEnd(fileSize);
         long rangeSize = rangeEnd - rangeStart + 1;
-        byte[] buffer = new byte[outputBufferSize];
-        int bytesRead;
         randomAccessContent.seek(rangeStart);
         InputStream is = randomAccessContent.getInputStream();
-        long toRead = rangeSize;
-        while ((bytesRead = is.read(buffer)) > 0) {
-            if ((toRead -= bytesRead) > 0) {
-                os.write(buffer, 0, bytesRead);
-//                os.flush();
-            } else {
-                os.write(buffer, 0, (int) toRead + bytesRead);
-//                os.flush();
-                break;
-            }
-        }
+
+        sentRangeBytesLoop(is, os, rangeSize, true);
     }
 
 
     protected void sentRangeBytes(File file, OutputStream os, HttpRange httpRange, long fileSize) throws IOException {
         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-        long rangeStart = httpRange.getRangeStart(fileSize);
+        RandomAccessFileInputStream is = new RandomAccessFileInputStream(randomAccessFile, true);
+        // 按 实际跳跃大小 作 起点
+        long rangeStart = is.skip(httpRange.getRangeStart(fileSize));
         long rangeEnd = httpRange.getRangeEnd(fileSize);
         long rangeSize = rangeEnd - rangeStart + 1;
-        byte[] buffer = new byte[outputBufferSize];
-        int bytesRead;
-        randomAccessFile.seek(rangeStart);
-        long toRead = rangeSize;
-        while ((bytesRead = randomAccessFile.read(buffer)) > 0) {
-            if ((toRead -= bytesRead) > 0) {
-                os.write(buffer, 0, bytesRead);
-//                os.flush();
-            } else {
-                os.write(buffer, 0, (int) toRead + bytesRead);
-//                os.flush();
-                break;
-            }
-        }
-    }
 
+        sentRangeBytesLoop(is, os, rangeSize, true);
 
-    protected void sentRangeBytes(URL url, OutputStream os, HttpRange httpRange, long fileSize) throws IOException {
-        InputStream is = url.openStream();
-        try {
-            sentRangeBytes(is, os, httpRange, fileSize);
-        } catch (Exception ignored) {
-        }
         is.close();
     }
 
 
+    protected void sentRangeBytes(URL url, OutputStream os, HttpRange httpRange, long fileSize) throws IOException {
+        sentRangeBytes(url.openStream(), os, httpRange, fileSize);
+    }
+
+
     protected void sentRangeBytes(InputStream is, OutputStream os, HttpRange httpRange, long fileSize) throws IOException {
-        long rangeStart = httpRange.getRangeStart(fileSize);
+        is.reset();
+        long httpRangeStart = httpRange.getRangeStart(fileSize);
+        // 按 实际跳跃大小 作 起点
+        long rangeStart = is instanceof FileInputStream ?
+            is.skip(httpRangeStart) :
+            skip(is, httpRangeStart);
         long rangeEnd = httpRange.getRangeEnd(fileSize);
         long rangeSize = rangeEnd - rangeStart + 1;
-        byte[] buffer = new byte[outputBufferSize];
-//        long bytesReadCount = 0;
-        int bytesRead;
-        is.reset();
-        long actualSkipBytesCount = is instanceof FileInputStream ?
-            is.skip(rangeStart) :
-            skip(is, rangeStart);
-        long toRead = rangeSize;
-        while ((bytesRead = is.read(buffer)) > 0) {
-            if ((toRead -= bytesRead) > 0) {
-                os.write(buffer, 0, bytesRead);
-//                os.flush();
-            } else {
-                os.write(buffer, 0, (int) toRead + bytesRead);
-//                os.flush();
-                break;
-            }
-        }
+
+        sentRangeBytesLoop(is, os, rangeSize, true);
     }
 
     @Override
@@ -161,46 +156,46 @@ public class MyVfsDavResource extends VfsDavResource {
 
     @Override
     public void spool(OutputContext outputContext) throws IOException {
-        if (exists() && !isCollection() && outputContext != null) {
-            HttpServletResponse response = null;
-            if (outputContext instanceof HttpServletResponseGetter) {
-                response = ((HttpServletResponseGetter) outputContext).getHttpServletResponse();
-            }
+        if (!keepGoing || !exists() || isCollection() || outputContext == null) {
+            return;
+        }
 
-            FileContent fileContent = fileObject.getContent();
-            long fileSize = fileContent.getSize();
+        HttpServletResponse response = null;
+        if (outputContext instanceof HttpServletResponseGetter responseGetter) {
+            response = responseGetter.getHttpServletResponse();
+        }
 
-            List<HttpRange> ranges = new ArrayList<>();
-            String range = davServletRequest.getHeader("Content-Range");
-            if (range == null) {
-                range = davServletRequest.getHeader("Range");
-            }
-            if (!StringUtils.isEmpty(range)) {
-                try {
-                    ranges = new HttpRangeParser().parseRanges(range);
-                } catch (IllegalArgumentException exception) {
-                    if (response != null) {
-                        response.setHeader("Content-Range", "bytes */" + fileSize); // Required in 416.
-                        response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
-                        return;
-                    } else {
-                        throw new IOException(exception.getMessage());
-                    }
+        FileContent fileContent = fileObject.getContent();
+        long fileSize = fileContent.getSize();
+
+        List<HttpRange> ranges = new ArrayList<>();
+        String range = davServletRequest.getHeader("Content-Range");
+        if (range == null) {
+            range = davServletRequest.getHeader("Range");
+        }
+        if (!StringUtils.isEmpty(range)) {
+            try {
+                ranges = new HttpRangeParser().parseRanges(range);
+            } catch (IllegalArgumentException exception) {
+                if (response != null) {
+                    response.setHeader("Content-Range", "bytes */" + fileSize); // Required in 416.
+                    response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                    return;
+                } else {
+                    throw new IOException(exception.getMessage());
                 }
             }
+        }
 
-            LocalFile localFile = fileObject instanceof LocalFile ?
-                ((LocalFile) fileObject): null;
-            InputStream is = localFile == null ?
-                fileContent.getInputStream() :
-                localFile.getInputStream() ;
+        LocalFile localFile = fileObject instanceof LocalFile ? ((LocalFile) fileObject) : null;
+        URL fileURL = fileObject.getURL();
+
+        if (keepGoing) {
             if (!ranges.isEmpty() && response != null) {
-                OutputStream os = response.getOutputStream();
-                // Cast back to ServletOutputStream to get the easy println methods.
-                ServletOutputStream sos = (ServletOutputStream) os;
-                try (is; os; sos) {
+                ServletOutputStream os = response.getOutputStream();
+                try (os) {
                     response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
-                    String contentType = tika.detect(is);
+                    String contentType = tika.detect(fileObject.getURL());
                     if (contentType == null) {
                         contentType = "application/octet-stream";
                     }
@@ -212,62 +207,66 @@ public class MyVfsDavResource extends VfsDavResource {
                         long rangeSize = rangeEnd - rangeStart + 1;
                         response.setContentType(contentType);
                         response.setContentLengthLong(rangeSize);
-//                        response.setHeader(HttpHeaders.TRANSFER_ENCODING, "chunked");
+                        // response.setHeader(HttpHeaders.TRANSFER_ENCODING, "chunked");
                         response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
-//                        response.setHeader(
-//                            "Content-Disposition",
-//                            "inline;filename=" + fileObject.getName()
-//                        );
+                        // response.setHeader(
+                        //     "Content-Disposition",
+                        //     "inline;filename=" + fileObject.getName()
+                        // );
                         response.setHeader(
                             HttpHeaders.CONTENT_RANGE,
                             "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize
                         );
-                        if(localFile != null) {
+                        if (localFile != null) {
                             sentRangeBytes(localFile, os, httpRange, fileSize);
                         } else {
-                            sentRangeBytes(is, os, httpRange, fileSize);
+                            sentRangeBytes(fileURL, os, httpRange, fileSize);
                         }
                     } else { // 多范围请求
                         response.setContentType("multipart/byteranges; boundary=" + MULTIPART_BOUNDARY);
                         response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
 
                         for (HttpRange httpRange : ranges) {
+                            // 停机
+                            if (!keepGoing) {
+                                response.setStatus(HttpServletResponse.SC_GONE);
+                                break;
+                            }
+
                             long rangeStart = httpRange.getRangeStart(fileSize);
                             long rangeEnd = httpRange.getRangeEnd(fileSize);
 //                            long rangeSize = rangeEnd - rangeStart + 1;
-                            sos.println();
-                            sos.println("--" + MULTIPART_BOUNDARY);
-                            sos.println("Content-Type: " + contentType);
-                            sos.println("Content-Range: bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
-                            if(localFile != null) {
+                            os.println();
+                            os.println("--" + MULTIPART_BOUNDARY);
+                            os.println("Content-Type: " + contentType);
+                            os.println("Content-Range: bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
+                            if (localFile != null) {
                                 sentRangeBytes(localFile, os, httpRange, fileSize);
                             } else {
-                                sentRangeBytes(is, os, httpRange, fileSize);
+                                sentRangeBytes(fileURL, os, httpRange, fileSize);
                             }
                         }
 
                         // End with multipart boundary.
-                        sos.println();
-                        sos.println("--" + MULTIPART_BOUNDARY + "--");
+                        os.println();
+                        os.println("--" + MULTIPART_BOUNDARY + "--");
                     }
                 }
             } else {
                 OutputStream os = outputContext.getOutputStream();
+                InputStream is = localFile == null ? fileContent.getInputStream() : localFile.getInputStream();
                 try (is; os) {
                     outputContext.setProperty(HttpHeaders.ACCEPT_RANGES, "bytes");
                     outputContext.setContentLength(fileSize);
-                    if (os != null) { // HEAD method
-                        byte[] buffer = new byte[outputBufferSize];
-                        int bytesRead;
-                        while ((bytesRead = is.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                    }
+                    sentRangeBytesLoop(is, os, fileSize, true);
                 }
             }
-
-
         }
+    }
+
+    @Override
+    public void close() {
+        keepGoing = false;
     }
 }
 

@@ -7,11 +7,14 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.jackrabbit.webdav.*;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * See org.apache.jackrabbit.webdav.simple.ResourceFactoryImpl
  */
 @Slf4j
 public class MyVfsDavResourceFactory extends VfsDavResourceFactory {
+    protected ConcurrentHashMap<DavResource, Object> createdResource = new ConcurrentHashMap<>();
 
     public MyVfsDavResourceFactory(LockManager lockMgr, FileObject root) {
         super(lockMgr, root);

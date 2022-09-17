@@ -3,7 +3,9 @@ package cc.xfl12345.mybigdata.server.web.alpha.beans;
 import cc.xfl12345.mybigdata.server.common.pojo.NameCasePack;
 import lombok.Getter;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class PropertyInfo {
     @Getter

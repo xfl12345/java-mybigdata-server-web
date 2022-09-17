@@ -18,11 +18,15 @@ package cc.xfl12345.mybigdata.server.web.service;
 
 import cc.xfl12345.mybigdata.server.common.utility.StringEscapeUtils;
 import cc.xfl12345.mybigdata.server.web.plugin.apache.jackrabbit.webdav.MyOutputContextImpl;
+import cc.xfl12345.mybigdata.server.web.plugin.apache.jackrabbit.webdav.MyVfsDavResource;
 import cc.xfl12345.mybigdata.server.web.plugin.apache.jackrabbit.webdav.MyVfsDavResourceFactory;
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.NoArgGenerator;
 import com.github.alanger.webdav.Text;
 import com.github.alanger.webdav.VfsDavLocatorFactory;
 import com.github.alanger.webdav.VfsDavSessionProvider;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileObject;
@@ -58,9 +62,9 @@ import org.apache.jackrabbit.webdav.version.*;
 import org.apache.jackrabbit.webdav.version.report.Report;
 import org.apache.jackrabbit.webdav.version.report.ReportInfo;
 import org.apache.jackrabbit.webdav.xml.DomUtil;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import lombok.NonNull;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -73,10 +77,10 @@ import java.net.URI;
 import java.text.DateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-public class VfsWebDavService implements DisposableBean, InitializingBean, DavConstants, Serializable {
+public class VfsWebDavService implements ApplicationListener<ContextClosedEvent>, InitializingBean, DavConstants, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -163,7 +167,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
     }
 
     public void afterPropertiesSet() throws Exception {
-        if(rootPath == null) {
+        if (rootPath == null) {
             setRootPath(System.getProperty("java.io.tmpdir"));
         }
 
@@ -197,12 +201,57 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
         );
     }
 
+
+    protected NoArgGenerator uuidGenerator = Generators.timeBasedGenerator();
+
+    protected ConcurrentHashMap<MyVfsDavResource, ConcurrentHashMap<UUID, Thread>> spoolThreads = new ConcurrentHashMap<>();
+
+    protected volatile boolean keepGoing = true;
+
+    @Override
+    public void onApplicationEvent(ContextClosedEvent event) {
+        keepGoing = false;
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
+
+        log.info("Start to close davResource.");
+
+        for (MyVfsDavResource davResource : spoolThreads.keySet().parallelStream().toList()) {
+            davResource.close();
+            ConcurrentHashMap<UUID, Thread> threadMap = spoolThreads.get(davResource);
+            if (threadMap != null) {
+                // threadMap.values().forEach(item -> {
+                //     try {
+                //         item.join();
+                //     } catch (InterruptedException e) {
+                //         throw new RuntimeException(e);
+                //     }
+                // });
+                threadMap.clear();
+            }
+            spoolThreads.remove(davResource);
+        }
+
+        spoolThreads.clear();
+
+        log.info("Destroy service: {}, rootpath: {}, listingsDirectory: {}, version: {}",
+            this,
+            rootPathFileObject != null ? rootPathFileObject.getPublicURIString() : rootPathFileObject,
+            listingsDirectory,
+            VERSION
+        );
+    }
+
+
     protected boolean isPreconditionValid(WebdavRequest request, DavResource resource) {
         return resource != null && (!resource.exists() || request.matchesIfHeader(resource));
     }
 
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!enableServer) {
+        if (!enableServer || !keepGoing) {
             response.setStatus(HttpServletResponse.SC_GONE);
             return;
         }
@@ -234,16 +283,6 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
                 log.info(msg);
             }
         }
-    }
-
-    @Override
-    public void destroy() {
-        log.info("Destroy service: {}, rootpath: {}, listingsDirectory: {}, version: {}",
-            this,
-            rootPathFileObject != null ? rootPathFileObject.getPublicURIString() : rootPathFileObject,
-            listingsDirectory,
-            VERSION
-        );
     }
 
     protected String getProperty(String key) {
@@ -406,13 +445,6 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
     }
 
 
-
-
-
-
-
-
-
     /**
      * Returns if a absolute URI should be created for hrefs.
      *
@@ -480,7 +512,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
      */
     private void addHintAboutPotentialRequestEncodings(WebdavRequest webdavRequest, WebdavResponse webdavResponse) {
         if (webdavRequest instanceof ContentCodingAwareRequest) {
-            ContentCodingAwareRequest ccr = (ContentCodingAwareRequest)webdavRequest;
+            ContentCodingAwareRequest ccr = (ContentCodingAwareRequest) webdavRequest;
             List<String> ces = ccr.getRequestContentCodings();
             if (ces.isEmpty()) {
                 webdavResponse.setHeader("Accept-Encoding", ccr.getAcceptableCodings());
@@ -699,10 +731,32 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
             }
         }
 
-        // spool resource properties and eventually resource content.
-        OutputStream out = (sendContent) ? response.getOutputStream() : null;
-        resource.spool(getOutputContext(response, out));
-        response.flushBuffer();
+
+        Thread thread = Thread.currentThread();
+        MyVfsDavResource davResource = (MyVfsDavResource) resource;
+        ConcurrentHashMap<UUID, Thread> threadMap = spoolThreads.putIfAbsent(davResource, new ConcurrentHashMap<>());
+        if (threadMap == null) {
+            threadMap = spoolThreads.get(davResource);
+        }
+
+        UUID uuid;
+        do {
+            uuid = uuidGenerator.generate();
+        } while (keepGoing && threadMap.putIfAbsent(uuid, thread) != null);
+
+        if (!keepGoing) {
+            threadMap.remove(uuid);
+            return;
+        }
+
+        try {
+            // spool resource properties and eventually resource content.
+            OutputStream out = (sendContent) ? response.getOutputStream() : null;
+            resource.spool(getOutputContext(response, out));
+            response.flushBuffer();
+        } finally {
+            threadMap.remove(uuid);
+        }
     }
 
     /**
@@ -1002,7 +1056,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
      *
      * @param destResource destination resource to be validated.
      * @param request
-     * @param checkHeader flag indicating if the destination header must be present.
+     * @param checkHeader  flag indicating if the destination header must be present.
      * @return status code indicating whether the destination is valid.
      */
     protected int validateDestination(DavResource destResource, WebdavRequest request, boolean checkHeader)
@@ -1029,8 +1083,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
                     DavResource col;
                     try {
                         col = destResource.getCollection();
-                    }
-                    catch (IllegalArgumentException ex) {
+                    } catch (IllegalArgumentException ex) {
                         return DavServletResponse.SC_BAD_GATEWAY;
                     }
                     col.removeMember(destResource);
@@ -1550,7 +1603,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
             throw new DavException(DavServletResponse.SC_BAD_REQUEST, "ACL request requires a DAV:acl body.");
         }
         AclProperty acl = AclProperty.createFromXml(doc.getDocumentElement());
-        ((AclResource)resource).alterAcl(acl);
+        ((AclResource) resource).alterAcl(acl);
     }
 
     /**
@@ -1611,7 +1664,7 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
 
     private static List<String> getListElementsFromHeaderField(HttpServletRequest request, String fieldName) {
         List<String> result = Collections.emptyList();
-        for (Enumeration<String> ceh = request.getHeaders(fieldName); ceh.hasMoreElements();) {
+        for (Enumeration<String> ceh = request.getHeaders(fieldName); ceh.hasMoreElements(); ) {
             for (String h : ceh.nextElement().split(",")) {
                 if (!h.trim().isEmpty()) {
                     if (result.isEmpty()) {
@@ -1627,7 +1680,8 @@ public class VfsWebDavService implements DisposableBean, InitializingBean, DavCo
 
     /**
      * Get field value of a singleton field
-     * @param request HTTP request
+     *
+     * @param request   HTTP request
      * @param fieldName field name
      * @return the field value (when there is indeed a single field line) or {@code null} when field not present
      * @throws IllegalArgumentException when multiple field lines present
