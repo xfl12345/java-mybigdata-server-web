@@ -1,9 +1,9 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful.vfs;
 
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
-import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.web.model.uri.URIRelativize;
+import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import cn.hutool.core.io.CharsetDetector;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
@@ -27,8 +27,6 @@ import java.net.URISyntaxException;
 public class RamFileSystemController {
     public static final String servletPath = "/vfs/ramfs";
 
-    protected String version = "1";
-
     @Getter
     protected RamFileSystem ramFileSystem;
 
@@ -40,10 +38,8 @@ public class RamFileSystemController {
     protected URIRelativize uriRelativize = new JarFileURIRelativizeImpl();
 
     @GetMapping("files/**")
-    public JsonApiResponseData list(HttpServletRequest request) {
-        JsonApiResponseData responseObject = new JsonApiResponseData(
-            version
-        );
+    public WebJsonApiResponseData list(HttpServletRequest request) {
+        WebJsonApiResponseData responseObject = new WebJsonApiResponseData();
         // String[] requestPaths = StringUtils.split(request.getServletPath(), '/');
         String requestPath = request.getServletPath().substring((servletPath + "/files").length());
 

@@ -10,11 +10,11 @@ import cc.xfl12345.mybigdata.server.common.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
 import cc.xfl12345.mybigdata.server.common.web.mapper.AccountMapper;
 import cc.xfl12345.mybigdata.server.common.web.pojo.Account;
-import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.web.model.generator.LetterOptions;
 import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGeneratorOptions;
+import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,10 +57,6 @@ public class AccountService implements InitializingBean {
     public void setAccountMapper(AccountMapper authAccountMapper) {
         this.authAccountMapper = authAccountMapper;
     }
-
-    @Getter
-    @Setter
-    protected String jsonApiVersion = "1";
 
     protected RandomCodeGeneratorOptions randomCodeGeneratorOptions;
 
@@ -171,8 +167,8 @@ public class AccountService implements InitializingBean {
     }
 
 
-    public JsonApiResponseData resetPassword(String passwordHash) {
-        JsonApiResponseData responseData = new JsonApiResponseData(getJsonApiVersion());
+    public WebJsonApiResponseData resetPassword(String passwordHash) {
+        WebJsonApiResponseData responseData = new WebJsonApiResponseData();
         Long accountId = (Long) StpUtil.getLoginId();
         if (accountId == null) {
             responseData.setApiResult(JsonApiResult.FAILED);

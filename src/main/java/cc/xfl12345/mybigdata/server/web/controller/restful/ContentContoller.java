@@ -5,7 +5,7 @@ import cc.xfl12345.mybigdata.server.common.data.handler.StringTypeHandler;
 import cc.xfl12345.mybigdata.server.common.data.interceptor.FunctionWithException;
 import cc.xfl12345.mybigdata.server.common.database.error.TableDataException;
 import cc.xfl12345.mybigdata.server.common.database.error.TableOperationException;
-import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
+import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequestMapping("content/string")
 public class ContentContoller {
-    protected final String apiVersion = "1";
-
     protected StringTypeHandler stringTypeHandler;
 
     @Autowired
@@ -29,15 +27,15 @@ public class ContentContoller {
     }
 
     @GetMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable Object id) {
+    public WebJsonApiResponseData httpGet(HttpServletResponse response, @PathVariable Object id) {
         return handleError(response, id, (param) -> stringTypeHandler.selectById(param));
     }
 
-    public JsonApiResponseData handleError(
+    public WebJsonApiResponseData handleError(
         HttpServletResponse httpServletResponse,
         Object param,
         FunctionWithException<Object, Object> action) {
-        JsonApiResponseData responseData = new JsonApiResponseData(apiVersion);
+        WebJsonApiResponseData responseData = new WebJsonApiResponseData();
         try {
             responseData.setData(action.apply(param));
             responseData.setApiResult(JsonApiResult.SUCCEED);
