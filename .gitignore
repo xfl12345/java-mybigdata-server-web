@@ -8,7 +8,7 @@ config.gradle
 
 
 /src/test/java/cc/xfl12345/a_generate_test/
-/src/main/resources/application.properties
+/config/
 
 
 ### STS ###
