@@ -195,7 +195,10 @@ public class MyVfsDavResource extends VfsDavResource implements Closeable {
                 ServletOutputStream os = response.getOutputStream();
                 try (os) {
                     response.setHeader(HttpHeaders.ACCEPT_RANGES, "bytes");
-                    String contentType = tika.detect(fileObject.getURL());
+                    String contentType = null;
+                    try (InputStream inputStream = fileURL.openStream()) {
+                        contentType = tika.detect(inputStream);
+                    }
                     if (contentType == null) {
                         contentType = "application/octet-stream";
                     }
