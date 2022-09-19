@@ -13,6 +13,7 @@ import org.apache.commons.vfs2.provider.ram.RamFileSystem;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.webdav4.Webdav4FileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.zip.ZipFileSystemConfigBuilder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -117,6 +118,7 @@ public class VFSConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "app.service.vfs-webdav", name = "enable-server")
     @ConfigurationProperties(prefix = "app.service.vfs-webdav")
     public VfsWebDavService vfsWebDavService(
         FileSystemManager fileSystemManager,
