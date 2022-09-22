@@ -20,6 +20,7 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
         fixedThreshold.put(druid, Level.INFO);
         fixedThreshold.put("java", Level.INFO);
         fixedThreshold.put("javax", Level.INFO);
+        fixedThreshold.put("sun.rmi", Level.INFO);
         fixedThreshold.put("org.apache.tomcat", Level.INFO);
         fixedThreshold.put("org.apache.catalina", Level.INFO);
         fixedThreshold.put("org.apache.catalina.util.LifecycleBase", Level.DEBUG);
