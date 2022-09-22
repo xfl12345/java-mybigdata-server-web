@@ -6,7 +6,7 @@ import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 
 public class WebJsonApiResponseData extends JsonApiResponseData {
     public WebJsonApiResponseData() {
-        super(ApiConst.version);
+        super(ApiConst.VERSION);
     }
 
     public WebJsonApiResponseData(String version) {
