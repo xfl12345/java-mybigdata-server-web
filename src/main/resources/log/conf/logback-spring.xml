@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- （*必须,各应用需要修改） 部署应用的名称,命名规则 :全部小写字母、中短横线、数字,与微服务命名,disconf中命名一致 -->
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+    <springProperty scope="context" name="LOG_BASE_FOLDER" source="app.logging.file.path"/>
+    <springProperty scope="context" name="CONSOLE_LOG_CHARSET" source="logging.charset.console"/>
+    <springProperty scope="context" name="FILE_LOG_CHARSET" source="logging.charset.console"/>
+
+
+    <springProfile name="default">
+        <springProperty scope="context" name="CONSOLE_LOG_LEVEL" source="app.logging.console.level"/>
+    </springProfile>
+
+    <springProfile name="test, dev">
+        <property name="CONSOLE_LOG_LEVEL" value="DEBUG"/>
+    </springProfile>
+
+    <springProfile name="pre, prod, docker">
+        <property name="CONSOLE_LOG_LEVEL" value="INFO"/>
+    </springProfile>
+
+    <contextName>${APP_NAME}</contextName>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="FILE_LOG_PATTERN"
+              value="${FILE_LOG_PATTERN:-%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <!--<include resource="org/springframework/boot/logging/logback/defaults.xml"/>-->
+    <!--<property name="CONSOLE_LOG_PATTERN" value="%clr([%d{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){orange} %clr(%level){blue} %clr(%logger){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr([%d{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){orange} %clr(%-6level){blue} %clr(%-56logger{56}:%6L){cyan} - %highlight(%m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx})"/>
+    <!--<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>-->
+
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>${CONSOLE_LOG_CHARSET}</charset>
+        </encoder>
+        <filter class="cc.xfl12345.mybigdata.server.web.log.logback.filter.ConsoleLogFilter" />
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${CONSOLE_LOG_LEVEL}</level>
+        </filter>
+    </appender>
+
+    <!-- RollingFileAppender：滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 -->
+    <appender name="fileDebugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--只拦截DEBUG-->
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>-->
+        <!--拦截DEBUG及以后的-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <!-- pattern节点，用来设置日志的输入格式 -->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <!-- 记录日志的编码:此处设置字符集 - -->
+            <charset>${FILE_LOG_CHARSET}</charset>
+        </encoder>
+        <File>${LOG_BASE_FOLDER}/${APP_NAME}-debug.log</File>
+        <!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 -->
+        <!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->
+            <fileNamePattern>${LOG_BASE_FOLDER}/%d{yyyy-MM}/${APP_NAME}-debug-%d{dd_HH_mm_ss}.%i.log.gz
+            </fileNamePattern>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为180天 -->
+            <maxHistory>15</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- maxFileSize:这是活动文件的大小，默认值是10MB，测试时可改成1KB看效果 -->
+                <maxFileSize>30MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    <appender name="fileErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>${FILE_LOG_CHARSET}</charset>
+        </encoder>
+        <File>${LOG_BASE_FOLDER}/${APP_NAME}-error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_BASE_FOLDER}/%d{yyyy-MM}/${APP_NAME}-error-%d{dd_HH_mm_ss}.%i.log.gz
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>30MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <root level="ALL">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="fileDebugAppender"/>
+        <appender-ref ref="fileErrorAppender"/>
+    </root>
+
+    <!-- 不想在 控制台 上看到，也不想在 文件日志 里看到。毕竟每秒产生一行，谁也顶不住。 -->
+    <logger name="org.apache.tomcat.util.net.NioEndpoint" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="fileDebugAppender"/>
+        <appender-ref ref="fileErrorAppender"/>
+    </logger>
+</configuration>

@@ -37,6 +37,9 @@ spring:
                         multi-statement-allow: true
                         # 允许非基本语句的其他语句
                         none-base-statement-allow: true
+            # 是否允许重置数据 （已设计成必填。安全相关，必须设置）
+            stat-view-servlet:
+                reset-enable: false
             #是否启用StatFilter默认值false，用于采集 web-jdbc 关联监控的数据。
             web-stat-filter:
                 enabled: true
@@ -44,6 +47,8 @@ spring:
                 exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
                 #需要监控的 url
                 url-pattern: "/*"
+                session-stat-enable: true       # 开启session统计功能
+                session-stat-max-count: 1000    # session的最大个数,默认100
     sql:
         init:
             encoding: UTF-8
@@ -111,12 +116,15 @@ debug: false
 logging:
     charset:
         console: UTF-8
+    config: classpath:log/conf/logback-spring.xml
 
 
 app:
     service:
-        vfs-webdav:
-            enable-server: false
-#            root-path: "C:/bigtmp/"
-
+        vfs:
+            webdav:
+                enable: true
+                setting:
+                    open: false
+                    # root-path: "C:/bigtmp/"
 

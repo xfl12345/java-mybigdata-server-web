@@ -36,7 +36,7 @@ plugins {
 group = 'cc.xfl12345.mybigdata'
 version = '0.0.1'
 sourceCompatibility = '17'
-if ((new File("config.gradle")).exists()) {
+if (getProject().file('config.gradle').exists()) {
     apply from: 'config.gradle'
 }
 
@@ -77,7 +77,26 @@ publishing {
     }
 }
 
+tasks.named('test') {
+    useJUnitPlatform()
+}
 
+tasks.named('bootJar') {
+    doLast {
+        File applicationProperties = getProject().file('config/application.properties');
+        if (applicationProperties.exists()) {
+            String destDirPath = 'build/libs/';
+            File configDir = getProject().file(destDirPath);
+            if (!configDir.exists()) {
+                configDir.mkdirs();
+            }
+            copy {
+                from applicationProperties.toPath()
+                into getProject().file(destDirPath).toPath()
+            }
+        }
+    }
+}
 
 repositories {
     mavenLocal()
@@ -123,7 +142,7 @@ dependencies {
 
     def applyPlatform2All = (myDependencyParent) -> {
         api platform(myDependencyParent)
-        providedRuntime platform(myDependencyParent)
+        // providedRuntime platform(myDependencyParent)
         annotationProcessor platform(myDependencyParent)
         runtimeOnly platform(myDependencyParent)
         runtimeClasspath platform(myDependencyParent)
@@ -143,7 +162,7 @@ dependencies {
         depsParentVersion = 'ad2e00850d'
         applyPlatform2All(group: 'com.github.xfl12345', name: 'java-mybigdata-server-deps-parent', version: depsParentVersion)
 
-        def parentModuleVersion = '29200efe5e'
+        def parentModuleVersion = 'd7184a518d'
         // https://jitpack.io/#xfl12345/java-mybigdata-server-mysql-spring-boot-starter
         implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion
         // implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion, ext: 'pom'
@@ -170,9 +189,9 @@ dependencies {
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
-    providedRuntime(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-        exclude group: 'com.vaadin.external.google', module: 'android-json'
-    }
+    // providedRuntime(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+    //     exclude group: 'com.vaadin.external.google', module: 'android-json'
+    // }
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
@@ -213,13 +232,13 @@ dependencies {
             ]
         ],
         // JSP support
-        'org.apache.tomcat': [
-            "$tomcatVersion": [
-                'tomcat-jsp-api',
-                'tomcat-jasper',
-                'tomcat-servlet-api'
-            ]
-        ],
+        // 'org.apache.tomcat': [
+        //     "$tomcatVersion": [
+        //         'tomcat-jsp-api',
+        //         'tomcat-jasper',
+        //         'tomcat-servlet-api'
+        //     ]
+        // ],
         'org.apache.jackrabbit': [
             "$jackrabbitVersion": [
                 'jackrabbit-core',
@@ -249,6 +268,8 @@ dependencies {
     testAnnotationProcessor group: 'org.projectlombok', name: 'lombok'
     testImplementation group: 'org.projectlombok', name: 'lombok'
 
+    // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
+    implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '4.7.2'
 
     // https://mvnrepository.com/artifact/org.json/json
     implementation group: 'org.json', name: 'json', version: '20220320'
@@ -383,6 +404,4 @@ dependencies {
 
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
+

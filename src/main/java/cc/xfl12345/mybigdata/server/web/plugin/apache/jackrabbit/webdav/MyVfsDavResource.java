@@ -5,6 +5,7 @@ import cc.xfl12345.mybigdata.server.web.http.HttpRangeParser;
 import com.github.alanger.webdav.VfsDavResource;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.RandomAccessFileInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileContent;
@@ -24,12 +25,16 @@ import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * See org.apache.jackrabbit.webdav.simple.DavResourceImpl
  */
+@Slf4j
 public class MyVfsDavResource extends VfsDavResource implements Closeable {
     protected volatile boolean keepGoing = true;
+
+    protected ConcurrentHashMap<OutputStream, Object> spoolOutputStream = new ConcurrentHashMap<>();
 
     protected DavServletRequest davServletRequest;
 
@@ -76,6 +81,8 @@ public class MyVfsDavResource extends VfsDavResource implements Closeable {
 
 
     protected void sentRangeBytesLoop(InputStream is, OutputStream os, long rangeSize, boolean autoCloseInputStream) throws IOException {
+        spoolOutputStream.put(os, new Object());
+
         try {
             byte[] buffer = new byte[outputBufferSize];
             int bytesRead;
@@ -95,6 +102,7 @@ public class MyVfsDavResource extends VfsDavResource implements Closeable {
                 }
             }
         } finally {
+            spoolOutputStream.remove(os);
             if (autoCloseInputStream) {
                 is.close();
             }
@@ -103,11 +111,11 @@ public class MyVfsDavResource extends VfsDavResource implements Closeable {
 
     protected void sentRangeBytes(LocalFile file, OutputStream os, HttpRange httpRange, long fileSize) throws IOException {
         RandomAccessContent randomAccessContent = file.getRandomAccessContent(RandomAccessMode.READ);
-        long rangeStart = httpRange.getRangeStart(fileSize);
+        InputStream is = randomAccessContent.getInputStream();
+        // 按 实际跳跃大小 作 起点
+        long rangeStart = is.skip(httpRange.getRangeStart(fileSize));
         long rangeEnd = httpRange.getRangeEnd(fileSize);
         long rangeSize = rangeEnd - rangeStart + 1;
-        randomAccessContent.seek(rangeStart);
-        InputStream is = randomAccessContent.getInputStream();
 
         sentRangeBytesLoop(is, os, rangeSize, true);
     }
@@ -270,6 +278,20 @@ public class MyVfsDavResource extends VfsDavResource implements Closeable {
     @Override
     public void close() {
         keepGoing = false;
+        OutputStream[] outputStreams = spoolOutputStream.keySet().toArray(OutputStream[]::new);
+        try {
+            log.debug("The living output stream of [" + fileObject.getURL().toString() + "] in total " + outputStreams.length);
+        } catch (FileSystemException e) {
+            throw new RuntimeException(e);
+        }
+        for (OutputStream os : outputStreams) {
+            try {
+                log.debug("Closing the output stream of [" + fileObject.getURL().toString() + "] <---> " + os.toString());
+                os.close();
+            } catch (IOException ignored) {
+            }
+            spoolOutputStream.remove(os);
+        }
     }
 }
 

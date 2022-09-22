@@ -14,8 +14,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.net.MalformedURLException;
 
 @Configuration
-@ConditionalOnProperty(prefix = "mybigdata.webui", name = "location")
-@ConfigurationProperties(prefix = "mybigdata.webui")
+@ConditionalOnProperty(prefix = "app.webui", name = "location")
+@ConfigurationProperties(prefix = "app.webui")
 public class UiResourceConfig implements WebMvcConfigurer {
     protected Resource resource;
 

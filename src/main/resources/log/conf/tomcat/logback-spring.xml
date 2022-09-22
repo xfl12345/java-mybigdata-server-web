@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <!-- （*必须,各应用需要修改） 部署应用的名称,命名规则 :全部小写字母、中短横线、数字,与微服务命名,disconf中命名一致 -->
-    <property name="APP_NAME" value="mybigdata"/>
-    <property name="LOG_BASE_FOLDER" value="${catalina.home}/logs/${APP_NAME}"/>
-    <!-- <property name="LOG_BASE_FOLDER" value="${user.home}/logs/${APP_NAME}"/> -->
-    <include resource="log/conf/logback-spring-base.xml"/>
-</configuration>

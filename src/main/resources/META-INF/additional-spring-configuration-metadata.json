@@ -1,9 +1,22 @@
 {
     "properties": [
         {
+            "sourceType": "cc.xfl12345.mybigdata.server.web.config.VFSConfig",
+            "name": "app.service.vfs.webdav.enable",
+            "type": "java.lang.Boolean",
+            "description": "设置是否实例化Webdav服务器"
+        },
+        {
             "sourceType": "cc.xfl12345.mybigdata.server.web.service.VfsWebDavService",
-            "name": "app.service.vfs-webdav.root-path",
-            "description": "设置用于Webdav访问的本地存储路径"
+            "name": "app.service.vfs-webdav.setting.open",
+            "type": "java.lang.Boolean",
+            "description": "设置Webdav服务器是否允许访问"
+        },
+        {
+            "sourceType": "cc.xfl12345.mybigdata.server.web.service.VfsWebDavService",
+            "name": "app.service.vfs-webdav.setting.root-path",
+            "type": "java.lang.String",
+            "description": "设置Webdav访问的本地存储路径"
         }
     ]
 }

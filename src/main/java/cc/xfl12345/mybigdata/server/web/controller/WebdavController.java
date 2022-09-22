@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@ConditionalOnProperty(prefix = "app.service.vfs-webdav", name = "enable-server")
+@ConditionalOnProperty(prefix = "app.service.vfs.webdav", name = "enable", havingValue = "true", matchIfMissing = true)
 @Controller
 @RequestMapping(WebdavController.VIRTUAL_SERVLET_PATH)
 @Slf4j
@@ -42,7 +42,7 @@ public class WebdavController {
             range = request.getHeader("Range");
         }
         if (!StringUtils.isEmpty(range)) {
-            log.info(request.getRemoteAddr() + " request for range=" + range);
+            log.debug(request.getRemoteAddr() + " request for range=" + range);
         }
         vfsWebDavService.service(wrapper, response);
     }

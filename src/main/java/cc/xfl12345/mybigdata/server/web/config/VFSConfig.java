@@ -63,7 +63,7 @@ public class VFSConfig {
         return fileSystemOptions;
     }
 
-    @Bean
+    @Bean(destroyMethod = "close")
     public StandardFileSystemManager apacheVfsFileSystemManager() throws IOException {
         // 修复一些BUG，让SpringBoot APP哪怕以JAR包运行也能正常读取resource资源
         SpringBootResourceFileProvider resourceFileProvider = new SpringBootResourceFileProvider();
@@ -111,21 +111,19 @@ public class VFSConfig {
         return fileSystemManager;
     }
 
-    @Bean
+    @Bean(destroyMethod = "close")
     public RamFileSystem ramFileSystem(FileSystemManager fileSystemManager) throws IOException {
         FileObject fileObject = fileSystemManager.resolveFile("ram:/");
         return (RamFileSystem) fileObject.getFileSystem();
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.service.vfs-webdav", name = "enable-server")
-    @ConfigurationProperties(prefix = "app.service.vfs-webdav")
-    public VfsWebDavService vfsWebDavService(
-        FileSystemManager fileSystemManager,
-        FileSystemOptions fileSystemOptions) throws IOException {
+    @ConditionalOnProperty(prefix = "app.service.vfs.webdav", name = "enable", havingValue = "true", matchIfMissing = true)
+    @ConfigurationProperties(prefix = "app.service.vfs.webdav.setting")
+    public VfsWebDavService vfsWebDavService(FileSystemManager manager, FileSystemOptions options) {
         VfsWebDavService vfsWebDavService = new VfsWebDavService();
-        vfsWebDavService.setFileSystemManager(fileSystemManager);
-        vfsWebDavService.setFileSystemOptions(fileSystemOptions);
+        vfsWebDavService.setFileSystemManager(manager);
+        vfsWebDavService.setFileSystemOptions(options);
         return vfsWebDavService;
     }
 }

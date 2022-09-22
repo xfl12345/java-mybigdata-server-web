@@ -135,7 +135,7 @@ public class VfsWebDavService implements ApplicationListener<ContextClosedEvent>
 
     @Getter
     @Setter
-    protected boolean enableServer = true;
+    protected boolean open = true;
 
     @Getter
     protected String rootPath = null;
@@ -204,7 +204,13 @@ public class VfsWebDavService implements ApplicationListener<ContextClosedEvent>
 
     protected NoArgGenerator uuidGenerator = Generators.timeBasedGenerator();
 
-    protected ConcurrentHashMap<MyVfsDavResource, ConcurrentHashMap<UUID, Thread>> spoolThreads = new ConcurrentHashMap<>();
+    // protected static class ThreadAndStream {
+    //     public Thread thread;
+    //     public OutputStream outputStream;
+    // }
+
+    // protected ConcurrentHashMap<MyVfsDavResource, ConcurrentHashMap<UUID, Thread>> spoolThreads = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<UUID, MyVfsDavResource> spoolDavResource = new ConcurrentHashMap<>();
 
     protected volatile boolean keepGoing = true;
 
@@ -219,23 +225,27 @@ public class VfsWebDavService implements ApplicationListener<ContextClosedEvent>
 
         log.info("Start to close davResource.");
 
-        for (MyVfsDavResource davResource : spoolThreads.keySet().parallelStream().toList()) {
+        for (MyVfsDavResource davResource : spoolDavResource.values().parallelStream().toList()) {
             davResource.close();
-            ConcurrentHashMap<UUID, Thread> threadMap = spoolThreads.get(davResource);
-            if (threadMap != null) {
-                // threadMap.values().forEach(item -> {
-                //     try {
-                //         item.join();
-                //     } catch (InterruptedException e) {
-                //         throw new RuntimeException(e);
-                //     }
-                // });
-                threadMap.clear();
-            }
-            spoolThreads.remove(davResource);
+            // ConcurrentHashMap<UUID, Thread> threadMap = spoolThreads.get(davResource);
+            // if (threadMap != null) {
+            //     // threadMap.values().forEach(item -> {
+            //     //     try {
+            //     //         item.join();
+            //     //     } catch (InterruptedException e) {
+            //     //         throw new RuntimeException(e);
+            //     //     }
+            //     // });
+            //     threadMap.clear();
+            // }
+            spoolDavResource.remove(davResource);
         }
 
-        spoolThreads.clear();
+        spoolDavResource.clear();
+
+        if (rootPathFileObject != null) {
+            fileSystemManager.closeFileSystem(rootPathFileObject.getFileSystem());
+        }
 
         log.info("Destroy service: {}, rootpath: {}, listingsDirectory: {}, version: {}",
             this,
@@ -251,7 +261,7 @@ public class VfsWebDavService implements ApplicationListener<ContextClosedEvent>
     }
 
     public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!enableServer || !keepGoing) {
+        if (!open || !keepGoing) {
             response.setStatus(HttpServletResponse.SC_GONE);
             return;
         }
@@ -732,30 +742,26 @@ public class VfsWebDavService implements ApplicationListener<ContextClosedEvent>
         }
 
 
-        Thread thread = Thread.currentThread();
+        // Thread thread = Thread.currentThread();
         MyVfsDavResource davResource = (MyVfsDavResource) resource;
-        ConcurrentHashMap<UUID, Thread> threadMap = spoolThreads.putIfAbsent(davResource, new ConcurrentHashMap<>());
-        if (threadMap == null) {
-            threadMap = spoolThreads.get(davResource);
-        }
+
 
         UUID uuid;
         do {
             uuid = uuidGenerator.generate();
-        } while (keepGoing && threadMap.putIfAbsent(uuid, thread) != null);
+        } while (keepGoing && spoolDavResource.putIfAbsent(uuid, davResource) != null);
 
         if (!keepGoing) {
-            threadMap.remove(uuid);
+            spoolDavResource.remove(uuid);
             return;
         }
 
-        try {
+        try (OutputStream out = (sendContent) ? response.getOutputStream() : null) {
             // spool resource properties and eventually resource content.
-            OutputStream out = (sendContent) ? response.getOutputStream() : null;
             resource.spool(getOutputContext(response, out));
             response.flushBuffer();
         } finally {
-            threadMap.remove(uuid);
+            spoolDavResource.remove(uuid);
         }
     }
 

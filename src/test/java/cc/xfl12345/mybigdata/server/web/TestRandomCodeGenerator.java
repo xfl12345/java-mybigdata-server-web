@@ -8,6 +8,6 @@ public class TestRandomCodeGenerator {
         RandomCodeGeneratorImpl generator = new RandomCodeGeneratorImpl();
         generator.setUuidGenerator(Generators.timeBasedGenerator());
 
-        System.out.println(generator.generate(20));
+        System.out.println(generator.generate(50));
     }
 }
