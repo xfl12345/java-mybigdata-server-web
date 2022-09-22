@@ -42,6 +42,6 @@ public class UiResourceConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/ui/**").addResourceLocations(resource);
+        registry.addResourceHandler("/**").addResourceLocations(resource);
     }
 }
