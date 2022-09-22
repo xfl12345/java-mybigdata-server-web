@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
+import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @Slf4j
-@RequestMapping("spring")
+@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + "spring")
 public class SpringFrameworkController implements ApplicationContextAware {
 
     protected ConfigurableApplicationContext applicationContext;

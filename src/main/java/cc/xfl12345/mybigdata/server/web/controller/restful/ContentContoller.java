@@ -5,6 +5,7 @@ import cc.xfl12345.mybigdata.server.common.data.handler.StringTypeHandler;
 import cc.xfl12345.mybigdata.server.common.data.interceptor.FunctionWithException;
 import cc.xfl12345.mybigdata.server.common.database.error.TableDataException;
 import cc.xfl12345.mybigdata.server.common.database.error.TableOperationException;
+import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
-@RequestMapping("content/string")
+@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + "content/string")
 public class ContentContoller {
     protected StringTypeHandler stringTypeHandler;
 

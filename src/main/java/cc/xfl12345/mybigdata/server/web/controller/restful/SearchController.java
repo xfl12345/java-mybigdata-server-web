@@ -3,6 +3,7 @@ package cc.xfl12345.mybigdata.server.web.controller.restful;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.common.data.condition.SingleTableCondition;
 import cc.xfl12345.mybigdata.server.common.web.mapper.AdvanceSearchMapper;
+import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("search")
+@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + "search")
 public class SearchController {
     protected AdvanceSearchMapper advanceSearchMapper;
 

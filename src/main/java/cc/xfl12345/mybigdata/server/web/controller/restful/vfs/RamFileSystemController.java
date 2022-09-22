@@ -1,6 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful.vfs;
 
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
+import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.web.model.uri.URIRelativize;
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
@@ -23,7 +24,7 @@ import java.net.URISyntaxException;
 
 @RestController
 @Slf4j
-@RequestMapping(RamFileSystemController.servletPath)
+@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + RamFileSystemController.servletPath)
 public class RamFileSystemController {
     public static final String servletPath = "/vfs/ramfs";
 

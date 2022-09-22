@@ -1,6 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
 import cc.xfl12345.mybigdata.server.common.utility.CopyUtils;
+import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.service.AccountService;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping(AccountController.servletName)
+@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + AccountController.servletName)
 public class AccountController {
     @Getter
     protected AccountService accountService;
