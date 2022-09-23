@@ -55,7 +55,7 @@ idea {
 }
 
 java {
-    compileJava.options.compilerArgs  << '-Xlint:unchecked'
+    compileJava.options.compilerArgs  << '-Xlint:unchecked' << "-Xlint:deprecation"
     compileJava.options.encoding = 'UTF-8'
     withSourcesJar()
     // withJavadocJar()
@@ -123,16 +123,16 @@ repositories {
 dependencies {
     // 补全环境，使得 Intelij IDEA 可以调试 build.gradle
     // https://search.maven.org/artifact/org.apache.groovy/groovy-all/4.0.4/pom
-    testRuntimeOnly 'org.apache.groovy:groovy:4.0.4'
+    testRuntimeOnly 'org.apache.groovy:groovy:4.0.5'
 
-    File localDevModeConfFile = new File("localDevMode");
+    File localDevModeConfFile = getProject().file('localDevMode');
     boolean isLocalDevMode = false;
     if (localDevModeConfFile.exists()) {
         FileReader fileReader = new FileReader(localDevModeConfFile, StandardCharsets.UTF_8);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         try {
             String localDevMode = bufferedReader.readLine();
-            isLocalDevMode = "true".equals(localDevMode);
+            isLocalDevMode = 'true'.equals(localDevMode);
         } catch (Exception ignored) {
         } finally {
             bufferedReader.close();
@@ -195,7 +195,7 @@ dependencies {
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-    def saTokenVersion = '1.30.0'
+    def saTokenVersion = '1.31.0'
     def hutoolVersion = '5.8.6'
     def apacheCommonsVFS2Version = '2.9.0'
 
@@ -209,38 +209,28 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
 
     // WebDAV 支持
-//    // https://mvnrepository.com/artifact/com.seanox/seanox-spring-webdav
-//    implementation( group: 'com.seanox', name: 'seanox-spring-webdav', version: '1.1.1') {
-//        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-//    }
+    // // https://mvnrepository.com/artifact/com.seanox/seanox-spring-webdav
+    // implementation( group: 'com.seanox', name: 'seanox-spring-webdav', version: '1.1.1') {
+    //    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    // }
+    //
+    // // https://mvnrepository.com/artifact/com.github.a-langer/webdav-vfs-gate
+    // implementation (group: 'com.github.a-langer', name: 'webdav-vfs-gate', version: '1.0.0', classifier: 'classes') {
+    //    exclude group: 'ch.qos.logback'
+    // }
 
-//    // https://mvnrepository.com/artifact/com.github.a-langer/webdav-vfs-gate
-//    implementation (group: 'com.github.a-langer', name: 'webdav-vfs-gate', version: '1.0.0', classifier: 'classes') {
-//        exclude group: 'ch.qos.logback'
-//    }
 
-
-    String org_apache_poi_version = '5.2.2'
-    String tomcatVersion = '9.0.65'
-    String jackrabbitVersion = '2.21.11'
     Object uni_dependencies = [
-        // poi
+        // Apache POI
         'org.apache.poi' : [
-            "$org_apache_poi_version": [
+            '5.2.2': [
                 'poi',
                 'poi-ooxml-full'
             ]
         ],
-        // JSP support
-        // 'org.apache.tomcat': [
-        //     "$tomcatVersion": [
-        //         'tomcat-jsp-api',
-        //         'tomcat-jasper',
-        //         'tomcat-servlet-api'
-        //     ]
-        // ],
+        // Apache Jackrabbit WebDAV
         'org.apache.jackrabbit': [
-            "$jackrabbitVersion": [
+            '2.21.11': [
                 'jackrabbit-core',
                 'jackrabbit-webdav'
             ]
