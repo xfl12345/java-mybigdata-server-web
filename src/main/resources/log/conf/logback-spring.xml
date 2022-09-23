@@ -111,4 +111,9 @@
         <appender-ref ref="fileDebugAppender"/>
         <appender-ref ref="fileErrorAppender"/>
     </logger>
+    <logger name="org.apache.catalina.session.ManagerBase" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="fileDebugAppender"/>
+        <appender-ref ref="fileErrorAppender"/>
+    </logger>
 </configuration>
