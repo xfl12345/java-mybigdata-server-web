@@ -29,7 +29,6 @@
     <!--<property name="CONSOLE_LOG_PATTERN" value="%clr([%d{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){orange} %clr(%level){blue} %clr(%logger){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>-->
     <property name="CONSOLE_LOG_PATTERN"
               value="%clr([%d{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){orange} %clr(%-6level){blue} %clr(%-56logger{56}:%6L){cyan} - %highlight(%m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx})"/>
-    <!--<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>-->
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
