@@ -2,6 +2,7 @@ package cc.xfl12345.mybigdata.server.web.config;
 
 import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.web.model.generator.impl.RandomCodeGeneratorImpl;
+import cc.xfl12345.mybigdata.server.web.pojo.RequestAnalyser;
 import cc.xfl12345.mybigdata.server.web.pojo.ResourceCacheMapBean;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
@@ -57,5 +58,11 @@ public class IndependenceBeansConfig {
     @ConditionalOnMissingBean
     public RandomCodeGenerator randomCodeGenerator() {
         return new RandomCodeGeneratorImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public RequestAnalyser requestAnalyser() {
+        return new RequestAnalyser();
     }
 }

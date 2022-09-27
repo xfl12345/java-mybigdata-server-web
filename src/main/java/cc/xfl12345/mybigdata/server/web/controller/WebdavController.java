@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.web.controller;
 
+import cc.xfl12345.mybigdata.server.web.pojo.RequestAnalyser;
 import cc.xfl12345.mybigdata.server.web.service.VfsWebDavService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,14 @@ public class WebdavController {
         this.vfsWebDavService = vfsWebDavService;
     }
 
+    @Getter
+    protected RequestAnalyser requestAnalyser;
+
+    @Autowired
+    public void setRequestAnalyser(RequestAnalyser requestAnalyser) {
+        this.requestAnalyser = requestAnalyser;
+    }
+
     @RequestMapping("/**")
     public void vfsWebdav(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request) {
@@ -38,12 +47,13 @@ public class WebdavController {
             }
         };
         String range = request.getHeader("Content-Range");
-        if (range == null) {
+        if (StringUtils.isEmpty(range)) {
             range = request.getHeader("Range");
         }
         if (!StringUtils.isEmpty(range)) {
-            log.debug(request.getRemoteAddr() + " request for range=" + range);
+            log.debug(requestAnalyser.getIpAddress(request) + " request for range=" + range);
         }
+
         vfsWebDavService.service(wrapper, response);
     }
 }
