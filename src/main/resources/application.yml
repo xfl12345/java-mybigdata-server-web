@@ -98,18 +98,22 @@ sa-token:
 
 
 server:
-    port: 8081
+    port: 8880
     tomcat:
         accesslog:
             enabled: true
             encoding: UTF-8
             ipv6-canonical: true
+        remoteip:
+            protocol-header: X-Forwarded-Proto
+        use-relative-redirects: true
     servlet:
         encoding:
             enabled: true
             charset: UTF-8
             force-response: true
         context-path: /${spring.application.name}
+    forward-headers-strategy: native
 
 
 debug: false
