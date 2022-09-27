@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + "db/viewer")
+@RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + "db/viewer")
 public class DatabaseViewerController {
     protected DatabaseViewer databaseViewer;
 

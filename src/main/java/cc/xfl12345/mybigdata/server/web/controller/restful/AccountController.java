@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + AccountController.servletName)
+@RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + AccountController.servletName)
 public class AccountController {
     @Getter
     protected AccountService accountService;

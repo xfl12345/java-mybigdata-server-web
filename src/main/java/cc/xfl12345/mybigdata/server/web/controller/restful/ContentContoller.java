@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
-@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + "content/string")
+@RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + "content/string")
 public class ContentContoller {
     protected StringTypeHandler stringTypeHandler;
 

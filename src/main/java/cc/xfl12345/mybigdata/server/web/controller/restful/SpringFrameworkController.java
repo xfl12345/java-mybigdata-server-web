@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @Slf4j
-@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + "spring")
+@RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + "spring")
 public class SpringFrameworkController implements ApplicationContextAware {
 
     protected ConfigurableApplicationContext applicationContext;

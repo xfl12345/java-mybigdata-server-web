@@ -32,6 +32,6 @@ public class AppSpringMvcConfig extends WebMvcAutoConfiguration implements WebMv
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(uploadInterceptor).addPathPatterns("/upload/**");
-        registry.addInterceptor(apiRequestInterceptor).addPathPatterns("/" + ApiConst.BACKEND_PATH_NAME + "/**");
+        registry.addInterceptor(apiRequestInterceptor).addPathPatterns("/" + ApiConst.BACKEND_PATH_BASE + "/**");
     }
 }

@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 
 @RestController
 @Slf4j
-@RequestMapping(ApiConst.BACKEND_PATH_NAME + '/' + RamFileSystemController.servletPath)
+@RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + RamFileSystemController.servletPath)
 public class RamFileSystemController {
     public static final String servletPath = "/vfs/ramfs";
 
