@@ -112,7 +112,6 @@ server:
             enabled: true
             charset: UTF-8
             force-response: true
-        context-path: /${spring.application.name}
     forward-headers-strategy: native
 
 
