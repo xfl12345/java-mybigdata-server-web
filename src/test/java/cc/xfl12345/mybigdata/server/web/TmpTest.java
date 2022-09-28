@@ -6,6 +6,7 @@ public class TmpTest {
     public static void main(String[] args) throws Exception {
         String content = "[君の名は。Fans] スパークル (original ver.) -Your name. Music Video edition- [DVDRip x264 N.mp4";
         System.out.println(StringEscapeUtils.escapeBracketsOnly4URL(content));
+        // ClassLoader.getSystemResource("META-INF/resources/webjars/");
 
         System.out.println();
     }
