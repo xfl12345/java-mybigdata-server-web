@@ -113,6 +113,8 @@ server:
             charset: UTF-8
             force-response: true
     forward-headers-strategy: native
+    http2:
+        enabled: true
 
 
 debug: false
