@@ -9,7 +9,7 @@ import java.io.IOException;
 @Controller
 public class RedirectController {
     @RequestMapping(path = {"", "index"})
-    public void redirectBackend(HttpServletResponse response) throws IOException {
+    public void redirectIndexPage(HttpServletResponse response) throws IOException {
         response.sendRedirect("./index.html");
     }
 }
