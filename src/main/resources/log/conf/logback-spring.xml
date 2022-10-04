@@ -2,7 +2,10 @@
 <configuration>
     <!-- （*必须,各应用需要修改） 部署应用的名称,命名规则 :全部小写字母、中短横线、数字,与微服务命名,disconf中命名一致 -->
     <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
-    <springProperty scope="context" name="LOG_BASE_FOLDER" source="app.logging.file.path"/>
+
+    <springProperty scope="context" name="LOG_FILE_BASE_FOLDER" source="app.logging.file.path"/>
+    <springProperty scope="context" name="LOG_FILE_BASE_NAME" source="logging.file.name"/>
+
     <springProperty scope="context" name="CONSOLE_LOG_CHARSET" source="logging.charset.console"/>
     <springProperty scope="context" name="FILE_LOG_CHARSET" source="logging.charset.console"/>
 
@@ -69,12 +72,12 @@
             <!-- 记录日志的编码:此处设置字符集 - -->
             <charset>${FILE_LOG_CHARSET}</charset>
         </encoder>
-        <File>${LOG_BASE_FOLDER}/${APP_NAME}-debug.log</File>
+        <File>${LOG_FILE_BASE_FOLDER}/${LOG_FILE_BASE_NAME}-debug.log</File>
         <!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 -->
         <!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->
-            <fileNamePattern>${LOG_BASE_FOLDER}/%d{yyyy-MM}/${APP_NAME}-debug-%d{dd_HH_mm_ss}.%i.log.gz
+            <fileNamePattern>${LOG_FILE_BASE_FOLDER}/%d{yyyy-MM}/${LOG_FILE_BASE_NAME}-debug-%d{dd_HH_mm_ss}.%i.log.gz
             </fileNamePattern>
             <!-- 每产生一个日志文件，该日志文件的保存期限为180天 -->
             <maxHistory>15</maxHistory>
@@ -92,9 +95,9 @@
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
             <charset>${FILE_LOG_CHARSET}</charset>
         </encoder>
-        <File>${LOG_BASE_FOLDER}/${APP_NAME}-error.log</File>
+        <File>${LOG_FILE_BASE_FOLDER}/${LOG_FILE_BASE_NAME}-error.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_BASE_FOLDER}/%d{yyyy-MM}/${APP_NAME}-error-%d{dd_HH_mm_ss}.%i.log.gz
+            <fileNamePattern>${LOG_FILE_BASE_FOLDER}/%d{yyyy-MM}/${LOG_FILE_BASE_NAME}-error-%d{dd_HH_mm_ss}.%i.log.gz
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>30MB</maxFileSize>
