@@ -1,6 +1,8 @@
 package cc.xfl12345.mybigdata.server.web.config;
 
-import cn.hutool.core.lang.Validator;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -11,13 +13,20 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 @Configuration
 @ConditionalOnProperty(prefix = "app.webui", name = "location")
 @ConfigurationProperties(prefix = "app.webui")
+@Slf4j
 public class UiResourceConfig implements WebMvcConfigurer {
     protected Resource resource;
+
+    @Getter
+    @Setter
+    protected String pathPattern = "/**";
 
     protected String location;
 
@@ -25,23 +34,28 @@ public class UiResourceConfig implements WebMvcConfigurer {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(String location) throws IOException {
         this.location = location;
         if (location.startsWith("classpath")) {
             resource = new ClassPathResource(location);
-        } else if (Validator.isUrl(location)) {
-            try {
-                resource = new UrlResource(location);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
         } else {
-            resource = new FileSystemResource(location);
+            if (!"".equals(location)) {
+                try {
+                    resource = new UrlResource(new URL(location));
+                } catch (MalformedURLException e) {
+                    log.info("[" + location + "] is not a URL link. [java.net.URL]: " + e.getMessage());
+                }
+            }
+            if (resource == null) {
+                resource = new FileSystemResource(location);
+            }
         }
+
+        log.info("Mapping request: [" + pathPattern + "] <---> [" + resource.getURL() + "]");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations(resource);
+        registry.addResourceHandler(pathPattern).addResourceLocations(resource);
     }
 }
