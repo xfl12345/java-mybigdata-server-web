@@ -22,7 +22,6 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
 
     public static final String LOGGING_FILE_NAME = "logging.file.name";
 
-    @SuppressWarnings("unchecked")
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         Properties properties = new Properties();
