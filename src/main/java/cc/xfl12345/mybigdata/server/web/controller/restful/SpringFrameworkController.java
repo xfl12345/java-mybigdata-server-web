@@ -15,6 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
@@ -47,26 +48,24 @@ public class SpringFrameworkController {
 
     @GetMapping("reboot")
     @ResponseBody
-    public boolean reboot(HttpServletRequest request, boolean confirm) {
+    public boolean reboot(HttpServletRequest request, HttpServletResponse response, boolean confirm) {
         WebApplicationContext context = RequestContextUtils.findWebApplicationContext(request);
         if (confirm && context != null) {
-            // 三秒后执行退出任务
-            Thread thread = new Thread(() -> {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-
-                if (SpringAppStatus.launchMode == SpringAppLaunchMode.JAR) {
+            if (SpringAppStatus.launchMode == SpringAppLaunchMode.JAR) {
+                // 三秒后执行退出任务
+                Thread thread = new Thread(() -> {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
                     MybigdataApplication.restart();
-                } else {
-                    MyServletInitializer myServletInitializer = MyServletInitializer.getInstance();
-                    myServletInitializer.restart();
-                }
-            });
-            thread.start();
-            return true;
+                });
+                thread.start();
+                return true;
+            }
+
+            response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
         }
 
         return false;

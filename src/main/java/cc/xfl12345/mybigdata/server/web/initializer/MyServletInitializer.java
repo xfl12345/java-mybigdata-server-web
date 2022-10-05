@@ -21,7 +21,7 @@ public class MyServletInitializer extends SpringBootServletInitializer {
         return instance;
     }
 
-    private ConfigurableApplicationContext context;
+    private ConfigurableApplicationContext springApplicationContext;
 
     private ServletContext servletContext;
 
@@ -45,23 +45,19 @@ public class MyServletInitializer extends SpringBootServletInitializer {
     @Override
     protected WebApplicationContext run(SpringApplication application) {
         WebApplicationContext applicationContext = super.run(application);
-        context = (ConfigurableApplicationContext) applicationContext;
+        springApplicationContext = (ConfigurableApplicationContext) applicationContext;
         return applicationContext;
     }
 
-    public void restart() {
-        Thread thread = new Thread(() -> {
-            SpringApplication.exit(context);
-            try {
-                onStartup(servletContext);
-            } catch (ServletException e) {
-                throw new RuntimeException(e);
-            }
-            // context.refresh();
-        });
+    public ServletContext getServletContext() {
+        return servletContext;
+    }
 
-        thread.setDaemon(false);
-        thread.setContextClassLoader(mainThreadClassLoader);
-        thread.start();
+    public ConfigurableApplicationContext getSpringApplicationContext() {
+        return springApplicationContext;
+    }
+
+    public ClassLoader getMainThreadClassLoader() {
+        return mainThreadClassLoader;
     }
 }
