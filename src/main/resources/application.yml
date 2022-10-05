@@ -113,12 +113,14 @@ server:
     http2:
         enabled: true
 
-
 debug: false
+
 logging:
     charset:
         console: UTF-8
     config: classpath:log/conf/logback-spring.xml
+    file:
+        name: ${spring.application.name}
 
 
 app:
