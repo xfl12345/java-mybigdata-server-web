@@ -1,14 +1,14 @@
 package cc.xfl12345.mybigdata.server.web.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Controller
 public class RedirectController {
-    @RequestMapping(path = {"", "index"})
+    @GetMapping(path = {"", "index"})
     public void redirectIndexPage(HttpServletResponse response) throws IOException {
         response.sendRedirect("./index.html");
     }
