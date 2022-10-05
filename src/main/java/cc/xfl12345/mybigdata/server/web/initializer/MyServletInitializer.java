@@ -31,15 +31,15 @@ public class MyServletInitializer extends SpringBootServletInitializer {
     public void onStartup(ServletContext servletContext) throws ServletException {
         mainThreadClassLoader = Thread.currentThread().getContextClassLoader();
         this.servletContext = servletContext;
+        SpringAppStatus.launchMode = SpringAppLaunchMode.WAR;
         log.info("我的ServletContext为：" + servletContext.getServletContextName() + "; 初始化时我被调用了。");
         super.onStartup(servletContext);
         MyServletInitializer.instance = this;
     }
 
     @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        SpringAppStatus.launchMode = SpringAppLaunchMode.WAR;
-        return application.sources(MybigdataApplication.class);
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(MybigdataApplication.class);
     }
 
     @Override
