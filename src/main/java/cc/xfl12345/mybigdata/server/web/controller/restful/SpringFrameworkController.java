@@ -1,6 +1,10 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
+import cc.xfl12345.mybigdata.server.web.MybigdataApplication;
+import cc.xfl12345.mybigdata.server.web.SpringAppStatus;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
+import cc.xfl12345.mybigdata.server.web.appconst.SpringAppLaunchMode;
+import cc.xfl12345.mybigdata.server.web.initializer.MyServletInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +24,8 @@ public class SpringFrameworkController {
     @ResponseBody
     public boolean shutdown(HttpServletRequest request, boolean confirm) {
         if (confirm) {
-            WebApplicationContext springMVCContext = RequestContextUtils.findWebApplicationContext(request);
-            if (springMVCContext == null) {
+            WebApplicationContext context = RequestContextUtils.findWebApplicationContext(request);
+            if (context == null) {
                 return false;
             }
 
@@ -32,7 +36,34 @@ public class SpringFrameworkController {
                 } catch (InterruptedException e) {
                     log.error(e.getMessage());
                 }
-                SpringApplication.exit(springMVCContext);
+                SpringApplication.exit(context);
+            });
+            thread.start();
+            return true;
+        }
+
+        return false;
+    }
+
+    @GetMapping("reboot")
+    @ResponseBody
+    public boolean reboot(HttpServletRequest request, boolean confirm) {
+        WebApplicationContext context = RequestContextUtils.findWebApplicationContext(request);
+        if (confirm && context != null) {
+            // 三秒后执行退出任务
+            Thread thread = new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+
+                if (SpringAppStatus.launchMode == SpringAppLaunchMode.JAR) {
+                    MybigdataApplication.restart();
+                } else {
+                    MyServletInitializer myServletInitializer = MyServletInitializer.getInstance();
+                    myServletInitializer.restart();
+                }
             });
             thread.start();
             return true;
