@@ -4,7 +4,6 @@ import cc.xfl12345.mybigdata.server.web.MybigdataApplication;
 import cc.xfl12345.mybigdata.server.web.SpringAppStatus;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.appconst.SpringAppLaunchMode;
-import cc.xfl12345.mybigdata.server.web.initializer.MyServletInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.web.bind.annotation.GetMapping;
