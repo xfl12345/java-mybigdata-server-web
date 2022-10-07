@@ -38,6 +38,7 @@ public class SpringFrameworkController {
                 }
                 SpringApplication.exit(context);
             });
+            thread.setName("web-api-shutdown");
             thread.start();
             return true;
         }
@@ -60,6 +61,7 @@ public class SpringFrameworkController {
                     }
                     MybigdataApplication.restart();
                 });
+                thread.setName("web-api-reboot");
                 thread.start();
                 return true;
             }

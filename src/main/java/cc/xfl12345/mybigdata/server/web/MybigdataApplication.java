@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static cc.xfl12345.mybigdata.server.web.SpringAppStatus.restartCount;
+
 @EnableConfigurationProperties
 @SpringBootApplication
 public class MybigdataApplication {
@@ -25,7 +27,9 @@ public class MybigdataApplication {
             context = SpringApplication.run(MybigdataApplication.class, args.getSourceArgs());
         });
 
+        restartCount += 1;
         thread.setDaemon(false);
+        // thread.setName("restart-" + restartCount);
         thread.start();
     }
 }
