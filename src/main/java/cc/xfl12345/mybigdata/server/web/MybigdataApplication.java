@@ -29,7 +29,7 @@ public class MybigdataApplication {
 
         restartCount += 1;
         thread.setDaemon(false);
-        // thread.setName("restart-" + restartCount);
+        thread.setName("restart-" + restartCount);
         thread.start();
     }
 }
