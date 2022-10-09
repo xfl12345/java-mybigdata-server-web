@@ -8,19 +8,16 @@ public class RequestAnalyser {
 
     public RequestAnalyser() {
         putDefaultIpAddressGetter(new DefaultIpAddressGetter("cf-connecting-ip"));
-        putDefaultIpAddressGetter(new DefaultIpAddressGetter("X-Forwarded-For") {
+        putDefaultIpAddressGetter(new DefaultIpAddressGetter("X-Forwarded-For"){
             @Override
-            public String getIpAddress(HttpServletRequest request) {
-                String headerContent = request.getHeader("X-Forwarded-For");
+            protected String getIpAddress(String headerContent) {
                 String ipAddr = null;
-                if (headerContent != null && !"".equals(headerContent) && !"unknown".equalsIgnoreCase(headerContent)) {
-                    int index = headerContent.indexOf(',');
-                    if (index != -1) {
-                        //只获取第一个值
-                        ipAddr = headerContent.substring(0, index);
-                    } else {
-                        ipAddr = headerContent;
-                    }
+                int index = headerContent.indexOf(',');
+                if (index != -1) {
+                    //只获取第一个值
+                    ipAddr = headerContent.substring(0, index);
+                } else {
+                    ipAddr = headerContent;
                 }
 
                 return ipAddr;
