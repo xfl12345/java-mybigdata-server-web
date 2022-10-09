@@ -7,8 +7,8 @@ public class RequestAnalyser {
     protected LinkedHashMap<String, IpAddressGetter> ipAddressGetters = new LinkedHashMap<>();
 
     public RequestAnalyser() {
-        putDefaultIpAddressGetter(new DefaultIpAddressGetter("cf-connecting-ip"));
-        putDefaultIpAddressGetter(new DefaultIpAddressGetter("X-Forwarded-For"){
+        putDefaultIpAddressGetter(new SimpleIpAddressGetter("cf-connecting-ip"));
+        putDefaultIpAddressGetter(new SimpleIpAddressGetter("X-Forwarded-For"){
             @Override
             protected String getIpAddress(String headerContent) {
                 String ipAddr = null;
@@ -23,11 +23,11 @@ public class RequestAnalyser {
                 return ipAddr;
             }
         });
-        putDefaultIpAddressGetter(new DefaultIpAddressGetter("X-Real-IP"));
-        putDefaultIpAddressGetter(new DefaultIpAddressGetter("REMOTE-HOST"));
+        putDefaultIpAddressGetter(new SimpleIpAddressGetter("X-Real-IP"));
+        putDefaultIpAddressGetter(new SimpleIpAddressGetter("REMOTE-HOST"));
     }
 
-    private void putDefaultIpAddressGetter(DefaultIpAddressGetter getter) {
+    private void putDefaultIpAddressGetter(SimpleIpAddressGetter getter) {
         ipAddressGetters.put(getter.getHeaderKey(), getter);
     }
 

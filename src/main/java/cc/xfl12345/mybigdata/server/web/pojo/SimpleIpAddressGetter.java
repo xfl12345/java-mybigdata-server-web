@@ -2,14 +2,14 @@ package cc.xfl12345.mybigdata.server.web.pojo;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class DefaultIpAddressGetter implements IpAddressGetter {
+public class SimpleIpAddressGetter implements IpAddressGetter {
     protected String headerKey;
 
     public String getHeaderKey() {
         return headerKey;
     }
 
-    public DefaultIpAddressGetter(String headerKey) {
+    public SimpleIpAddressGetter(String headerKey) {
         this.headerKey = headerKey;
     }
 
