@@ -11,9 +11,9 @@ spring:
     thymeleaf:
         cache: false
     datasource:
-        username: xfl
-        password: amazingxfl666
-        url: "jdbc:mysql://localhost:3306/xfl_mybigdata?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowMultiQueries=true"
+        username: ${spring.application.name}
+        password: ${spring.application.name}
+        url: "jdbc:mysql://localhost:3306/${spring.application.name}?characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true&allowMultiQueries=true"
         driver-class-name: com.mysql.cj.jdbc.Driver
         type: com.alibaba.druid.pool.DruidDataSource
         # druid 其它配置
