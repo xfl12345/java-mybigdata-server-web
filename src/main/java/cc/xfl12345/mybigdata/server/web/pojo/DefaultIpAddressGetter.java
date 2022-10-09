@@ -17,9 +17,13 @@ public class DefaultIpAddressGetter implements IpAddressGetter {
     public String getIpAddress(HttpServletRequest request) {
         String headerContent = request.getHeader(headerKey);
         if (headerContent != null && !"".equals(headerContent) && !"unknown".equalsIgnoreCase(headerContent)) {
-            return headerContent;
+            return getIpAddress(headerContent);
         }
 
         return null;
+    }
+
+    protected String getIpAddress(String headerContent) {
+        return headerContent;
     }
 }
