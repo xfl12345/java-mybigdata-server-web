@@ -38,10 +38,8 @@ public class RequestAnalyser {
      * @return IP地址字符串
      */
     public String getIpAddress(HttpServletRequest request) {
-        String ipAddr = null;
-
         for (IpAddressGetter getter : ipAddressGetters.values()) {
-            ipAddr = getter.getIpAddress(request);
+            String ipAddr = getter.getIpAddress(request);
             if (ipAddr != null) {
                 return ipAddr;
             }
