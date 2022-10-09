@@ -15,7 +15,7 @@ public class DefaultIpAddressGetter implements IpAddressGetter {
 
     @Override
     public String getIpAddress(HttpServletRequest request) {
-        String headerContent = request.getHeader("X-Real-IP");
+        String headerContent = request.getHeader(headerKey);
         if (headerContent != null && !"".equals(headerContent) && !"unknown".equalsIgnoreCase(headerContent)) {
             return headerContent;
         }
