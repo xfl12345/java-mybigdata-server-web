@@ -4,10 +4,6 @@ pluginManagement {
         maven { url 'https://repo.spring.io/release' }
         mavenLocal()
     }
-
-    plugins {
-        id 'org.springframework.experimental.aot' version '0.12.1'
-    }
 }
 
 rootProject.name = 'server-web'

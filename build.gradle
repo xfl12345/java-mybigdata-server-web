@@ -11,58 +11,22 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/spring-plugin' }
     }
 
-    // dependencies {
-    //     classpath 'io.github.fvarrui:javapackager:1.6.7'
-    // }
+    dependencies {
+        classpath 'io.github.fvarrui:javapackager:1.6.7'
+    }
 }
 
 plugins {
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'org.springframework.boot' version '2.7.4'
-    id 'org.springframework.experimental.aot' version '0.12.1'
-    // id 'org.jreleaser' version '1.2.0'
     id 'maven-publish'
-    id 'application'
     id 'java'
     id 'war'
     id 'eclipse'
     id 'idea'
 }
 
-// apply plugin: 'io.github.fvarrui.javapackager.plugin'
-
-// bootBuildImage {
-//     builder = "paketobuildpacks/builder:tiny"
-//     environment = [
-//         "BP_NATIVE_IMAGE": "true"
-//     ]
-// }
-
-application {
-    mainClass = 'org.springframework.boot.loader.JarLauncher'
-}
-
-
-springAot {
-    mode = org.springframework.aot.gradle.dsl.AotMode.NATIVE
-    // verify = true
-}
-
-graalvmNative {
-    binaries {
-        main {
-            // imageName = 'application' // The name of the native image, defaults to the project name
-            // mainClass = 'org.test.Main' // The main class to use, defaults to the application.mainClass
-            // debug = true // Determines if debug info should be generated, defaults to false (alternatively add --debug-native to the CLI)
-            verbose = true // Add verbose output, defaults to false
-            // fallback = true // Sets the fallback mode of native-image, defaults to false
-            // buildArgs.add('--initialize-at-build-time=org.apache.commons.logging.impl.SLF4JLocationAwareLog')
-            jvmArgs.add('-DspringAot=true')
-            // buildArgs.add('--initialize-at-build-time=org.apache.commons.logging.impl.SLF4JLocationAwareLog')
-        }
-    }
-}
-
+apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
 eclipse {
     classpath {
@@ -421,21 +385,21 @@ tasks.named('bootJar') {
     }
 }
 
-// launch4j {
-//     headerType = 'gui'
-//     jarTask = project.tasks.bootJar
-//     bundledJre64Bit = true
-// }
-//
-// task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: bootJar) {
-//     // mandatory
-//     // mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
-//     mainClass = 'org.springframework.boot.loader.JarLauncher'
-//     // optional
-//     bundleJre = true
-//     customizedJre = false
-//     generateInstaller = false
-//     administratorRequired = false
-//     platform = io.github.fvarrui.javapackager.model.Platform.auto
-// }
+launch4j {
+    headerType = 'console'
+    jarTask = project.tasks.bootJar
+    bundledJre64Bit = true
+}
+
+task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: bootJar) {
+    // mandatory
+    // mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
+    mainClass = 'org.springframework.boot.loader.JarLauncher'
+    // optional
+    bundleJre = true
+    customizedJre = false
+    generateInstaller = false
+    administratorRequired = false
+    platform = io.github.fvarrui.javapackager.model.Platform.auto
+}
 
