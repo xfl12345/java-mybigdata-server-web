@@ -9,14 +9,12 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-@Component
 public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor, Ordered {
     public static final String APP_LOGGING_CONSOLE_LEVEL = "app.logging.console.level";
 
@@ -63,7 +61,7 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
             if (charset != null) {
                 System.out.println("Current console charset name is [" + charset.name() + "]");
             } else {
-                System.out.println("Retrieve environment charset failed.Using 'UTF-8' as default.");
+                System.out.println("Retrieve environment charset failed. Using 'UTF-8' as default.");
                 charset = StandardCharsets.UTF_8;
             }
             properties.setProperty(LOGGING_CHARSET_CONSOLE, charset.name());
@@ -93,6 +91,5 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
     public int getOrder() {
         return Integer.MAX_VALUE;
     }
-
 }
 
