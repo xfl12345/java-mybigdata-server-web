@@ -1,6 +1,8 @@
 package cc.xfl12345.mybigdata.server.web.initializer;
 
 import cc.xfl12345.mybigdata.server.common.appconst.AppConst;
+import cc.xfl12345.mybigdata.server.common.utility.ConsoleCharsetUtils;
+import cc.xfl12345.mybigdata.server.web.SpringAppOuterHook;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
@@ -10,6 +12,8 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Component
@@ -21,6 +25,8 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
     public static final String SPRING_APPLICATION_NAME = "spring.application.name";
 
     public static final String LOGGING_FILE_NAME = "logging.file.name";
+
+    public static final String LOGGING_CHARSET_CONSOLE = "logging.charset.console";
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
@@ -45,6 +51,22 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
         if (fileNameBase == null || "".equals(fileNameBase)) {
             fileNameBase = appName;
             properties.setProperty(LOGGING_FILE_NAME, fileNameBase);
+        }
+
+        String loggingCharsetConsole = environment.getProperty(LOGGING_CHARSET_CONSOLE);
+        if ((loggingCharsetConsole == null || "".equals(loggingCharsetConsole))) {
+            Charset charset = null;
+            ConsoleCharsetUtils consoleCharsetUtils = SpringAppOuterHook.getSingletonByClass(ConsoleCharsetUtils.class);
+            if (consoleCharsetUtils != null) {
+                charset = consoleCharsetUtils.getCharset();
+            }
+            if (charset != null) {
+                System.out.println("Current console charset name is [" + charset.name() + "]");
+            } else {
+                System.out.println("Retrieve environment charset failed.Using 'UTF-8' as default.");
+                charset = StandardCharsets.UTF_8;
+            }
+            properties.setProperty(LOGGING_CHARSET_CONSOLE, charset.name());
         }
 
         String logBaseFolder = environment.getProperty("logging.file.path");

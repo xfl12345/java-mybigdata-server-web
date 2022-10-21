@@ -5,8 +5,11 @@ import cc.xfl12345.mybigdata.server.web.interceptor.UploadInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.ProxyBits;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@AotProxyHint(targetClass = AppSpringMvcInterceptorConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 public class AppSpringMvcInterceptorConfig {
     @Bean
     @ConditionalOnMissingBean

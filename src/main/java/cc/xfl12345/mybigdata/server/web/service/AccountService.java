@@ -1,15 +1,15 @@
 package cc.xfl12345.mybigdata.server.web.service;
 
 
+import cc.xfl12345.mybigdata.server.common.api.AccountMapper;
 import cc.xfl12345.mybigdata.server.common.appconst.CommonConst;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.LoginApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.LogoutApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.common.database.error.SqlErrorAnalyst;
+import cc.xfl12345.mybigdata.server.common.database.pojo.CommonAccount;
 import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
-import cc.xfl12345.mybigdata.server.common.web.mapper.AccountMapper;
-import cc.xfl12345.mybigdata.server.common.web.pojo.Account;
 import cc.xfl12345.mybigdata.server.web.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.web.model.generator.LetterOptions;
 import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGenerator;
@@ -17,7 +17,6 @@ import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGeneratorOptio
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -80,7 +79,7 @@ public class AccountService implements InitializingBean {
         return StpUtil.isLogin();
     }
 
-    public Account queryByUsername(String username) {
+    public CommonAccount queryByUsername(String username) {
         // 暂不支持
         return null;
     }
@@ -94,7 +93,7 @@ public class AccountService implements InitializingBean {
             username.length() <= AccountField.USERNAME_MAX_LENGTH &&
             passwordHash.length() == CommonConst.SHA_512_HEX_STR_LENGTH) {
             //从数据库拉取用户信息
-            Account account = queryByUsername(username);
+            CommonAccount account = queryByUsername(username);
             //如果用户不存在，则立即返回
             if (account == null) {
                 loginApiResult = LoginApiResult.FAILED;
@@ -120,7 +119,7 @@ public class AccountService implements InitializingBean {
      * @param passwordHash 来自客户端发送来的密码SHA512 HEX值
      * @return 是否通过验证
      */
-    public boolean validate(Account account, String passwordHash) {
+    public boolean validate(CommonAccount account, String passwordHash) {
         //默认前端已对密码文本已完成SHA512哈希值计算。这行补全完整的单向加密。这样，哪怕被拖库，也可以保证密码安全。
         String passwordHashFromRequest = passwordHashEncrypt(passwordHash, account.getPasswordSalt());
         String passwordHashFromDatabase = account.getPasswordHash();
@@ -176,7 +175,7 @@ public class AccountService implements InitializingBean {
             String passwordSalt = generatePasswordSalt();
             String encryptedPasswordHash = passwordHashEncrypt(passwordHash, passwordSalt);
 
-            Account account = new Account();
+            CommonAccount account = new CommonAccount();
             account.setAccountId(accountId);
             account.setPasswordSalt(passwordSalt);
             account.setPasswordHash(encryptedPasswordHash);

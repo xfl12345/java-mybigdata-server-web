@@ -7,7 +7,7 @@
     <springProperty scope="context" name="LOG_FILE_BASE_NAME" source="logging.file.name"/>
 
     <springProperty scope="context" name="CONSOLE_LOG_CHARSET" source="logging.charset.console"/>
-    <springProperty scope="context" name="FILE_LOG_CHARSET" source="logging.charset.console"/>
+    <springProperty scope="context" name="FILE_LOG_CHARSET" source="logging.charset.file"/>
 
 
     <springProfile name="default">

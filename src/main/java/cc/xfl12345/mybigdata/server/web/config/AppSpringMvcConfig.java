@@ -6,10 +6,13 @@ import cc.xfl12345.mybigdata.server.web.interceptor.UploadInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@AotProxyHint(targetClass = AppSpringMvcConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 public class AppSpringMvcConfig extends WebMvcAutoConfiguration implements WebMvcConfigurer {
     public AppSpringMvcConfig() {
         super();

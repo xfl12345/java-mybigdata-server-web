@@ -1,7 +1,6 @@
 package cc.xfl12345.mybigdata.server.web.controller;
 
 import cc.xfl12345.mybigdata.server.common.data.source.StringTypeSource;
-import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -24,7 +23,7 @@ public class DebugController {
                 StringTypeSource stringTypeSource = applicationContext.getBean(
                     StringTypeSource.class
                 );
-                log.debug(JSON.toJSONString(stringTypeSource.selectId("text")));
+                log.debug(stringTypeSource.selectId("text").toString());
             }
         } catch (Exception e) {
             log.error(e.getMessage());

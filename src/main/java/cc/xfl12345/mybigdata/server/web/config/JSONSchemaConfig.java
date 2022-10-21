@@ -14,13 +14,16 @@ import com.networknt.schema.JsonMetaSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.ProxyBits;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@AotProxyHint(targetClass = JSONSchemaConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 public class JSONSchemaConfig {
 
     public static URI createJsonSchemFileURI(String resourcePath) {
@@ -32,7 +35,6 @@ public class JSONSchemaConfig {
     public ObjectMapper jsonObjectMapper() {
         return new ObjectMapper();
     }
-
 
     @Bean
     public JsonSchemaFactory jsonSchemaFactory(ObjectMapper mapper) throws IOException {
@@ -100,7 +102,7 @@ public class JSONSchemaConfig {
     }
 
     @Bean
-    public SchemaGenerator schemaGenerator() {
-        return new SchemaGenerator(schemaGeneratorConfigBuilder().build());
+    public SchemaGenerator schemaGenerator(SchemaGeneratorConfigBuilder schemaGeneratorConfigBuilder) {
+        return new SchemaGenerator(schemaGeneratorConfigBuilder.build());
     }
 }

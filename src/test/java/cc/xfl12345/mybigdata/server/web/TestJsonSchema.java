@@ -1,7 +1,6 @@
 package cc.xfl12345.mybigdata.server.web;
 
 import cc.xfl12345.mybigdata.server.web.model.checker.JsonChecker;
-import com.alibaba.fastjson2.JSONObject;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public class TestJsonSchema extends TestSpringAppLoad {
@@ -31,13 +30,13 @@ public class TestJsonSchema extends TestSpringAppLoad {
         System.out.println("#".repeat(60));
         System.out.print("\n".repeat(10));
         System.out.println("Test jsonSchemaChecker: " +
-            jsonSchemaChecker.getCheckResultAsBoolean(baseRequestObjectChecker.getJsonObject())
+            jsonSchemaChecker.check(baseRequestObjectChecker.getJsonObject())
         );
         System.out.println("Test mybatisRowBoundsObjectChecker(string): " +
-            mybatisRowBoundsObjectChecker.getCheckResultAsBoolean(jsonString)
+            mybatisRowBoundsObjectChecker.check(jsonString)
         );
         System.out.println("Test mybatisRowBoundsObjectChecker(object): " +
-            mybatisRowBoundsObjectChecker.getCheckResultAsBoolean(JSONObject.parseObject(jsonString))
+            mybatisRowBoundsObjectChecker.check(jsonString)
         );
         System.out.print("\n".repeat(10));
         System.out.println("#".repeat(60));

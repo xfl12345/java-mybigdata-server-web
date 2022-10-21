@@ -1,12 +1,15 @@
 package cc.xfl12345.mybigdata.server.web.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@AotProxyHint(targetClass = ApiRequestInterceptor.class, proxyFeatures = ProxyBits.IS_STATIC)
 @Slf4j
 public class ApiRequestInterceptor implements HandlerInterceptor {
     @Override

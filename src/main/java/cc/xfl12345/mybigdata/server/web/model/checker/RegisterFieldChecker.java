@@ -5,7 +5,7 @@ import cc.xfl12345.mybigdata.server.common.appconst.api.request.RegisterRequestF
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.RegisterApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.field.AccountField;
 import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
-import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,26 +14,26 @@ public class RegisterFieldChecker {
     @Setter
     protected static volatile int emailVerificationCodeLength = 8;
 
-    public static RegisterApiResult autoCheck(JSONObject jsonObject) {
+    public static RegisterApiResult autoCheck(JsonNode jsonObject) {
         RegisterApiResult registerApiResult;
         String username;
         String passwordStr;
         String email;
         String gender;
         //获取用户名字段
-        username = (String) jsonObject.get(RegisterRequestField.USERNAME);
+        username = jsonObject.get(RegisterRequestField.USERNAME).asText();
         //检查用户名数据是否合法
         if (RegisterFieldChecker.isUsernameUnderLegal(username)) {
             //获取性别字段
-            gender = (String) jsonObject.get(RegisterRequestField.GENDER);
+            gender = jsonObject.get(RegisterRequestField.GENDER).asText();
             //检查性别数据是否合法
             if (RegisterFieldChecker.isGenderUnderLegal(gender)) {
                 //获取密码字段
-                passwordStr = (String) jsonObject.get(RegisterRequestField.PASSWORD);
+                passwordStr = jsonObject.get(RegisterRequestField.PASSWORD).asText();
                 //检查密码复杂度是否符合要求
                 if (RegisterFieldChecker.isPasswordComplexityEnough(passwordStr)) {
                     //获取电子邮箱字段
-                    email = (String) jsonObject.get(RegisterRequestField.EMAIL);
+                    email = jsonObject.get(RegisterRequestField.EMAIL).asText();
                     if (RegisterFieldChecker.isEmailUnderLegal(email)) {
                         registerApiResult = RegisterApiResult.SUCCEED;
                     } else {

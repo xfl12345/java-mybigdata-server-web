@@ -1,8 +1,8 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
+import cc.xfl12345.mybigdata.server.common.api.AdvanceSearchMapper;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.common.data.condition.SingleTableCondition;
-import cc.xfl12345.mybigdata.server.common.web.mapper.AdvanceSearchMapper;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import lombok.Getter;
@@ -56,7 +56,7 @@ public class SearchController {
         return searchNumber(param.getPrefix());
     }
 
-    @PostMapping("by-condition")
+    @PostMapping("by-condition/")
     public WebJsonApiResponseData searchByCondition(@RequestBody SingleTableCondition condition) {
         WebJsonApiResponseData responseData = new WebJsonApiResponseData();
         responseData.setApiResult(JsonApiResult.SUCCEED);

@@ -11,12 +11,14 @@ import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.ram.RamFileProvider;
 import org.apache.commons.vfs2.provider.ram.RamFileSystem;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
-import org.apache.commons.vfs2.provider.webdav4.Webdav4FileSystemConfigBuilder;
+// import org.apache.commons.vfs2.provider.webdav4.Webdav4FileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.zip.ZipFileSystemConfigBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.ProxyBits;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +29,8 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Objects;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@AotProxyHint(targetClass = VFSConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 @Slf4j
 public class VFSConfig {
     @Bean
@@ -49,16 +52,16 @@ public class VFSConfig {
         sftpBuilder.setUserDirIsRoot(fileSystemOptions, false);
         sftpBuilder.setStrictHostKeyChecking(fileSystemOptions, "no");
 
-        Webdav4FileSystemConfigBuilder webdavBuilder = Webdav4FileSystemConfigBuilder.getInstance();
-        webdavBuilder.setConnectionTimeout(fileSystemOptions, Duration.ofSeconds(50));
-        webdavBuilder.setSoTimeout(fileSystemOptions, Duration.ofSeconds(50));
-        webdavBuilder.setMaxConnectionsPerHost(fileSystemOptions, 1000);
-        webdavBuilder.setMaxTotalConnections(fileSystemOptions, 1000);
-        webdavBuilder.setHostnameVerificationEnabled(fileSystemOptions, false);
-        webdavBuilder.setPreemptiveAuth(fileSystemOptions, true);
-        webdavBuilder.setUrlCharset(fileSystemOptions, StandardCharsets.UTF_8.name());
-        webdavBuilder.setFollowRedirect(fileSystemOptions, true);
-        webdavBuilder.setKeepAlive(fileSystemOptions, true);
+        // Webdav4FileSystemConfigBuilder webdavBuilder = Webdav4FileSystemConfigBuilder.getInstance();
+        // webdavBuilder.setConnectionTimeout(fileSystemOptions, Duration.ofSeconds(50));
+        // webdavBuilder.setSoTimeout(fileSystemOptions, Duration.ofSeconds(50));
+        // webdavBuilder.setMaxConnectionsPerHost(fileSystemOptions, 1000);
+        // webdavBuilder.setMaxTotalConnections(fileSystemOptions, 1000);
+        // webdavBuilder.setHostnameVerificationEnabled(fileSystemOptions, false);
+        // webdavBuilder.setPreemptiveAuth(fileSystemOptions, true);
+        // webdavBuilder.setUrlCharset(fileSystemOptions, StandardCharsets.UTF_8.name());
+        // webdavBuilder.setFollowRedirect(fileSystemOptions, true);
+        // webdavBuilder.setKeepAlive(fileSystemOptions, true);
 
         return fileSystemOptions;
     }

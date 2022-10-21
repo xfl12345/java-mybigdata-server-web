@@ -6,8 +6,6 @@ import cc.xfl12345.mybigdata.server.web.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.web.model.uri.URIRelativize;
 import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
 import cn.hutool.core.io.CharsetDetector;
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.vfs2.FileObject;
@@ -21,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -48,25 +49,25 @@ public class RamFileSystemController {
             FileObject ramfsRoot = ramFileSystem.getRoot();
             FileObject targetFile = ramFileSystem.resolveFile(requestPath);
             if (targetFile.isFile()) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("fileName", targetFile.getName().getBaseName());
-                jsonObject.put(
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("fileName", targetFile.getName().getBaseName());
+                map.put(
                     "relativePath",
                     uriRelativize.getRelativizeURI(ramfsRoot.getURI(), targetFile.getURI())
                 );
-                jsonObject.put("isFile", targetFile.isFile());
+                map.put("isFile", targetFile.isFile());
                 InputStream inputStream = targetFile.getContent().getInputStream();
-                jsonObject.put(
+                map.put(
                     "content",
                     targetFile.getContent().getString(CharsetDetector.detect(inputStream))
                 );
                 inputStream.close();
-                responseObject.setData(jsonObject);
+                responseObject.setData(map);
             } else {
-                JSONArray jsonArray = new JSONArray();
                 FileObject[] fileObjects = targetFile.getChildren();
+                List<Object> jsonArray = new ArrayList<>(fileObjects.length);
                 for (FileObject fileObject: fileObjects) {
-                    JSONObject jsonObject = new JSONObject();
+                    HashMap<String, Object> jsonObject = new HashMap<>();
                     jsonObject.put("fileName", fileObject.getName().getBaseName());
                     jsonObject.put(
                         "relativePath",

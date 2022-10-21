@@ -116,11 +116,11 @@ server:
 debug: false
 
 logging:
-    charset:
-        console: UTF-8
     config: classpath:log/conf/logback-spring.xml
     file:
         name: ${spring.application.name}
+    charset:
+        file: UTF-8
 
 
 app:

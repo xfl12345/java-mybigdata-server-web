@@ -1,5 +1,6 @@
 package cc.xfl12345.mybigdata.server.web.initializer;
 
+import cc.xfl12345.mybigdata.server.web.SpringAppOuterHook;
 import cc.xfl12345.mybigdata.server.web.SpringAppStatus;
 import cc.xfl12345.mybigdata.server.web.MybigdataApplication;
 import cc.xfl12345.mybigdata.server.web.appconst.SpringAppLaunchMode;
@@ -29,12 +30,18 @@ public class MyServletInitializer extends SpringBootServletInitializer {
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        mainThreadClassLoader = Thread.currentThread().getContextClassLoader();
         this.servletContext = servletContext;
+        MyServletInitializer.instance = this;
+        mainThreadClassLoader = Thread.currentThread().getContextClassLoader();
         SpringAppStatus.launchMode = SpringAppLaunchMode.WAR;
         log.info("我的ServletContext为：" + servletContext.getServletContextName() + "; 初始化时我被调用了。");
-        super.onStartup(servletContext);
-        MyServletInitializer.instance = this;
+        try {
+            SpringAppOuterHook.beforeAppStarted();
+            super.onStartup(servletContext);
+            SpringAppOuterHook.afterAppStarted(springApplicationContext);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 
     @Override

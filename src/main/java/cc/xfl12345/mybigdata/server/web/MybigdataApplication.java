@@ -4,19 +4,40 @@ import cc.xfl12345.mybigdata.server.web.appconst.SpringAppLaunchMode;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.nativex.hint.NativeHint;
 
 import static cc.xfl12345.mybigdata.server.web.SpringAppStatus.restartCount;
 
-@EnableConfigurationProperties
+@NativeHint(options = "--initialize-at-build-time=org.apache.commons.logging.impl.SLF4JLocationAwareLog")
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.AppConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.AppSpringMvcConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.AppSpringMvcInterceptorConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.IndependenceBeansConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.JSONSchemaConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.SaTokenConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.TomcatConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.UiResourceConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.VFSConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+// @EnableConfigurationProperties
 @SpringBootApplication
 public class MybigdataApplication {
     private static ConfigurableApplicationContext context;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SpringAppStatus.launchMode = SpringAppLaunchMode.JAR;
-        context = SpringApplication.run(MybigdataApplication.class, args);
+        try {
+            SpringAppOuterHook.beforeAppStarted();
+            context = SpringApplication.run(MybigdataApplication.class, args);
+            SpringAppOuterHook.afterAppStarted(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // e.printStackTrace(System.out);
+            // for (StackTraceElement stackTraceElement : e.getStackTrace()) {
+            //     System.out.println(stackTraceElement.toString());
+            // }
+            throw e;
+        }
     }
 
     public static void restart() {

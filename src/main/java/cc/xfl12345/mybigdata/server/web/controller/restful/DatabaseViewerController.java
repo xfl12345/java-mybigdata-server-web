@@ -1,6 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
-import cc.xfl12345.mybigdata.server.common.web.mapper.DatabaseViewer;
+import cc.xfl12345.mybigdata.server.common.api.DatabaseViewer;
+import cc.xfl12345.mybigdata.server.common.pojo.DatabaseDataSourceInfo;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,10 @@ public class DatabaseViewerController {
     @GetMapping("table/content")
     public List<Object> getTableContent(String tableName, long offset, long limit) {
         return databaseViewer.getTableContent(tableName, offset, limit);
+    }
+
+    @GetMapping("data-source")
+    public List<DatabaseDataSourceInfo> getAllDataSourceInfos() {
+        return databaseViewer.getAllDataSourceInfos();
     }
 }

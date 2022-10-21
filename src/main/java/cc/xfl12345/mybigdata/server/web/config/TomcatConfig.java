@@ -6,8 +6,11 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.nativex.hint.AotProxyHint;
+import org.springframework.nativex.hint.ProxyBits;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@AotProxyHint(targetClass = TomcatConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 public class TomcatConfig {
     @Bean
     public ServletWebServerFactory servletWebServerFactory() {
