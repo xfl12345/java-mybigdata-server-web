@@ -2,8 +2,7 @@ package cc.xfl12345.mybigdata.server.web;
 
 
 import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONWriter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TestPatternMatch {
+    protected static ObjectMapper jacksonObjectMapper = new ObjectMapper();
+
     public static void main(String[] args) {
         ArrayList<String> strArr = new ArrayList<>(Arrays.asList(
             "零0", "1", "01",
@@ -85,7 +86,8 @@ public class TestPatternMatch {
             System.out.println(i + ":" + isMatched
                 + ", content:[" + content + "]"
                 + ", group count:" + resultGroupCount
-                + ", result:" + JSON.toJSONString(results, JSONWriter.Feature.PrettyFormat));
+                + ", result:" + jacksonObjectMapper.valueToTree(results).toPrettyString()
+            );
         }
         if (title != null) {
             String stringBuilder = foxLine + foxLine +

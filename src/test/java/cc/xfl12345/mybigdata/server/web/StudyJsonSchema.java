@@ -3,9 +3,6 @@ package cc.xfl12345.mybigdata.server.web;
 import cc.xfl12345.mybigdata.server.web.plugin.networknt.schema.DraftV202012HyperSchema;
 import cc.xfl12345.mybigdata.server.web.plugin.networknt.schema.DraftV202012Links;
 import cc.xfl12345.mybigdata.server.web.plugin.networknt.schema.DraftV202012Schema;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonMetaSchema;
@@ -89,18 +86,18 @@ public class StudyJsonSchema {
         System.out.print("\n".repeat(10));
         System.out.println("#".repeat(60));
         System.out.println(
-            JSON.toJSONString(errors, JSONWriter.Feature.PrettyFormat)
+            objectMapper.valueToTree(errors).toPrettyString()
         );
         System.out.println("#".repeat(60));
         System.out.print("\n".repeat(10));
 
 
-        errors = jsonSchema.validate(objectMapper.valueToTree(JSONObject.parseObject(jsonInString)));
+        errors = jsonSchema.validate(objectMapper.readTree(jsonInString));
 
         System.out.print("\n".repeat(10));
         System.out.println("#".repeat(60));
         System.out.println(
-            JSON.toJSONString(errors, JSONWriter.Feature.PrettyFormat)
+            objectMapper.valueToTree(errors).toPrettyString()
         );
         System.out.println("#".repeat(60));
         System.out.print("\n".repeat(10));
