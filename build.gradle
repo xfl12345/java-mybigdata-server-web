@@ -60,13 +60,13 @@ publishing {
             artifact sourcesJar
             artifact bootJar
             artifact bootWar
-            artifact war
+            // artifact war
         }
     }
 }
 
 group = 'cc.xfl12345.mybigdata'
-version = '0.4.0'
+version = '0.4.5'
 sourceCompatibility = '17'
 if (getProject().file('config.gradle').exists()) {
     apply from: 'config.gradle'
@@ -89,7 +89,7 @@ import java.nio.charset.StandardCharsets
 dependencies {
     // 补全环境，使得 Intelij IDEA 可以调试 build.gradle
     // https://search.maven.org/artifact/org.apache.groovy/groovy-all/4.0.4/pom
-    testRuntimeOnly 'org.apache.groovy:groovy:4.0.5'
+    testRuntimeOnly 'org.apache.groovy:groovy:4.0.6'
 
     File localDevModeConfFile = getProject().file('localDevMode');
     boolean isLocalDevMode = false;
@@ -147,17 +147,10 @@ dependencies {
     // // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter
     // implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter', version: '3.1.4'
 
-    testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-        exclude group: 'com.vaadin.external.google', module: 'android-json'
-    }
-    // providedRuntime(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-    //     exclude group: 'com.vaadin.external.google', module: 'android-json'
-    // }
-
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
     def saTokenVersion = '1.31.0'
-    def hutoolVersion = '5.8.7'
+    def hutoolVersion = '5.8.8'
     def apacheCommonsVFS2Version = '2.9.0'
 
     // Sa-Token 框架
@@ -220,14 +213,14 @@ dependencies {
     testImplementation group: 'org.projectlombok', name: 'lombok'
 
     // https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-annotations
-    implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '4.7.2'
+    implementation group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: '4.7.3'
 
     // https://mvnrepository.com/artifact/org.json/json
-    implementation group: 'org.json', name: 'json', version: '20220320'
+    implementation group: 'org.json', name: 'json', version: '20220924'
 
     // JSON Schema support
     // https://mvnrepository.com/artifact/com.github.victools/jsonschema-generator
-    implementation group: 'com.github.victools', name: 'jsonschema-generator', version: '4.26.0'
+    implementation group: 'com.github.victools', name: 'jsonschema-generator', version: '4.27.0'
 
     // https://github.com/jimblackler/jsonschemafriend
     // https://jitpack.io/#net.jimblackler/jsonschemafriend
@@ -245,8 +238,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2
-    implementation group: 'org.apache.commons', name: 'commons-configuration2', version: '2.8.0'
+    // // https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2
+    // implementation group: 'org.apache.commons', name: 'commons-configuration2', version: '2.8.0'
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
@@ -263,12 +256,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     implementation group: 'org.apache.commons', name: 'commons-vfs2', version: apacheCommonsVFS2Version
 
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2-jackrabbit1
-    implementation group: 'org.apache.commons', name: 'commons-vfs2-jackrabbit1', version: apacheCommonsVFS2Version
-    // implementation group: 'org.apache.commons', name: 'commons-vfs2-jackrabbit1', version: apacheCommonsVFS2Version, ext: 'pom'
-
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2-jackrabbit2
-    implementation group: 'org.apache.commons', name: 'commons-vfs2-jackrabbit2', version: apacheCommonsVFS2Version
+    // // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2-jackrabbit1
+    // implementation group: 'org.apache.commons', name: 'commons-vfs2-jackrabbit1', version: apacheCommonsVFS2Version
+    // // implementation group: 'org.apache.commons', name: 'commons-vfs2-jackrabbit1', version: apacheCommonsVFS2Version, ext: 'pom'
+    //
+    // // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2-jackrabbit2
+    // implementation group: 'org.apache.commons', name: 'commons-vfs2-jackrabbit2', version: apacheCommonsVFS2Version
 
     // https://mvnrepository.com/artifact/commons-net/commons-net
     implementation group: 'commons-net', name: 'commons-net', version: '3.8.0'
@@ -343,7 +336,7 @@ dependencies {
 
     // ECC 加解密
     // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15to18
-    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15to18', version: '1.71'
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15to18', version: '1.72'
 
     // HuTool 超级工具集
     // https://mvnrepository.com/artifact/cn.hutool/hutool-core
@@ -356,6 +349,13 @@ dependencies {
 
     // testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
     // testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+
+    testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
+    // providedRuntime(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+    //     exclude group: 'com.vaadin.external.google', module: 'android-json'
+    // }
 }
 
 configurations {
@@ -385,21 +385,37 @@ tasks.named('bootJar') {
     }
 }
 
-launch4j {
-    headerType = 'console'
-    jarTask = project.tasks.bootJar
-    bundledJre64Bit = true
-}
+import io.github.fvarrui.javapackager.model.SetupMode
+import io.github.fvarrui.javapackager.gradle.PackageTask
 
-task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: bootJar) {
+task packageMyApp(type: PackageTask, dependsOn: bootJar) {
     // mandatory
-    // mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
-    mainClass = 'org.springframework.boot.loader.JarLauncher'
+    mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
+    // mainClass = 'org.springframework.boot.loader.JarLauncher'
     // optional
     bundleJre = true
     customizedJre = false
     generateInstaller = false
     administratorRequired = false
     platform = io.github.fvarrui.javapackager.model.Platform.auto
+    organizationName = 'xfl12345.cc'
+    organizationUrl = 'mybigdata.xfl12345.cc'
+
+    // linuxConfig {
+    // }
+    // macConfig {
+    // }
+    winConfig {
+        headerType = 'console'
+        fileVersion = getProject().version
+        productVersion = getProject().version
+
+        setupMode = SetupMode.askTheUser
+        disableDirPage = false
+        disableProgramGroupPage = false
+        disableFinishedPage = false
+        disableWelcomePage = false
+        createDesktopIconTask = true
+    }
 }
 
