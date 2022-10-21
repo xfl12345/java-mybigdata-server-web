@@ -37,12 +37,6 @@
               value="%clr([%date{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){green} %clr(%-6level){blue} %clr(%-56logger{56}:%6line){cyan} - %highlight(%message%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx})"/>
     <property name="FILE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN}"/>
 
-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
-    <conversionRule conversionWord="wex"
-                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
-    <conversionRule conversionWord="wEx"
-                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
-
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
