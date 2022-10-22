@@ -6,6 +6,7 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConsoleLogFilter extends Filter<ILoggingEvent> {
     protected final static String druidSql = "druid.sql";
@@ -13,8 +14,10 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
 
     protected HashMap<String, Level> fixedThreshold;
 
+    protected ConcurrentHashMap<String, String> secondLevelCache;
+
     public ConsoleLogFilter() {
-        fixedThreshold = new HashMap<>(10);
+        fixedThreshold = new HashMap<>(13);
         fixedThreshold.put("org.apache.coyote.http11", Level.INFO);
         fixedThreshold.put(druidSql, Level.INFO);
         fixedThreshold.put(druid, Level.INFO);
@@ -27,6 +30,9 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
         fixedThreshold.put("org.apache.catalina.mapper.MapperListener", Level.DEBUG);
         fixedThreshold.put("org.springframework.validation.beanvalidation", Level.INFO);
         fixedThreshold.put("org.aspectj", Level.INFO);
+        fixedThreshold.put("com.networknt.schema", Level.INFO);
+
+        secondLevelCache = new ConcurrentHashMap<>(fixedThreshold.size() << 2);
     }
 
 
@@ -35,13 +41,23 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
         String loggerName = event.getLoggerName();
         Level level = event.getLevel();
 
-        for (String prefix : fixedThreshold.keySet()) {
-            if (isMatch(prefix, loggerName)) {
-                if (!level.isGreaterOrEqual(fixedThreshold.get(prefix))) {
-                    return FilterReply.DENY;
-                }
+        // 看看有没有缓存
+        String prefix = secondLevelCache.get(loggerName);
+        if (prefix == null) {
+            for (String loggerPrefix : fixedThreshold.keySet()) {
+                if (isMatch(loggerPrefix, loggerName)) {
+                    // 缓存起来
+                    secondLevelCache.put(loggerName, loggerPrefix);
+                    if (!level.isGreaterOrEqual(fixedThreshold.get(loggerPrefix))) {
+                        return FilterReply.DENY;
+                    }
 
-                break;
+                    break;
+                }
+            }
+        } else {
+            if (!level.isGreaterOrEqual(fixedThreshold.get(prefix))) {
+                return FilterReply.DENY;
             }
         }
 
@@ -66,8 +82,10 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
         }
 
         boolean result = true;
+        // 判断总长度是否是奇数，以减少一次比较。
+        boolean odd = (prefixLength & 0x1) == 0x1;
         int end = prefixLength - 1;
-        int mid = prefixLength / 2 + 1;
+        int mid = prefixLength / 2;
         // 两头向中间靠拢，一定程度上提高碰撞概率
         for (int i = 0, currentEnd = end; i < mid; i++, currentEnd--) {
             if (prefix.charAt(i) != name.charAt(i)) {
@@ -79,6 +97,10 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
                 result = false;
                 break;
             }
+        }
+
+        if (result && odd) {
+            result = prefix.charAt(mid) == name.charAt(mid);
         }
 
         return result;
