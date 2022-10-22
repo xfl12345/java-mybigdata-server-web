@@ -30,12 +30,10 @@ public class MybigdataApplication {
             SpringAppOuterHook.beforeAppStarted();
             context = SpringApplication.run(MybigdataApplication.class, args);
             SpringAppOuterHook.afterAppStarted(context);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
-            // e.printStackTrace(System.out);
-            // for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-            //     System.out.println(stackTraceElement.toString());
-            // }
+        }  catch (Exception e) {
+            e.printStackTrace();
             throw e;
         }
     }
