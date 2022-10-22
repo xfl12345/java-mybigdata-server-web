@@ -12,27 +12,35 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
     protected final static String druidSql = "druid.sql";
     protected final static String druid = "com.alibaba.druid";
 
-    protected HashMap<String, Level> fixedThreshold;
+    protected HashMap<String, Level> prefixName2Threshold;
+
+    protected HashMap<String, Level> canonicalName2Threshold;
 
     protected ConcurrentHashMap<String, String> secondLevelCache;
 
-    public ConsoleLogFilter() {
-        fixedThreshold = new HashMap<>(13);
-        fixedThreshold.put("org.apache.coyote.http11", Level.INFO);
-        fixedThreshold.put(druidSql, Level.INFO);
-        fixedThreshold.put(druid, Level.INFO);
-        fixedThreshold.put("java", Level.INFO);
-        fixedThreshold.put("javax", Level.INFO);
-        fixedThreshold.put("sun.rmi", Level.INFO);
-        fixedThreshold.put("org.apache.tomcat", Level.INFO);
-        fixedThreshold.put("org.apache.catalina", Level.INFO);
-        fixedThreshold.put("org.apache.catalina.util.LifecycleBase", Level.DEBUG);
-        fixedThreshold.put("org.apache.catalina.mapper.MapperListener", Level.DEBUG);
-        fixedThreshold.put("org.springframework.validation.beanvalidation", Level.INFO);
-        fixedThreshold.put("org.aspectj", Level.INFO);
-        fixedThreshold.put("com.networknt.schema", Level.INFO);
+    protected ConcurrentHashMap<String, Object> whiteListCache;
 
-        secondLevelCache = new ConcurrentHashMap<>(fixedThreshold.size() << 2);
+    public ConsoleLogFilter() {
+        whiteListCache = new ConcurrentHashMap<>();
+
+        prefixName2Threshold = new HashMap<>(16);
+        prefixName2Threshold.put("org.apache.coyote.http11", Level.INFO);
+        prefixName2Threshold.put(druidSql, Level.INFO);
+        prefixName2Threshold.put(druid, Level.INFO);
+        prefixName2Threshold.put("java", Level.INFO);
+        prefixName2Threshold.put("javax", Level.INFO);
+        prefixName2Threshold.put("sun.rmi", Level.INFO);
+        prefixName2Threshold.put("org.apache.tomcat", Level.INFO);
+        prefixName2Threshold.put("org.apache.catalina", Level.INFO);
+        prefixName2Threshold.put("org.aspectj", Level.INFO);
+        prefixName2Threshold.put("com.networknt.schema", Level.INFO);
+        prefixName2Threshold.put("org.springframework.validation.beanvalidation", Level.INFO);
+
+        canonicalName2Threshold = new HashMap<>(4);
+        canonicalName2Threshold.put("org.apache.catalina.util.LifecycleBase", Level.INFO);
+        canonicalName2Threshold.put("org.apache.catalina.mapper.MapperListener", Level.DEBUG);
+
+        secondLevelCache = new ConcurrentHashMap<>(prefixName2Threshold.size()  << 2);
     }
 
 
@@ -41,24 +49,37 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
         String loggerName = event.getLoggerName();
         Level level = event.getLevel();
 
+        // 先看看有没有白名单缓存
+        if (whiteListCache.containsKey(loggerName)) {
+            return FilterReply.NEUTRAL;
+        }
+
+        // 完全限定名称匹配
+        Level canonicalNameMatchLevel = canonicalName2Threshold.get(loggerName);
+        if (canonicalNameMatchLevel != null) {
+            return level.isGreaterOrEqual(canonicalNameMatchLevel) ?
+                FilterReply.ACCEPT : FilterReply.DENY;
+        }
+
+        // 前缀匹配
         // 看看有没有缓存
         String prefix = secondLevelCache.get(loggerName);
         if (prefix == null) {
-            for (String loggerPrefix : fixedThreshold.keySet()) {
+            for (String loggerPrefix : prefixName2Threshold.keySet()) {
                 if (isMatch(loggerPrefix, loggerName)) {
                     // 缓存起来
                     secondLevelCache.put(loggerName, loggerPrefix);
-                    if (!level.isGreaterOrEqual(fixedThreshold.get(loggerPrefix))) {
-                        return FilterReply.DENY;
-                    }
-
-                    break;
+                    return level.isGreaterOrEqual(prefixName2Threshold.get(loggerPrefix)) ?
+                        FilterReply.ACCEPT : FilterReply.DENY;
                 }
             }
+
+            // 如果被匹配了，就不会到这一行了
+            // 加入白名单缓存
+            whiteListCache.put(loggerName, "");
         } else {
-            if (!level.isGreaterOrEqual(fixedThreshold.get(prefix))) {
-                return FilterReply.DENY;
-            }
+            return level.isGreaterOrEqual(prefixName2Threshold.get(prefix)) ?
+                FilterReply.ACCEPT : FilterReply.DENY;
         }
 
         return FilterReply.NEUTRAL;
