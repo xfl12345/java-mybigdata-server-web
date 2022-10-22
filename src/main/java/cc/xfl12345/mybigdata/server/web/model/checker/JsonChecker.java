@@ -4,11 +4,8 @@ import cc.xfl12345.mybigdata.server.common.appconst.JsonSchemaKeyWords;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchema;
-import com.networknt.schema.ValidationMessage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Set;
 
 
 @Slf4j
@@ -27,7 +24,7 @@ public class JsonChecker {
     }
 
     public JsonNode getJsonObject() {
-        return objectMapper.valueToTree(jsonObject.textValue());
+        return jsonObject.deepCopy();
     }
 
     public String getMetaSchema() {
@@ -37,8 +34,7 @@ public class JsonChecker {
     public boolean check(String jsonString) {
         boolean isOK = false;
         try {
-            Set<ValidationMessage> errors = jsonSchema.validate(objectMapper.readTree(jsonString));
-            isOK = errors.isEmpty();
+            isOK = check(objectMapper.readTree(jsonString));
         } catch (Exception e) {
             log.debug(e.getMessage());
         }
@@ -46,15 +42,11 @@ public class JsonChecker {
         return isOK;
     }
 
-    public boolean check(Object obj) {
-        boolean isOK = false;
-        try {
-            Set<ValidationMessage> errors = jsonSchema.validate(objectMapper.valueToTree(obj));
-            isOK = errors.isEmpty();
-        } catch (Exception e) {
-            log.debug(e.getMessage());
-        }
+    public boolean check(JsonNode obj) {
+        return jsonSchema.validate(obj).isEmpty();
+    }
 
-        return isOK;
+    public boolean check(Object obj) {
+        return check(objectMapper.valueToTree(obj));
     }
 }
