@@ -46,9 +46,20 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
         String loggingCharsetConsole = environment.getProperty(EnvConst.LOGGING_CHARSET_CONSOLE);
         if ((loggingCharsetConsole == null || "".equals(loggingCharsetConsole))) {
             Charset charset = null;
-            ConsoleCharsetUtils consoleCharsetUtils = SpringAppOuterHook.getSingletonByClass(ConsoleCharsetUtils.class);
-            if (consoleCharsetUtils != null) {
-                charset = consoleCharsetUtils.getCharset();
+            String appGuiEnable = environment.getProperty(EnvConst.APP_GUI_ENABLED);
+            // 如果是 GUI 窗口输出 log
+            if (Boolean.parseBoolean(appGuiEnable)) {
+                System.out.println("GUI mode detected.");
+                try {
+                    charset = Charset.forName(System.getProperty("file.encoding"));
+                } catch (Exception e) {
+                    // ignore
+                }
+            } else {
+                ConsoleCharsetUtils consoleCharsetUtils = SpringAppOuterHook.getSingletonByClass(ConsoleCharsetUtils.class);
+                if (consoleCharsetUtils != null) {
+                    charset = consoleCharsetUtils.getCharset();
+                }
             }
             if (charset != null) {
                 System.out.println("Current console charset name is [" + charset.name() + "]");
