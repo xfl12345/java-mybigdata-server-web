@@ -1,6 +1,6 @@
 package cc.xfl12345.mybigdata.server.web.appconst;
 
-public class AppEnvConst {
+public class EnvConst {
     public static final String APP_GUI_ENABLED = "app.gui.enabled";
     public static final String APP_LOGGING_CONSOLE_LEVEL = "app.logging.console.level";
     public static final String APP_LOGGING_FILE_PATH = "app.logging.file.path";

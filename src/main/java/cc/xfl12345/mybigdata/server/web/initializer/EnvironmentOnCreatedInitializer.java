@@ -3,7 +3,7 @@ package cc.xfl12345.mybigdata.server.web.initializer;
 import cc.xfl12345.mybigdata.server.common.appconst.AppConst;
 import cc.xfl12345.mybigdata.server.common.utility.ConsoleCharsetUtils;
 import cc.xfl12345.mybigdata.server.web.SpringAppOuterHook;
-import cc.xfl12345.mybigdata.server.web.appconst.AppEnvConst;
+import cc.xfl12345.mybigdata.server.web.appconst.EnvConst;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
@@ -24,26 +24,26 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
 
         boolean debugMode = Boolean.parseBoolean(environment.getProperty("debug"));
         if (debugMode) {
-            properties.setProperty(AppEnvConst.APP_LOGGING_CONSOLE_LEVEL, "DEBUG");
+            properties.setProperty(EnvConst.APP_LOGGING_CONSOLE_LEVEL, "DEBUG");
         } else {
-            if (environment.getProperty(AppEnvConst.APP_LOGGING_CONSOLE_LEVEL) == null) {
-                properties.setProperty(AppEnvConst.APP_LOGGING_CONSOLE_LEVEL, "INFO");
+            if (environment.getProperty(EnvConst.APP_LOGGING_CONSOLE_LEVEL) == null) {
+                properties.setProperty(EnvConst.APP_LOGGING_CONSOLE_LEVEL, "INFO");
             }
         }
 
-        String appName = environment.getProperty(AppEnvConst.SPRING_APPLICATION_NAME);
+        String appName = environment.getProperty(EnvConst.SPRING_APPLICATION_NAME);
         if (appName == null || "".equals(appName)) {
             appName = AppConst.DEFAULT_APP_NAME;
-            properties.setProperty(AppEnvConst.SPRING_APPLICATION_NAME, appName);
+            properties.setProperty(EnvConst.SPRING_APPLICATION_NAME, appName);
         }
 
-        String fileNameBase = environment.getProperty(AppEnvConst.LOGGING_FILE_NAME);
+        String fileNameBase = environment.getProperty(EnvConst.LOGGING_FILE_NAME);
         if (fileNameBase == null || "".equals(fileNameBase)) {
             fileNameBase = appName;
-            properties.setProperty(AppEnvConst.LOGGING_FILE_NAME, fileNameBase);
+            properties.setProperty(EnvConst.LOGGING_FILE_NAME, fileNameBase);
         }
 
-        String loggingCharsetConsole = environment.getProperty(AppEnvConst.LOGGING_CHARSET_CONSOLE);
+        String loggingCharsetConsole = environment.getProperty(EnvConst.LOGGING_CHARSET_CONSOLE);
         if ((loggingCharsetConsole == null || "".equals(loggingCharsetConsole))) {
             Charset charset = null;
             ConsoleCharsetUtils consoleCharsetUtils = SpringAppOuterHook.getSingletonByClass(ConsoleCharsetUtils.class);
@@ -56,7 +56,7 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
                 System.out.println("Retrieve environment charset failed. Using 'UTF-8' as default.");
                 charset = StandardCharsets.UTF_8;
             }
-            properties.setProperty(AppEnvConst.LOGGING_CHARSET_CONSOLE, charset.name());
+            properties.setProperty(EnvConst.LOGGING_CHARSET_CONSOLE, charset.name());
         }
 
         String logBaseFolder = environment.getProperty("logging.file.path");
@@ -72,7 +72,7 @@ public class EnvironmentOnCreatedInitializer implements EnvironmentPostProcessor
             }
         }
 
-        properties.setProperty(AppEnvConst.APP_LOGGING_FILE_PATH, logBaseFolder);
+        properties.setProperty(EnvConst.APP_LOGGING_FILE_PATH, logBaseFolder);
 
         MutablePropertySources propertySources = environment.getPropertySources();
         PropertiesPropertySource propertiesPropertySource = new PropertiesPropertySource("myDiyEnv", properties);
