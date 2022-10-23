@@ -4,6 +4,7 @@ import cc.xfl12345.mybigdata.server.web.appconst.SpringAppLaunchMode;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.nativex.hint.NativeHint;
 
@@ -19,7 +20,7 @@ import static cc.xfl12345.mybigdata.server.web.SpringAppStatus.restartCount;
 // @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.TomcatConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 // @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.UiResourceConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 // @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.VFSConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @EnableConfigurationProperties
+@EnableConfigurationProperties
 @SpringBootApplication
 public class MybigdataApplication {
     private static ConfigurableApplicationContext context;
