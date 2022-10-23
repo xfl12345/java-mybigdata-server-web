@@ -1,12 +1,6 @@
 {
     "properties": [
         {
-            "sourceType": "cc.xfl12345.mybigdata.server.web.config.VFSConfig",
-            "name": "app.service.vfs.webdav.enable",
-            "type": "java.lang.Boolean",
-            "description": "设置是否实例化Webdav服务器"
-        },
-        {
             "sourceType": "cc.xfl12345.mybigdata.server.web.service.VfsWebDavService",
             "name": "app.service.vfs-webdav.setting.open",
             "type": "java.lang.Boolean",

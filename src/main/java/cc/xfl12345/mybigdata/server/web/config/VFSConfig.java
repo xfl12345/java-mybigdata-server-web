@@ -121,7 +121,6 @@ public class VFSConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "app.service.vfs.webdav", name = "enable", havingValue = "true", matchIfMissing = true)
     @ConfigurationProperties(prefix = "app.service.vfs.webdav.setting")
     public VfsWebDavService vfsWebDavService(FileSystemManager manager, FileSystemOptions options) {
         VfsWebDavService vfsWebDavService = new VfsWebDavService();

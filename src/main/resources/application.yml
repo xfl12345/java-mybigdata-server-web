@@ -127,7 +127,6 @@ app:
     service:
         vfs:
             webdav:
-                enable: true
                 setting:
                     open: false
                     # root-path: "C:/bigtmp/"
