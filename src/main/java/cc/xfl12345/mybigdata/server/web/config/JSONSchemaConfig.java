@@ -25,11 +25,9 @@ import java.util.HashMap;
 @Configuration(proxyBeanMethods = false)
 @AotProxyHint(targetClass = JSONSchemaConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 public class JSONSchemaConfig {
-
     public static URI createJsonSchemFileURI(String resourcePath) {
-        return URI.create("resource:/" + resourcePath);
+        return URI.create("resource:/cc/xfl12345/mybigdata/server/common/" + resourcePath);
     }
-
 
     @Bean
     public ObjectMapper jsonObjectMapper() {
@@ -39,7 +37,7 @@ public class JSONSchemaConfig {
     @Bean
     public JsonSchemaFactory jsonSchemaFactory(ObjectMapper mapper) throws IOException {
         URL mappingsURL = Thread.currentThread().getContextClassLoader()
-            .getResource("json/conf/json_schema_validator_uri_mapping.json");
+            .getResource("cc/xfl12345/mybigdata/server/common/json/conf/json_schema_validator_uri_mapping.json");
 
         HashMap<String, String> mapping = new HashMap<String, String>();
         for (JsonNode jsonNode : mapper.readTree(mappingsURL)) {
@@ -82,16 +80,6 @@ public class JSONSchemaConfig {
             jsonObjectMapper,
             jsonSchemaFactory.getSchema(
                 createJsonSchemFileURI("json/schema/base_request_object.json")
-            )
-        );
-    }
-
-    @Bean
-    public JsonChecker mybatisRowBoundsObjectChecker(ObjectMapper jsonObjectMapper, JsonSchemaFactory jsonSchemaFactory) {
-        return new JsonChecker(
-            jsonObjectMapper,
-            jsonSchemaFactory.getSchema(
-                createJsonSchemFileURI("json/schema/mybatis_row_bounds_object.json")
             )
         );
     }

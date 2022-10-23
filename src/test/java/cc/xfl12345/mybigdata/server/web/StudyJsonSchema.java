@@ -30,7 +30,7 @@ public class StudyJsonSchema {
         HashMap<String, String> map = new HashMap<String, String>();
         for (JsonNode mapping : objectMapper.readTree(url)) {
             map.put(mapping.get("publicURL").asText(),
-                "resource:/" + mapping.get("localPath").asText());
+                "resource:/cc/xfl12345/mybigdata/server/common/" + mapping.get("localPath").asText());
         }
         return map;
     }
@@ -39,7 +39,7 @@ public class StudyJsonSchema {
 
 
         URL mappingsURL = Thread.currentThread().getContextClassLoader()
-            .getResource("json/conf/json_schema_validator_uri_mapping.json");
+            .getResource("cc/xfl12345/mybigdata/server/common/json/conf/json_schema_validator_uri_mapping.json");
 
 
         JsonMetaSchema draftV202012HyperSchema = new DraftV202012HyperSchema().getInstance();

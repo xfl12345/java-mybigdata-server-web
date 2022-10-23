@@ -17,26 +17,17 @@ public class TestJsonSchema extends TestSpringAppLoad {
         );
 
         String jsonString = "{" +
-            "    \"offset\": 666," +
-            "    \"limit\": 2333 " +
+            "    \"operation\": \"hello\"," +
+            "    \"data\": {\"msg\": \"2333\"} " +
             "}";
-
-        JsonChecker mybatisRowBoundsObjectChecker = applicationContext.getBean(
-            "mybatisRowBoundsObjectChecker",
-            JsonChecker.class
-        );
-
 
         System.out.println("#".repeat(60));
         System.out.print("\n".repeat(10));
         System.out.println("Test jsonSchemaChecker: " +
             jsonSchemaChecker.check(baseRequestObjectChecker.getJsonObject())
         );
-        System.out.println("Test mybatisRowBoundsObjectChecker(string): " +
-            mybatisRowBoundsObjectChecker.check(jsonString)
-        );
-        System.out.println("Test mybatisRowBoundsObjectChecker(object): " +
-            mybatisRowBoundsObjectChecker.check(jsonString)
+        System.out.println("Test baseRequestObjectChecker(string): " +
+            baseRequestObjectChecker.check(jsonString)
         );
         System.out.print("\n".repeat(10));
         System.out.println("#".repeat(60));
