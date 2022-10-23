@@ -19,7 +19,7 @@ public class MybigdataWebServerGUI extends ConsoleApplication {
 
     public static void main(String[] args) throws Exception {
         String appGuiEnable = System.getProperty(EnvConst.APP_GUI_ENABLED);
-        if (appGuiEnable != null && !"".equals(appGuiEnable) && Boolean.parseBoolean(appGuiEnable)) {
+        if (Boolean.parseBoolean(appGuiEnable)) {
             launch(args);
         } else {
             MybigdataApplication.main(args);
