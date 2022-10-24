@@ -10,16 +10,6 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
 
 @Slf4j
 public class AllEventListener implements ApplicationListener<ApplicationEvent> {
-    public static ApplicationContext applicationContext = null;
-
-    public AllEventListener() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (applicationContext != null) {
-                SpringApplication.exit(applicationContext);
-            }
-        }));
-    }
-
     @Override
     public void onApplicationEvent(final ApplicationEvent event) {
         // 忽略请求事件
