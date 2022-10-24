@@ -17,13 +17,15 @@ buildscript {
 }
 
 plugins {
-    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-    id 'org.springframework.boot' version '2.7.4'
-    id 'maven-publish'
-    id 'java'
-    id 'war'
     id 'eclipse'
     id 'idea'
+    id 'java'
+    id 'war'
+    id 'application'
+    id 'maven-publish'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
@@ -53,11 +55,31 @@ javadoc {
     options.encoding = 'UTF-8'
 }
 
+javafx {
+    version = '17.0.2'
+    modules = [
+        'javafx.controls',
+        'javafx.fxml',
+        'javafx.graphics',
+        'javafx.media',
+        'javafx.web'
+    ]
+}
+
+application {
+    mainClass = 'cc.xfl12345.mybigdata.server.web.gui.Main'
+}
+
+run {
+    jvmArgs('-Dfile.encoding=UTF-8', '-Dapp.gui.enabled=true')
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
             // from components.java
             artifact sourcesJar
+            artifact jar
             artifact bootJar
             artifact bootWar
             // artifact war
@@ -66,8 +88,8 @@ publishing {
 }
 
 group = 'cc.xfl12345.mybigdata'
-version = '0.4.5'
-sourceCompatibility = '17'
+version = '0.5.0'
+sourceCompatibility = JavaVersion.VERSION_17
 if (getProject().file('config.gradle').exists()) {
     apply from: 'config.gradle'
 }
@@ -173,6 +195,8 @@ dependencies {
     //    exclude group: 'ch.qos.logback'
     // }
 
+    // https://mvnrepository.com/artifact/org.beryx/text-io
+    implementation group: 'org.beryx', name: 'text-io', version: '3.4.1'
 
     Object uni_dependencies = [
         // Apache POI
@@ -385,11 +409,16 @@ tasks.named('bootJar') {
     }
 }
 
+// task.named('run') {
+//
+// }
+
 import io.github.fvarrui.javapackager.model.SetupMode
 import io.github.fvarrui.javapackager.gradle.PackageTask
 
-task packageMyApp(type: PackageTask, dependsOn: bootJar) {
+task package2ConsoleApp(type: PackageTask, dependsOn: bootJar) {
     // mandatory
+    // mainClass = 'cc.xfl12345.mybigdata.server.web.gui.Main'
     mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
     // mainClass = 'org.springframework.boot.loader.JarLauncher'
     // optional
@@ -401,12 +430,48 @@ task packageMyApp(type: PackageTask, dependsOn: bootJar) {
     organizationName = 'xfl12345.cc'
     organizationUrl = 'mybigdata.xfl12345.cc'
 
+    vmArgs = ['-Dfile.encoding=UTF-8', '-Dapp.gui.enabled=false']
+
     // linuxConfig {
     // }
     // macConfig {
     // }
     winConfig {
         headerType = 'console'
+        fileVersion = getProject().version
+        productVersion = getProject().version
+
+        setupMode = SetupMode.askTheUser
+        disableDirPage = false
+        disableProgramGroupPage = false
+        disableFinishedPage = false
+        disableWelcomePage = false
+        createDesktopIconTask = true
+    }
+}
+
+task package2GuiApp(type: PackageTask, dependsOn: bootJar) {
+    // mandatory
+    mainClass = 'cc.xfl12345.mybigdata.server.web.gui.Main'
+    // mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
+    // mainClass = 'org.springframework.boot.loader.JarLauncher'
+    // optional
+    bundleJre = true
+    customizedJre = false
+    generateInstaller = false
+    administratorRequired = false
+    platform = io.github.fvarrui.javapackager.model.Platform.auto
+    organizationName = 'xfl12345.cc'
+    organizationUrl = 'mybigdata.xfl12345.cc'
+
+    vmArgs = ['-Dfile.encoding=UTF-8', '-Dapp.gui.enabled=true']
+
+    // linuxConfig {
+    // }
+    // macConfig {
+    // }
+    winConfig {
+        headerType = 'gui'
         fileVersion = getProject().version
         productVersion = getProject().version
 
