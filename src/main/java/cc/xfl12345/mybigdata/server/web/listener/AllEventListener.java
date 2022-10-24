@@ -1,6 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.listener;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -9,6 +10,16 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
 
 @Slf4j
 public class AllEventListener implements ApplicationListener<ApplicationEvent> {
+    public static ApplicationContext applicationContext = null;
+
+    public AllEventListener() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (applicationContext != null) {
+                SpringApplication.exit(applicationContext);
+            }
+        }));
+    }
+
     @Override
     public void onApplicationEvent(final ApplicationEvent event) {
         // 忽略请求事件
