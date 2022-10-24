@@ -248,7 +248,7 @@ dependencies {
 
     // https://github.com/jimblackler/jsonschemafriend
     // https://jitpack.io/#net.jimblackler/jsonschemafriend
-//    implementation 'net.jimblackler.jsonschemafriend:core:0.11.3'
+    // implementation 'net.jimblackler.jsonschemafriend:core:0.11.3'
 
     // https://mvnrepository.com/artifact/com.networknt/json-schema-validator
     implementation group: 'com.networknt', name: 'json-schema-validator', version: '1.0.73'
@@ -302,8 +302,8 @@ dependencies {
     // // https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient
     // implementation group: 'commons-httpclient', name: 'commons-httpclient', version: '3.1'
 
-//    // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
-//    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+    // // https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils
+    // implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
 
     // https://mvnrepository.com/artifact/org.apache.tika/tika-core
     implementation group: 'org.apache.tika', name: 'tika-core', version: '2.4.1'
@@ -317,40 +317,40 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     implementation group: 'org.jsoup', name: 'jsoup', version: '1.15.3'
 
-//    // https://mvnrepository.com/artifact/org.dom4j/dom4j
-//    implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
+    // // https://mvnrepository.com/artifact/org.dom4j/dom4j
+    // implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.3'
 
-//    // https://mvnrepository.com/artifact/com.j2html/j2html
-//    implementation group: 'com.j2html', name: 'j2html', version: '1.4.0'
+    // // https://mvnrepository.com/artifact/com.j2html/j2html
+    // implementation group: 'com.j2html', name: 'j2html', version: '1.4.0'
 
 
-//    def javaMailVersion = '1.6.2'
-//    // Java Email support
-//    // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
-//    implementation group: 'com.sun.mail', name: 'javax.mail', version: javaMailVersion
-//
-//    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-//    implementation group: 'javax.mail', name: 'javax.mail-api', version: javaMailVersion
+    // def javaMailVersion = '1.6.2'
+    // // Java Email support
+    // // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+    // implementation group: 'com.sun.mail', name: 'javax.mail', version: javaMailVersion
+    //
+    // // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+    // implementation group: 'javax.mail', name: 'javax.mail-api', version: javaMailVersion
 
-//    // 大名鼎鼎的 Java字节码操作框架 ASM
-//    // https://mvnrepository.com/artifact/org.ow2.asm/asm
-//    implementation group: 'org.ow2.asm', name: 'asm', version: asmVersion
-//
-//    // https://mvnrepository.com/artifact/org.ow2.asm/asm-commons
-//    implementation group: 'org.ow2.asm', name: 'asm-commons', version: asmVersion
-//
-//    // https://mvnrepository.com/artifact/org.ow2.asm/asm-util
-//    implementation group: 'org.ow2.asm', name: 'asm-util', version: asmVersion
+    // // 大名鼎鼎的 Java字节码操作框架 ASM
+    // // https://mvnrepository.com/artifact/org.ow2.asm/asm
+    // implementation group: 'org.ow2.asm', name: 'asm', version: asmVersion
+    //
+    // // https://mvnrepository.com/artifact/org.ow2.asm/asm-commons
+    // implementation group: 'org.ow2.asm', name: 'asm-commons', version: asmVersion
+    //
+    // // https://mvnrepository.com/artifact/org.ow2.asm/asm-util
+    // implementation group: 'org.ow2.asm', name: 'asm-util', version: asmVersion
 
-//    // 大名鼎鼎的 Java字节码工具 javassist
-//    // https://mvnrepository.com/artifact/org.javassist/javassist
-//    implementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    // // 大名鼎鼎的 Java字节码工具 javassist
+    // // https://mvnrepository.com/artifact/org.javassist/javassist
+    // implementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
 
-//    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
-//    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.10'
-//
-//    // https://mvnrepository.com/artifact/org.jsonschema2pojo/jsonschema2pojo
-//    implementation group: 'org.jsonschema2pojo', name: 'jsonschema2pojo-core', version: '1.1.2'
+    // // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+    // implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.10'
+    //
+    // // https://mvnrepository.com/artifact/org.jsonschema2pojo/jsonschema2pojo
+    // implementation group: 'org.jsonschema2pojo', name: 'jsonschema2pojo-core', version: '1.1.2'
 
 
     // Google Open Source Library
@@ -367,8 +367,8 @@ dependencies {
     implementation group: 'cn.hutool', name: 'hutool-core', version: hutoolVersion
 
 
-//    implementation fileTree(dir:'lib',includes:['**/*.*'])
-//    implementation fileTree(dir:'src/main/webapp',includes:['**/*.*'])
+    // implementation fileTree(dir:'lib',includes:['**/*.*'])
+    // implementation fileTree(dir:'src/main/webapp',includes:['**/*.*'])
 
 
     // testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
