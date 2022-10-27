@@ -53,6 +53,7 @@ public class JSONSchemaConfig {
         JsonMetaSchema draftV202012 = new DraftV202012Schema().getInstance();
 
         JsonSchemaFactory factory = new JsonSchemaFactory.Builder()
+            .objectMapper(mapper)
             .addMetaSchema(draftV202012)
             .addMetaSchema(draftV202012Links)
             .addMetaSchema(draftV202012HyperSchema)
