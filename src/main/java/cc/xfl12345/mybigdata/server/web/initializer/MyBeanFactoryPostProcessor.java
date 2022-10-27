@@ -1,6 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.initializer;
 
 
+import cc.xfl12345.mybigdata.server.web.appconst.EnvConst;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -15,7 +16,7 @@ public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
         ConfigurableEnvironment configurableEnvironment = configurableListableBeanFactory.getBean(ConfigurableEnvironment.class);
-        log.info("Final console charset name is [" + configurableEnvironment.getProperty("logging.charset.console") + "]");
+        log.info("Final console charset name is [" + configurableEnvironment.getProperty(EnvConst.LOGGING_CHARSET_CONSOLE) + "]");
         // 优先初始化一些 Bean
         // Something else
     }

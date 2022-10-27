@@ -67,7 +67,7 @@ javafx {
 }
 
 application {
-    mainClass = 'cc.xfl12345.mybigdata.server.web.gui.Main'
+    mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
 }
 
 run {
@@ -195,8 +195,12 @@ dependencies {
     //    exclude group: 'ch.qos.logback'
     // }
 
-    // https://mvnrepository.com/artifact/org.beryx/text-io
-    implementation group: 'org.beryx', name: 'text-io', version: '3.4.1'
+
+    // https://mvnrepository.com/artifact/org.fusesource.jansi/jansi
+    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.4.0'
+
+    // // https://mvnrepository.com/artifact/org.beryx/text-io
+    // implementation group: 'org.beryx', name: 'text-io', version: '3.4.1'
 
     Object uni_dependencies = [
         // Apache POI
@@ -452,8 +456,8 @@ task package2ConsoleApp(type: PackageTask, dependsOn: bootJar) {
 
 task package2GuiApp(type: PackageTask, dependsOn: bootJar) {
     // mandatory
-    mainClass = 'cc.xfl12345.mybigdata.server.web.gui.Main'
-    // mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
+    // mainClass = 'cc.xfl12345.mybigdata.server.web.gui.Main'
+    mainClass = 'cc.xfl12345.mybigdata.server.web.MybigdataApplication'
     // mainClass = 'org.springframework.boot.loader.JarLauncher'
     // optional
     bundleJre = true

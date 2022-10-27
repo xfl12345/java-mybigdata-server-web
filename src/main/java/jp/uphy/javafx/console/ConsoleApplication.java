@@ -14,10 +14,13 @@ package jp.uphy.javafx.console;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.nio.charset.Charset;
 
 
 /**
@@ -28,8 +31,36 @@ public abstract class ConsoleApplication extends Application {
 
     private String title;
 
+    private Charset charset;
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public String getTitle() {
+        return this.stage.getTitle();
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+        Platform.runLater(() -> this.stage.setTitle(title));
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
+
     public void beforeStart() throws Exception {
-        title = getClass().getSimpleName();
+        if (title == null) {
+            title = getClass().getSimpleName();
+        }
+        if (charset == null) {
+            charset = Charset.defaultCharset();
+        }
     }
 
     @Override
@@ -37,23 +68,44 @@ public abstract class ConsoleApplication extends Application {
         beforeStart();
         this.stage = primaryStage;
         final String[] args = getParameters().getRaw().toArray(new String[0]);
-        final ConsoleView console = new ConsoleView();
+        final ConsoleView console = new ConsoleView(charset);
         final Scene scene = new Scene(console);
         final URL styleSheetUrl = getStyleSheetUrl();
         if (styleSheetUrl != null) {
             scene.getStylesheets().add(styleSheetUrl.toString());
         }
+
+        Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
+        double width = screenRectangle.getWidth();
+        double height = screenRectangle.getHeight();
+
         primaryStage.setTitle(title + " - [initializing]");
         primaryStage.setScene(scene);
+        primaryStage.setWidth(width * 0.618);
+        primaryStage.setHeight(height * 0.618);
+
         primaryStage.setOnCloseRequest(e -> System.exit(0));
         primaryStage.show();
+
+        Platform.runLater(primaryStage::toFront);
 
         System.setOut(console.getOut());
         System.setIn(console.getIn());
         System.setErr(console.getOut());
+
         primaryStage.setTitle(title + " - [running]");
-        invokeMain(args);
-        primaryStage.setTitle(title + " - [main thread exited]");
+        String titleBackup = title;
+        Thread thread = new Thread(() -> {
+            try {
+                invokeMain(args);
+                setTitle(titleBackup + " - [main thread exited]");
+            } catch (Exception e) {
+                e.printStackTrace();
+                setTitle(titleBackup + " - [error occurred]");
+            }
+        });
+        thread.setName("Console Application Main Thread");
+        thread.start();
     }
 
     protected URL getStyleSheetUrl() {
@@ -64,15 +116,6 @@ public abstract class ConsoleApplication extends Application {
         }
         url = ConsoleApplication.class.getResource(styleSheetName);
         return url;
-    }
-
-    public String getTitle() {
-        return this.stage.getTitle();
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-        Platform.runLater(() -> this.stage.setTitle(title));
     }
 
     protected abstract void invokeMain(String[] args) throws Exception;

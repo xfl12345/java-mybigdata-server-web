@@ -117,10 +117,10 @@ debug: false
 
 logging:
     config: classpath:cc/xfl12345/mybigdata/server/web/log/conf/logback-spring.xml
-    file:
-        name: ${spring.application.name}
     charset:
         file: UTF-8
+    file:
+        name: ${spring.application.name}
 
 
 app:

@@ -2,40 +2,18 @@
 <configuration>
     <!-- （*必须,各应用需要修改） 部署应用的名称,命名规则 :全部小写字母、中短横线、数字,与微服务命名,disconf中命名一致 -->
     <springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
-
+    <springProperty scope="context" name="CONSOLE_LOG_LEVEL" source="app.logging.console.level"/>
     <springProperty scope="context" name="LOG_FILE_BASE_FOLDER" source="app.logging.file.path"/>
     <springProperty scope="context" name="LOG_FILE_BASE_NAME" source="logging.file.name"/>
 
-    <springProperty scope="context" name="CONSOLE_LOG_CHARSET" source="logging.charset.console"/>
-    <springProperty scope="context" name="FILE_LOG_CHARSET" source="logging.charset.file"/>
-
-
-    <springProfile name="default">
-        <springProperty scope="context" name="CONSOLE_LOG_LEVEL" source="app.logging.console.level"/>
-    </springProfile>
-
-    <springProfile name="test, dev">
-        <property name="CONSOLE_LOG_LEVEL" value="DEBUG"/>
-    </springProfile>
-
-    <springProfile name="pre, prod, docker">
-        <property name="CONSOLE_LOG_LEVEL" value="INFO"/>
-    </springProfile>
-
-    <!-- 彩色日志 -->
-    <!-- 彩色日志依赖的渲染类 -->
-    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
-    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
-    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
-
     <contextName>${APP_NAME}</contextName>
-    <!--<include resource="org/springframework/boot/logging/logback/defaults.xml"/>-->
-    <!--<property name="CONSOLE_LOG_PATTERN" value="%clr([%d{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){green} %clr(%level){blue} %clr(%logger){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>-->
-    <!--<property name="FILE_LOG_PATTERN"-->
-    <!--          value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(-&#45;&#45;){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>-->
+
     <property name="CONSOLE_LOG_PATTERN"
-              value="%clr([%date{yyyy-MM-dd HH:mm:ss.SSS}]){faint} %clr(${PID}){magenta} %clr([%thread]){green} %clr(%-6level){blue} %clr(%-56logger{56}:%6line){cyan} - %highlight(%message%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx})"/>
-    <property name="FILE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN}"/>
+              value="${CONSOLE_LOG_PATTERN:-%clr([%date{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}]){faint} %clr(${PID}){magenta} %clr([%thread]){green} %clr(%-6level){blue} %clr(%-56logger{56}:%6line){cyan} - %message%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-[%date{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}] ${PID} [%thread] %-6level %-56logger{56}:%6line - %message%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -62,7 +40,7 @@
         </filter>
         <encoder>
             <!-- pattern节点，用来设置日志的输入格式 -->
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
             <!-- 记录日志的编码:此处设置字符集 - -->
             <charset>${FILE_LOG_CHARSET}</charset>
         </encoder>
@@ -86,7 +64,7 @@
             <level>ERROR</level>
         </filter>
         <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
             <charset>${FILE_LOG_CHARSET}</charset>
         </encoder>
         <File>${LOG_FILE_BASE_FOLDER}/${LOG_FILE_BASE_NAME}-error.log</File>
@@ -106,14 +84,6 @@
     </root>
 
     <!-- 不想在 控制台 上看到，也不想在 文件日志 里看到。毕竟每秒产生一行，谁也顶不住。 -->
-    <logger name="org.apache.tomcat.util.net.NioEndpoint" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="fileDebugAppender"/>
-        <appender-ref ref="fileErrorAppender"/>
-    </logger>
-    <logger name="org.apache.catalina.session.ManagerBase" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="fileDebugAppender"/>
-        <appender-ref ref="fileErrorAppender"/>
-    </logger>
+    <logger name="org.apache.tomcat.util.net.NioEndpoint" level="INFO" />
+    <logger name="org.apache.catalina.session.ManagerBase" level="INFO" />
 </configuration>

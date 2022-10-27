@@ -8,4 +8,5 @@ public class EnvConst {
     public static final String SPRING_APPLICATION_NAME = "spring.application.name";
     public static final String LOGGING_FILE_NAME = "logging.file.name";
     public static final String LOGGING_CHARSET_CONSOLE = "logging.charset.console";
+    public static final String SPRING_OUTPUT_ANSI_ENABLED = "spring.output.ansi.enabled";
 }
