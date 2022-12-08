@@ -13,7 +13,7 @@ spring:
     datasource:
         username: ${spring.application.name}
         password: ${spring.application.name}
-        url: "jdbc:mysql://localhost:3306/${spring.application.name}?characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&nullCatalogMeansCurrent=true&useInformationSchema=true&remarks=true"
+        url: "jdbc:mysql://localhost:3306/${spring.application.name}?characterEncoding=utf8&characterSetResults=utf8&serverTimezone=${spring.jackson.time-zone}&allowMultiQueries=true&nullCatalogMeansCurrent=true&useInformationSchema=true&remarks=true"
         driver-class-name: com.mysql.cj.jdbc.Driver
         type: com.alibaba.druid.pool.DruidDataSource
         # druid 其它配置
@@ -55,7 +55,7 @@ spring:
     jackson:
         date-format: yyyy-MM-dd HH:mm:ss.SSS
         property-naming-strategy: LOWER_CAMEL_CASE
-        time-zone: GMT+8
+        time-zone: Asia/Hong_Kong
         default-property-inclusion: non_null
     servlet:
         multipart:

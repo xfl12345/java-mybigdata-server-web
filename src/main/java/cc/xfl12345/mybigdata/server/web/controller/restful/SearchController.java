@@ -4,7 +4,7 @@ import cc.xfl12345.mybigdata.server.common.api.AdvanceSearchMapper;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.common.data.condition.SingleTableCondition;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
-import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
+import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,43 +22,43 @@ public class SearchController {
         this.advanceSearchMapper = advanceSearchMapper;
     }
 
-    protected WebJsonApiResponseData searchString(String prefix) {
-        WebJsonApiResponseData responseData = new WebJsonApiResponseData();
+    protected JsonApiResponseData searchString(String prefix) {
+        JsonApiResponseData responseData = new JsonApiResponseData();
         responseData.setApiResult(JsonApiResult.SUCCEED);
         responseData.setData(advanceSearchMapper.selectStringByPrefix(prefix));
         return responseData;
     }
 
-    protected WebJsonApiResponseData searchNumber(String prefix) {
-        WebJsonApiResponseData responseData = new WebJsonApiResponseData();
+    protected JsonApiResponseData searchNumber(String prefix) {
+        JsonApiResponseData responseData = new JsonApiResponseData();
         responseData.setApiResult(JsonApiResult.SUCCEED);
         responseData.setData(advanceSearchMapper.selectNumberByPrefix(prefix));
         return responseData;
     }
 
     @GetMapping("string/by-prefix/{prefix:^\\w+}")
-    public WebJsonApiResponseData httpGetSearchString(@PathVariable String prefix) {
+    public JsonApiResponseData httpGetSearchString(@PathVariable String prefix) {
         return searchString(prefix);
     }
 
     @PostMapping("string/by-prefix/")
-    public WebJsonApiResponseData httpPostSearchString(@RequestBody PrefixParam param) {
+    public JsonApiResponseData httpPostSearchString(@RequestBody PrefixParam param) {
         return searchString(param.getPrefix());
     }
 
     @GetMapping("number/by-prefix/{prefix:^\\w+}")
-    public WebJsonApiResponseData httpGetSearchNumber(@PathVariable String prefix) {
+    public JsonApiResponseData httpGetSearchNumber(@PathVariable String prefix) {
         return searchNumber(prefix);
     }
 
     @PostMapping("number/by-prefix/")
-    public WebJsonApiResponseData httpPostSearchNumber(@RequestBody PrefixParam param) {
+    public JsonApiResponseData httpPostSearchNumber(@RequestBody PrefixParam param) {
         return searchNumber(param.getPrefix());
     }
 
     @PostMapping("by-condition/")
-    public WebJsonApiResponseData searchByCondition(@RequestBody SingleTableCondition condition) {
-        WebJsonApiResponseData responseData = new WebJsonApiResponseData();
+    public JsonApiResponseData searchByCondition(@RequestBody SingleTableCondition condition) {
+        JsonApiResponseData responseData = new JsonApiResponseData();
         responseData.setApiResult(JsonApiResult.SUCCEED);
         responseData.setData(advanceSearchMapper.selectByCondition(condition));
         return responseData;

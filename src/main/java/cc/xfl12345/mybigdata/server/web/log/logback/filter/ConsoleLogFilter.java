@@ -25,7 +25,7 @@ public class ConsoleLogFilter extends Filter<ILoggingEvent> {
 
         prefixName2Threshold = new HashMap<>(16);
         prefixName2Threshold.put("org.apache.coyote.http11", Level.INFO);
-        prefixName2Threshold.put(druidSql, Level.INFO);
+        prefixName2Threshold.put(druidSql, Level.OFF);
         prefixName2Threshold.put(druid, Level.INFO);
         prefixName2Threshold.put("java", Level.INFO);
         prefixName2Threshold.put("javax", Level.INFO);

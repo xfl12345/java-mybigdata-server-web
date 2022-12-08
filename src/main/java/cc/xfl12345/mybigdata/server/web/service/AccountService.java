@@ -14,7 +14,7 @@ import cc.xfl12345.mybigdata.server.web.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.web.model.generator.LetterOptions;
 import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGenerator;
 import cc.xfl12345.mybigdata.server.web.model.generator.RandomCodeGeneratorOptions;
-import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
+import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -166,8 +166,8 @@ public class AccountService implements InitializingBean {
     }
 
 
-    public WebJsonApiResponseData resetPassword(String passwordHash) {
-        WebJsonApiResponseData responseData = new WebJsonApiResponseData();
+    public JsonApiResponseData resetPassword(String passwordHash) {
+        JsonApiResponseData responseData = new JsonApiResponseData();
         Long accountId = (Long) StpUtil.getLoginId();
         if (accountId == null) {
             responseData.setApiResult(JsonApiResult.FAILED);

@@ -55,28 +55,30 @@ public class StudyJsonSchema {
             .build();
 
 
-        String jsonInString = "{\n" +
-            "    \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n" +
-            "    \"title\": \"mybatis_row_bounds_object\",\n" +
-            "    \"description\": \"MyBatis RowBound 对象的字段检验\",\n" +
-            "    \"type\": \"object\",\n" +
-            "    \"properties\": {\n" +
-            "        \"offset\": {\n" +
-            "            \"description\": \"从第几行之后开始\",\n" +
-            "            \"type\": \"integer\",\n" +
-            "            \"minimum\": 0\n" +
-            "        },\n" +
-            "        \"limit\": {\n" +
-            "            \"description\": \"总共多少个\",\n" +
-            "            \"type\": \"integer\",\n" +
-            "            \"minimum\": 0\n" +
-            "        }\n" +
-            "    },\n" +
-            "    \"required\": [\n" +
-            "        \"offset\",\n" +
-            "        \"limit\"\n" +
-            "    ]\n" +
-            "}\n";
+        String jsonInString = """
+            {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "title": "mybatis_row_bounds_object",
+                "description": "MyBatis RowBound 对象的字段检验",
+                "type": "object",
+                "properties": {
+                    "offset": {
+                        "description": "从第几行之后开始",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "limit": {
+                        "description": "总共多少个",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "offset",
+                    "limit"
+                ]
+            }
+            """;
         JsonNode jsonNode = objectMapper.readTree(jsonInString);
         JsonSchema jsonSchema = factory.getSchema(URI.create(draftV202012.getUri()));
         Set<ValidationMessage> errors;

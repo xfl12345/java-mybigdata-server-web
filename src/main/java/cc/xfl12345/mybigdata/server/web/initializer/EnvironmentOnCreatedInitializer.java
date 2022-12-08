@@ -7,7 +7,6 @@ import cc.xfl12345.mybigdata.server.web.appconst.EnvConst;
 import cc.xfl12345.mybigdata.server.web.gui.SpringAppConsoleGUI;
 import cc.xfl12345.mybigdata.server.web.utility.SynchronizeLock;
 import org.fusesource.jansi.AnsiConsole;
-import org.fusesource.jansi.AnsiType;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.env.EnvironmentPostProcessor;

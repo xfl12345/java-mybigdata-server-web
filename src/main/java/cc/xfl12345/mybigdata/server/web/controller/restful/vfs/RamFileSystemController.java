@@ -4,7 +4,7 @@ import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.web.model.uri.URIRelativize;
-import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
+import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cn.hutool.core.io.CharsetDetector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +40,8 @@ public class RamFileSystemController {
     protected URIRelativize uriRelativize = new JarFileURIRelativizeImpl();
 
     @GetMapping("files/**")
-    public WebJsonApiResponseData list(HttpServletRequest request) {
-        WebJsonApiResponseData responseObject = new WebJsonApiResponseData();
+    public JsonApiResponseData list(HttpServletRequest request) {
+        JsonApiResponseData responseObject = new JsonApiResponseData();
         // String[] requestPaths = StringUtils.split(request.getServletPath(), '/');
         String requestPath = request.getServletPath().substring((servletPath + "/files").length());
 

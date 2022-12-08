@@ -2,7 +2,7 @@ package cc.xfl12345.mybigdata.server.web.controller.restful;
 
 import cc.xfl12345.mybigdata.server.common.utility.CopyUtils;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
-import cc.xfl12345.mybigdata.server.web.pojo.WebJsonApiResponseData;
+import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.service.AccountService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,27 +28,27 @@ public class AccountController {
     public static final String servletPathCache2 = "/" + servletName + "/";
 
     @PostMapping("reset-password")
-    public WebJsonApiResponseData resetPassword(String passwordHash) {
+    public JsonApiResponseData resetPassword(String passwordHash) {
         return accountService.resetPassword(passwordHash);
     }
 
     @PostMapping("login")
-    public WebJsonApiResponseData login(String username, String passwordHash) {
-        WebJsonApiResponseData responseData = getNewResponseDataObject();
+    public JsonApiResponseData login(String username, String passwordHash) {
+        JsonApiResponseData responseData = getNewResponseDataObject();
         CopyUtils.copy(accountService.login(username, passwordHash), responseData);
 
         return responseData;
     }
 
     @PostMapping("logout")
-    public WebJsonApiResponseData logout() {
-        WebJsonApiResponseData responseData = getNewResponseDataObject();
+    public JsonApiResponseData logout() {
+        JsonApiResponseData responseData = getNewResponseDataObject();
         CopyUtils.copy(accountService.logout(), responseData);
 
         return responseData;
     }
 
-    public WebJsonApiResponseData getNewResponseDataObject() {
-        return new WebJsonApiResponseData();
+    public JsonApiResponseData getNewResponseDataObject() {
+        return new JsonApiResponseData();
     }
 }
