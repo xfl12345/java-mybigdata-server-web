@@ -1,11 +1,11 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
 import cc.xfl12345.mybigdata.server.common.data.source.GroupTypeSource;
-import cc.xfl12345.mybigdata.server.common.data.source.pojo.MbdGroup;
-import cc.xfl12345.mybigdata.server.common.data.source.pojo.PlainMdbGroup;
+import cc.xfl12345.mybigdata.server.common.data.source.pojo.CommonMbdId;
+import cc.xfl12345.mybigdata.server.common.data.source.pojo.CommonMdbGroup;
 import cc.xfl12345.mybigdata.server.common.pojo.IdAndValue;
-import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
+import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +24,14 @@ public class MbdGroupController extends DataControllerBase {
     }
 
     @GetMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable Number id) {
-        return webApiExecutor.handle(response, id, groupTypeSource::selectById);
+    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
+        return webApiExecutor.handle(response, new CommonMbdId(id), groupTypeSource::selectById);
     }
 
     @PutMapping("")
-    public JsonApiResponseData httpPut(HttpServletResponse response, PlainMdbGroup mbdGroup) {
+    public JsonApiResponseData httpPut(HttpServletResponse response, @RequestBody CommonMdbGroup mbdGroup) {
         if (mbdGroup.getGlobalId() != null) {
-            IdAndValue<MbdGroup> idAndValue = new IdAndValue<>();
+            IdAndValue<CommonMdbGroup> idAndValue = new IdAndValue<>();
             idAndValue.id = mbdGroup.getGlobalId();
             idAndValue.value = mbdGroup;
             return webApiExecutor.handle(response, idAndValue, (param) -> {
@@ -44,7 +44,7 @@ public class MbdGroupController extends DataControllerBase {
     }
 
     @DeleteMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpDelete(HttpServletResponse response, @PathVariable Number id) {
-        return webApiExecutor.handle(response, id.toString(), groupTypeSource::deleteById);
+    public JsonApiResponseData httpDelete(HttpServletResponse response, @PathVariable String id) {
+        return webApiExecutor.handle(response, new CommonMbdId(id), groupTypeSource::deleteById);
     }
 }

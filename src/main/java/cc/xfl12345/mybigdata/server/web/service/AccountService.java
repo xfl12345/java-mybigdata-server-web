@@ -7,8 +7,10 @@ import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.LoginApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.LogoutApiResult;
 import cc.xfl12345.mybigdata.server.common.appconst.field.AccountField;
+import cc.xfl12345.mybigdata.server.common.data.source.pojo.CommonMbdId;
 import cc.xfl12345.mybigdata.server.common.database.error.SqlErrorAnalyst;
 import cc.xfl12345.mybigdata.server.common.database.pojo.CommonAccount;
+import cc.xfl12345.mybigdata.server.common.pojo.MbdId;
 import cc.xfl12345.mybigdata.server.common.utility.MyStrIsOK;
 import cc.xfl12345.mybigdata.server.web.model.checker.RegisterFieldChecker;
 import cc.xfl12345.mybigdata.server.web.model.generator.LetterOptions;
@@ -168,8 +170,8 @@ public class AccountService implements InitializingBean {
 
     public JsonApiResponseData resetPassword(String passwordHash) {
         JsonApiResponseData responseData = new JsonApiResponseData();
-        Long accountId = (Long) StpUtil.getLoginId();
-        if (accountId == null) {
+        MbdId<?> accountId = new CommonMbdId(StpUtil.getLoginId());
+        if (accountId.getValue() == null) {
             responseData.setApiResult(JsonApiResult.FAILED);
         } else {
             String passwordSalt = generatePasswordSalt();

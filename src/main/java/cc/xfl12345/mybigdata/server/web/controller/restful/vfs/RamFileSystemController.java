@@ -1,10 +1,10 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful.vfs;
 
 import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
+import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.model.uri.JarFileURIRelativizeImpl;
 import cc.xfl12345.mybigdata.server.web.model.uri.URIRelativize;
-import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cn.hutool.core.io.CharsetDetector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
