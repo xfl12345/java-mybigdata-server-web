@@ -138,9 +138,6 @@ dependencies {
         // implementation group: 'com.github.xfl12345', name: 'java-mybigdata-server-mysql-spring-boot-starter', version: parentModuleVersion, ext: 'pom'
     }
 
-    // https://mvnrepository.com/artifact/org.springframework.experimental/spring-native
-    implementation group: 'org.springframework.experimental', name: 'spring-native', version: '0.12.0'
-
     ArrayList<String> springBootDependencies = [
         // 'starter-actuator',
         // 'starter-thymeleaf',

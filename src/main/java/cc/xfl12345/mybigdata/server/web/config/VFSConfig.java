@@ -17,9 +17,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.nativex.hint.AotProxyHint;
-import org.springframework.nativex.hint.ProxyBits;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,8 +26,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Objects;
 
-@Configuration(proxyBeanMethods = false)
-@AotProxyHint(targetClass = VFSConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+@Configuration
 @Slf4j
 public class VFSConfig {
     @Bean

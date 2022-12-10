@@ -10,14 +10,11 @@ import org.apache.tika.Tika;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.nativex.hint.AotProxyHint;
-import org.springframework.nativex.hint.ProxyBits;
 
 import java.text.SimpleDateFormat;
 import java.util.SimpleTimeZone;
 
-@Configuration(proxyBeanMethods = false)
-@AotProxyHint(targetClass = IndependenceBeansConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+@Configuration
 public class IndependenceBeansConfig {
     @Bean
     public SimpleTimeZone defaultTimeZone() {

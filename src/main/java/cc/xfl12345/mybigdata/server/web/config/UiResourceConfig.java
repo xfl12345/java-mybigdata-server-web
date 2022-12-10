@@ -10,8 +10,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.nativex.hint.AotProxyHint;
-import org.springframework.nativex.hint.ProxyBits;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,8 +17,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-@Configuration(proxyBeanMethods = false)
-@AotProxyHint(targetClass = UiResourceConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
+@Configuration
 @ConditionalOnProperty(prefix = "app.webui", name = "location")
 @ConfigurationProperties(prefix = "app.webui")
 @Slf4j

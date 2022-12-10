@@ -6,20 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.nativex.hint.NativeHint;
 
 import static cc.xfl12345.mybigdata.server.web.SpringAppStatus.restartCount;
 
-@NativeHint(options = "--initialize-at-build-time=org.apache.commons.logging.impl.SLF4JLocationAwareLog")
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.AppConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.AppSpringMvcConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.AppSpringMvcInterceptorConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.IndependenceBeansConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.JSONSchemaConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.SaTokenConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.TomcatConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.UiResourceConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
-// @AotProxyHint(targetClass = cc.xfl12345.mybigdata.server.web.config.VFSConfig.class, proxyFeatures = ProxyBits.IS_STATIC)
 @EnableConfigurationProperties
 @SpringBootApplication
 public class MybigdataApplication {
