@@ -28,7 +28,7 @@ public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
         // 使 swagger 正确识别自定义类型 （映射自定义类型为其它类型）
         // io.swagger.v3.core.converter.ModelConverters
         SpringDocUtils.getConfig().replaceWithSchema(MbdId.class, new StringSchema());
-        SpringDocUtils.getConfig().replaceWithSchema(CommonMbdId.class, new StringSchema());
+        // SpringDocUtils.getConfig().replaceWithSchema(CommonMbdId.class, new StringSchema());
         SpringDocUtils.getConfig().replaceWithSchema(ObjectId.class, new StringSchema());
     }
 }

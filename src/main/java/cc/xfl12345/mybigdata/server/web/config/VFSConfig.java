@@ -1,7 +1,6 @@
 package cc.xfl12345.mybigdata.server.web.config;
 
 import cc.xfl12345.mybigdata.server.web.plugin.apache.vfs.SpringBootResourceFileProvider;
-import cc.xfl12345.mybigdata.server.web.service.VfsWebDavService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.*;
@@ -11,12 +10,10 @@ import org.apache.commons.vfs2.provider.ftps.FtpsFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.ram.RamFileProvider;
 import org.apache.commons.vfs2.provider.ram.RamFileSystem;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
-// import org.apache.commons.vfs2.provider.webdav4.Webdav4FileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.zip.ZipFileSystemConfigBuilder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -114,14 +111,5 @@ public class VFSConfig {
     public RamFileSystem ramFileSystem(FileSystemManager fileSystemManager) throws IOException {
         FileObject fileObject = fileSystemManager.resolveFile("ram:/");
         return (RamFileSystem) fileObject.getFileSystem();
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "app.service.vfs.webdav.setting")
-    public VfsWebDavService vfsWebDavService(FileSystemManager manager, FileSystemOptions options) {
-        VfsWebDavService vfsWebDavService = new VfsWebDavService();
-        vfsWebDavService.setFileSystemManager(manager);
-        vfsWebDavService.setFileSystemOptions(options);
-        return vfsWebDavService;
     }
 }

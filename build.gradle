@@ -131,6 +131,7 @@ dependencies {
     String parentModuleVersion = getProject().getVersion()
     if (isLocalDevMode) {
         implementation group: 'cc.xfl12345.mybigdata', name: 'server-mysql-spring-boot-starter', version: parentModuleVersion
+        implementation group: 'cc.xfl12345.mybigdata', name: 'server-webdav', version: parentModuleVersion
         // api group: 'cc.xfl12345.mybigdata', name: 'server-mysql-spring-boot-starter', version: depsParentVersion, ext: 'pom'
     } else {
         // https://jitpack.io/#xfl12345/java-mybigdata-server-mysql-spring-boot-starter
@@ -169,9 +170,10 @@ dependencies {
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-    def saTokenVersion = '1.33.0'
-    def hutoolVersion = '5.8.10'
-    def apacheCommonsVFS2Version = '2.9.0'
+    String saTokenVersion = '1.33.0'
+    String hutoolVersion = '5.8.10'
+    String apacheCommonsVFS2Version = '2.9.0'
+    String apache_poi_version = '5.2.3'
 
     // Sa-Token 框架
     // https://mvnrepository.com/artifact/cn.dev33/sa-token-spring-boot-starter
@@ -204,36 +206,11 @@ dependencies {
     // // https://mvnrepository.com/artifact/org.beryx/text-io
     // implementation group: 'org.beryx', name: 'text-io', version: '3.4.1'
 
-    Object uni_dependencies = [
-        // Apache POI
-        'org.apache.poi'       : [
-            '5.2.2': [
-                'poi',
-                'poi-ooxml-full'
-            ]
-        ],
-        // Apache Jackrabbit WebDAV
-        'org.apache.jackrabbit': [
-            '2.21.11': [
-                'jackrabbit-core',
-                'jackrabbit-webdav'
-            ]
-        ]
-    ]
+    // https://mvnrepository.com/artifact/org.apache.poi/poi
+    implementation group: 'org.apache.poi', name: 'poi', version: apache_poi_version
 
-    uni_dependencies.each {
-        groupId, groupEntry ->
-            {
-                groupEntry.each {
-                    version, versionEntry ->
-                        {
-                            versionEntry.each {
-                                moduleName -> implementation(group: groupId, name: moduleName, version: version)
-                            }
-                        }
-                }
-            }
-    }
+    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-full
+    implementation group: 'org.apache.poi', name: 'poi-ooxml-full', version: apache_poi_version
 
     // 注解神器 getter setter toString builder
     // https://mvnrepository.com/artifact/org.projectlombok/lombok

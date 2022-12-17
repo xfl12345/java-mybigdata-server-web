@@ -13,49 +13,52 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 @Configuration
-@ConditionalOnProperty(prefix = "app.webui", name = "location")
+@ConditionalOnProperty(prefix = "app.webui", name = "resource-location")
 @ConfigurationProperties(prefix = "app.webui")
 @Slf4j
 public class UiResourceConfig implements WebMvcConfigurer {
-    protected Resource resource;
+    @Getter
+    @Setter
+    protected String servletPath = "webui/";
 
     @Getter
     @Setter
-    protected String pathPattern = "/**";
+    protected String resourceLocation;
 
-    protected String location;
+    protected Resource resource;
 
-    public String getLocation() {
-        return location;
+    public String getPathPattern() {
+        return "/" + servletPath + "**";
     }
 
-    public void setLocation(String location) throws IOException {
-        this.location = location;
-        if (location.startsWith("classpath")) {
-            resource = new ClassPathResource(location);
+    @PostConstruct
+    public void init() throws IOException {
+        if (resourceLocation.startsWith("classpath")) {
+            resource = new ClassPathResource(resourceLocation);
         } else {
-            if (!"".equals(location)) {
+            if (!"".equals(resourceLocation)) {
                 try {
-                    resource = new UrlResource(new URL(location));
+                    resource = new UrlResource(new URL(resourceLocation));
                 } catch (MalformedURLException e) {
-                    log.info("[" + location + "] is not a URL link. [java.net.URL]: " + e.getMessage());
+                    log.info("[" + resourceLocation + "] is not a URL link. [java.net.URL]: " + e.getMessage());
                 }
             }
             if (resource == null) {
-                resource = new FileSystemResource(location);
+                resource = new FileSystemResource(resourceLocation);
             }
         }
 
-        log.info("Mapping request: [" + pathPattern + "] <---> [" + resource.getURL() + "]");
+        log.info("Mapping request: [" + getPathPattern() + "] <---> [" + resource.getURL() + "]");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(pathPattern).addResourceLocations(resource);
+        registry.addResourceHandler(getPathPattern()).addResourceLocations(resource);
     }
 }
