@@ -24,7 +24,7 @@ plugins {
     id 'application'
     id 'maven-publish'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'org.springframework.boot' version '2.7.6'
+    id 'org.springframework.boot' version '2.7.7'
     id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
@@ -111,7 +111,7 @@ import java.nio.charset.StandardCharsets
 dependencies {
     // 补全环境，使得 Intelij IDEA 可以调试 build.gradle
     // https://search.maven.org/artifact/org.apache.groovy/groovy-all/4.0.4/pom
-    testRuntimeOnly 'org.apache.groovy:groovy:4.0.6'
+    testRuntimeOnly 'org.apache.groovy:groovy:4.0.7'
 
     File localDevModeConfFile = getProject().file('localDevMode');
     boolean isLocalDevMode = false;
@@ -234,7 +234,7 @@ dependencies {
     // implementation 'net.jimblackler.jsonschemafriend:core:0.11.3'
 
     // https://mvnrepository.com/artifact/com.networknt/json-schema-validator
-    implementation group: 'com.networknt', name: 'json-schema-validator', version: '1.0.73'
+    implementation group: 'com.networknt', name: 'json-schema-validator', version: '1.0.75'
 
 
     // Ant support
@@ -277,7 +277,7 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime
-    implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
+    implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
 
     // https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
     implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'

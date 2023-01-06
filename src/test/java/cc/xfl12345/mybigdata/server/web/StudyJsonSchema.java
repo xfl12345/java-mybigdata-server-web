@@ -1,57 +1,34 @@
 package cc.xfl12345.mybigdata.server.web;
 
-import cc.xfl12345.mybigdata.server.web.plugin.networknt.schema.DraftV202012HyperSchema;
-import cc.xfl12345.mybigdata.server.web.plugin.networknt.schema.DraftV202012Links;
-import cc.xfl12345.mybigdata.server.web.plugin.networknt.schema.DraftV202012Schema;
+import cc.xfl12345.mybigdata.server.common.json.JsonResourceMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonMetaSchema;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 
 public class StudyJsonSchema {
-    ObjectMapper objectMapper = new ObjectMapper();
 
     public static void main(String[] args) throws IOException {
         StudyJsonSchema studyJsonSchema = new StudyJsonSchema();
         studyJsonSchema.test();
     }
 
-    private Map<String, String> getUriMappingsFromUrl(URL url) throws IOException {
-        HashMap<String, String> map = new HashMap<String, String>();
-        for (JsonNode mapping : objectMapper.readTree(url)) {
-            map.put(mapping.get("publicURL").asText(),
-                "resource:/cc/xfl12345/mybigdata/server/common/" + mapping.get("localPath").asText());
-        }
-        return map;
-    }
-
     public void test() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
 
-
-        URL mappingsURL = Thread.currentThread().getContextClassLoader()
-            .getResource("cc/xfl12345/mybigdata/server/common/json/conf/json_schema_validator_uri_mapping.json");
-
-
-        JsonMetaSchema draftV202012HyperSchema = new DraftV202012HyperSchema().getInstance();
-        JsonMetaSchema draftV202012Links = new DraftV202012Links().getInstance();
-        JsonMetaSchema draftV202012 = new DraftV202012Schema().getInstance();
+        JsonMetaSchema draftV202012 = JsonSchemaFactory.checkVersion(SpecVersion.VersionFlag.V202012).getInstance();
+        JsonResourceMapper jsonResourceMapper = new JsonResourceMapper();
+        jsonResourceMapper.setObjectMapper(objectMapper);
+        jsonResourceMapper.init();
 
         JsonSchemaFactory factory = new JsonSchemaFactory.Builder()
+            .addUriMappings(jsonResourceMapper.getUriMappings())
             .addMetaSchema(draftV202012)
-            .addMetaSchema(draftV202012Links)
-            .addMetaSchema(draftV202012HyperSchema)
             .defaultMetaSchemaURI(draftV202012.getUri())
-            .addUriMappings(getUriMappingsFromUrl(mappingsURL))
             .build();
 
 
@@ -80,10 +57,11 @@ public class StudyJsonSchema {
             }
             """;
         JsonNode jsonNode = objectMapper.readTree(jsonInString);
-        JsonSchema jsonSchema = factory.getSchema(URI.create(draftV202012.getUri()));
+        JsonSchema jsonSchema = factory.getSchema(jsonNode);
+        JsonSchema draftV202012JsonSchema = factory.getSchema(URI.create(draftV202012.getUri()));
         Set<ValidationMessage> errors;
 
-        errors = jsonSchema.validate(jsonNode);
+        errors = draftV202012JsonSchema.validate(jsonNode);
 
         System.out.print("\n".repeat(10));
         System.out.println("#".repeat(60));
@@ -94,7 +72,7 @@ public class StudyJsonSchema {
         System.out.print("\n".repeat(10));
 
 
-        errors = jsonSchema.validate(objectMapper.readTree(jsonInString));
+        errors = draftV202012JsonSchema.validate(objectMapper.readTree(jsonInString));
 
         System.out.print("\n".repeat(10));
         System.out.println("#".repeat(60));
@@ -103,6 +81,17 @@ public class StudyJsonSchema {
         );
         System.out.println("#".repeat(60));
         System.out.print("\n".repeat(10));
+
+
+        System.out.print("\n".repeat(10));
+        System.out.println("#".repeat(60));
+        System.out.println(
+            objectMapper.valueToTree(jsonSchema.getSchemaNode().at("/title")).toPrettyString()
+        );
+        System.out.println("#".repeat(60));
+        System.out.print("\n".repeat(10));
+
+
 
     }
 }

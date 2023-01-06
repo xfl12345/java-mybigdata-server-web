@@ -1,8 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.initializer;
 
 
-import cc.xfl12345.mybigdata.server.common.data.source.pojo.CommonMbdId;
-import cc.xfl12345.mybigdata.server.common.pojo.MbdId;
+import cc.xfl12345.mybigdata.server.common.data.source.pojo.MbdId;
 import cc.xfl12345.mybigdata.server.web.appconst.EnvConst;
 import io.swagger.v3.oas.models.media.StringSchema;
 import lombok.NonNull;

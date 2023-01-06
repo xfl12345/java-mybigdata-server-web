@@ -1,7 +1,7 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
 import cc.xfl12345.mybigdata.server.common.data.source.NumberTypeSource;
-import cc.xfl12345.mybigdata.server.common.data.source.pojo.CommonMbdId;
+import cc.xfl12345.mybigdata.server.common.data.source.pojo.MbdId;
 import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +26,6 @@ public class NumberContentController extends DataControllerBase {
 
     @GetMapping("by-id/{id:^\\w+}")
     public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new CommonMbdId(id), numberTypeSource::selectById);
+        return webApiExecutor.handle(response, new MbdId(id), numberTypeSource::selectById);
     }
 }

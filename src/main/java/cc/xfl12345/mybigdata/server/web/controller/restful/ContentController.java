@@ -1,8 +1,8 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
 import cc.xfl12345.mybigdata.server.common.api.IdViewer;
-import cc.xfl12345.mybigdata.server.common.data.source.GlobalDataRecordDataSource;
-import cc.xfl12345.mybigdata.server.common.data.source.pojo.CommonMbdId;
+import cc.xfl12345.mybigdata.server.common.data.source.IdDataSource;
+import cc.xfl12345.mybigdata.server.common.data.source.pojo.MbdId;
 import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + "content")
 public class ContentController extends DataControllerBase {
-    protected GlobalDataRecordDataSource globalDataRecordDataSource;
+    protected IdDataSource idDataSource;
 
     @Autowired
-    public void setGlobalDataRecordDataSource(GlobalDataRecordDataSource globalDataRecordDataSource) {
-        this.globalDataRecordDataSource = globalDataRecordDataSource;
+    public void setIdDataSource(IdDataSource idDataSource) {
+        this.idDataSource = idDataSource;
     }
 
     protected IdViewer idViewer;
@@ -34,7 +34,7 @@ public class ContentController extends DataControllerBase {
 
     @GetMapping("type/by-id/{id:^\\w+}")
     public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new CommonMbdId(id), idViewer::getDataTypeById);
+        return webApiExecutor.handle(response, new MbdId(id), idViewer::getDataTypeById);
     }
 
     // @PostMapping

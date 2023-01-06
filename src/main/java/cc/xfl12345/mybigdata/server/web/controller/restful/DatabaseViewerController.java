@@ -24,7 +24,7 @@ public class DatabaseViewerController {
 
     @GetMapping("all-table-name")
     public List<String> getAllTableName() {
-        return databaseViewer.getAllTableName();
+        return databaseViewer.getAllTableNames();
     }
 
     @GetMapping("table/field")
