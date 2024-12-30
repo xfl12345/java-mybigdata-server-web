@@ -9,11 +9,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TomcatConfig {
+
     @Bean
     public TomcatContextCustomizer tomcatContextCustomizer() {
         // 预留 50 秒给 StandardContext 正常关闭
         return context -> {
-            if(context instanceof StandardContext standardContext) {
+            if (context instanceof StandardContext standardContext) {
                 standardContext.setUnloadDelay(5000);
             }
         };

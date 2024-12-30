@@ -2,6 +2,7 @@ package cc.xfl12345.mybigdata.server.web.config;
 
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
 import cc.xfl12345.mybigdata.server.web.interceptor.ApiRequestInterceptor;
+import cc.xfl12345.mybigdata.server.web.interceptor.DebugPrintRequestIpAddress;
 import cc.xfl12345.mybigdata.server.web.interceptor.UploadInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -29,9 +30,17 @@ public class AppSpringMvcConfig extends WebMvcAutoConfiguration implements WebMv
         this.apiRequestInterceptor = apiRequestInterceptor;
     }
 
+    protected DebugPrintRequestIpAddress debugPrintRequestIpAddress;
+
+    @Autowired
+    public void setDebugPrintRequestIpAddress(DebugPrintRequestIpAddress debugPrintRequestIpAddress) {
+        this.debugPrintRequestIpAddress = debugPrintRequestIpAddress;
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(uploadInterceptor).addPathPatterns("/upload/**");
         registry.addInterceptor(apiRequestInterceptor).addPathPatterns("/" + ApiConst.BACKEND_PATH_BASE + "/**");
+        registry.addInterceptor(debugPrintRequestIpAddress).addPathPatterns("/**");
     }
 }

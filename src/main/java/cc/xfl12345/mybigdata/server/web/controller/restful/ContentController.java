@@ -1,46 +1,95 @@
 package cc.xfl12345.mybigdata.server.web.controller.restful;
 
-import cc.xfl12345.mybigdata.server.common.api.IdViewer;
-import cc.xfl12345.mybigdata.server.common.data.source.IdDataSource;
+import cc.xfl12345.mybigdata.server.common.appconst.api.result.JsonApiResult;
+import cc.xfl12345.mybigdata.server.common.data.source.DataSourceHome;
 import cc.xfl12345.mybigdata.server.common.data.source.pojo.MbdId;
 import cc.xfl12345.mybigdata.server.common.web.pojo.response.JsonApiResponseData;
 import cc.xfl12345.mybigdata.server.web.appconst.ApiConst;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Slf4j
-@RequestMapping(ApiConst.BACKEND_PATH_BASE + '/' + "content")
+@RequestMapping(ApiConst.BACKEND_PATH_BASE)
 public class ContentController extends DataControllerBase {
-    protected IdDataSource idDataSource;
+
+    protected ObjectMapper jacksonObjectMapper;
 
     @Autowired
-    public void setIdDataSource(IdDataSource idDataSource) {
-        this.idDataSource = idDataSource;
+    public void setJacksonObjectMapper(ObjectMapper jacksonObjectMapper) {
+        this.jacksonObjectMapper = jacksonObjectMapper;
     }
 
-    protected IdViewer idViewer;
+    protected DataSourceHome dataSourceHome;
 
     @Autowired
-    public void setIdViewer(IdViewer idViewer) {
-        this.idViewer = idViewer;
+    public void setDataSourceHome(DataSourceHome dataSourceHome) {
+        this.dataSourceHome = dataSourceHome;
     }
 
     @GetMapping("type/by-id/{id:^\\w+}")
-    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new MbdId(id), idViewer::getDataTypeById);
+    public JsonApiResponseData httpGetType(HttpServletRequest request, @PathVariable String id) {
+        return webApiExecutor.handle(request, new MbdId(id), dataSourceHome::getDataTypeById);
     }
 
-    // @PostMapping
-    // public JsonApiResponseData httpPost(HttpServletResponse response) {
+    // @PostMapping("content/by-id")
+    // public JsonApiResponseData httpGetContent(HttpServletRequest request, @RequestBody BaseRequestObject requestObject) {
+    //     switch (requestObject.operation) {
+    //         case "GET" -> {
+    //             GetDataByIdPayload payload = jacksonObjectMapper.convertValue(requestObject.data, GetDataByIdPayload.class);
+    //             return webApiExecutor.handle(request, payload, param -> {
+    //                 return dataSourceHome.getDataById(param.getId(), param.getDataRequirement());
+    //             });
+    //         }
+    //         case "SET" -> {
+    //             SetDataByIdPayload payload = jacksonObjectMapper.convertValue(requestObject.data, SetDataByIdPayload.class);
     //
-    //     return webApiExecutor.handle(response, )
+    //             JsonNode jsonNode = jacksonObjectMapper.valueToTree(payload.getData());
+    //             BaseMbdObject mbdObject;
+    //
+    //             switch (jsonNode.getNodeType()) {
+    //                 case ARRAY -> {
+    //                     PlainMdbGroup mdbGroup = new PlainMdbGroup()
+    //                 }
+    //                 case BINARY -> {
+    //                 }
+    //                 case BOOLEAN -> {
+    //                 }
+    //                 case MISSING -> {
+    //                 }
+    //                 case NULL -> {
+    //                 }
+    //                 case NUMBER -> {
+    //                 }
+    //                 case OBJECT -> {
+    //                 }
+    //                 case POJO -> {
+    //                 }
+    //                 case STRING -> {
+    //                 }
+    //             }
+    //
+    //
+    //             return webApiExecutor.handle(request, mbdObject, param -> {
+    //                 return dataSourceHome.setData(param);
+    //             });
+    //         }
+    //
+    //         default -> {
+    //             return getNotSupportPayload();
+    //         }
+    //     }
     // }
+
+    protected JsonApiResponseData getNotSupportPayload() {
+        JsonApiResponseData responseData = webApiExecutor.getResponseDataInstanceGenerator().getNewInstance();
+        responseData.setApiResult(JsonApiResult.FAILED_NOT_SUPPORT);
+
+        return responseData;
+    }
 
 }

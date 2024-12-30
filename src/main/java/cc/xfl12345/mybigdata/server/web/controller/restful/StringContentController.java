@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Slf4j
@@ -23,29 +23,29 @@ public class StringContentController extends DataControllerBase {
     }
 
     @GetMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new MbdId(id), stringTypeSource::selectById);
+    public JsonApiResponseData httpGet(HttpServletRequest request, @PathVariable String id) {
+        return webApiExecutor.handle(request, new MbdId(id), stringTypeSource::selectById);
     }
 
     @PutMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpPost(HttpServletResponse response, @PathVariable String id, @RequestBody String content) {
+    public JsonApiResponseData httpPost(HttpServletRequest request, @PathVariable String id, @RequestBody String content) {
         IdAndValue<String> idAndValue = new IdAndValue<>();
         idAndValue.id = new MbdId(id);
         idAndValue.value = content;
-        return webApiExecutor.handle(response, idAndValue, (param) -> {
+        return webApiExecutor.handle(request, idAndValue, (param) -> {
             stringTypeSource.updateById(param.value, param.id);
             return null;
         });
     }
 
     @PutMapping("")
-    public JsonApiResponseData httpPost(HttpServletResponse response, @RequestBody String content) {
-        return webApiExecutor.handle(response, content, stringTypeSource::selectIdOrInsert4Id);
+    public JsonApiResponseData httpPost(HttpServletRequest request, @RequestBody String content) {
+        return webApiExecutor.handle(request, content, stringTypeSource::selectIdOrInsert4Id);
     }
 
     @DeleteMapping("")
-    public JsonApiResponseData httpDelete(HttpServletResponse response, String content) {
-        return webApiExecutor.handle(response, content, stringTypeSource::delete);
+    public JsonApiResponseData httpDelete(HttpServletRequest request, String content) {
+        return webApiExecutor.handle(request, content, stringTypeSource::delete);
     }
 
 }

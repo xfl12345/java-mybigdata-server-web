@@ -48,6 +48,15 @@ public class StudyJsonSchema {
                         "description": "总共多少个",
                         "type": "integer",
                         "minimum": 0
+                    },
+                    "qqq": {
+                        "type": "object",
+                        "properties": {
+                            "vvv": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["vvv"]
                     }
                 },
                 "required": [
@@ -91,6 +100,17 @@ public class StudyJsonSchema {
         System.out.println("#".repeat(60));
         System.out.print("\n".repeat(10));
 
+
+        System.out.print("\n".repeat(10));
+        System.out.println("#".repeat(60));
+        System.out.println(
+            objectMapper.valueToTree(
+                factory.getSchema(jsonSchema.getRefSchemaNode("#/properties/qqq"))
+                    .validate(objectMapper.readTree("{\"vvv\": true}"))
+            ).toPrettyString()
+        );
+        System.out.println("#".repeat(60));
+        System.out.print("\n".repeat(10));
 
 
     }

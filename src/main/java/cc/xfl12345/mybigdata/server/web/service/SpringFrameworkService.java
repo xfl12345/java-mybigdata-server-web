@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Service("springFrameworkService")
@@ -22,7 +22,7 @@ public class SpringFrameworkService {
 
     public boolean shutdown(ApplicationContext context, boolean confirm) {
         if (confirm && context != null) {
-            // 三秒后执行退出任务
+            // 三秒后执行任务
             Thread thread = new Thread(() -> {
                 try {
                     Thread.sleep(3000);
@@ -43,7 +43,7 @@ public class SpringFrameworkService {
         WebApplicationContext context = getWebApplicationContext(request);
         if (confirm && context != null) {
             if (SpringAppStatus.launchMode == SpringAppLaunchMode.JAR) {
-                // 三秒后执行退出任务
+                // 三秒后执行任务
                 Thread thread = new Thread(() -> {
                     try {
                         Thread.sleep(3000);

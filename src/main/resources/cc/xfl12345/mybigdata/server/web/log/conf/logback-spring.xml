@@ -51,8 +51,9 @@
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->
             <fileNamePattern>${LOG_FILE_BASE_FOLDER}/%d{yyyy-MM}/${LOG_FILE_BASE_NAME}-debug-%d{dd_HH_mm_ss}.%i.log.gz
             </fileNamePattern>
-            <!-- 每产生一个日志文件，该日志文件的保存期限为180天 -->
-            <maxHistory>15</maxHistory>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为1天 -->
+            <maxHistory>1</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- maxFileSize:这是活动文件的大小，默认值是10MB，测试时可改成1KB看效果 -->
                 <maxFileSize>30MB</maxFileSize>
@@ -69,7 +70,7 @@
         </encoder>
         <File>${LOG_FILE_BASE_FOLDER}/${LOG_FILE_BASE_NAME}-error.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE_BASE_FOLDER}/%d{yyyy-MM}/${LOG_FILE_BASE_NAME}-error-%d{dd_HH_mm_ss}.%i.log.gz
+            <fileNamePattern>${LOG_FILE_BASE_FOLDER}/error/${LOG_FILE_BASE_NAME}-error-%d{yyyy-MM-dd_HH_mm_ss}.%i.log.gz
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>30MB</maxFileSize>

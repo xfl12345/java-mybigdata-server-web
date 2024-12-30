@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Slf4j
@@ -25,27 +25,27 @@ public class MbdGroupController extends DataControllerBase {
     }
 
     @GetMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new MbdId(id), groupTypeSource::selectById);
+    public JsonApiResponseData httpGet(HttpServletRequest request, @PathVariable String id) {
+        return webApiExecutor.handle(request, new MbdId(id), groupTypeSource::selectById);
     }
 
     @PutMapping("")
-    public JsonApiResponseData httpPut(HttpServletResponse response, @RequestBody PlainMdbGroup mbdGroup) {
+    public JsonApiResponseData httpPut(HttpServletRequest request, @RequestBody PlainMdbGroup mbdGroup) {
         if (mbdGroup.getGlobalId() != null) {
             IdAndValue<MbdGroup> idAndValue = new IdAndValue<>();
             idAndValue.id = mbdGroup.getGlobalId();
             idAndValue.value = mbdGroup;
-            return webApiExecutor.handle(response, idAndValue, (param) -> {
+            return webApiExecutor.handle(request, idAndValue, (param) -> {
                 groupTypeSource.updateById(param.value, param.id);
                 return null;
             });
         } else {
-            return webApiExecutor.handle(response, mbdGroup, groupTypeSource::insertAndReturnId);
+            return webApiExecutor.handle(request, mbdGroup, groupTypeSource::insertAndReturnId);
         }
     }
 
     @DeleteMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpDelete(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new MbdId(id), groupTypeSource::deleteById);
+    public JsonApiResponseData httpDelete(HttpServletRequest request, @PathVariable String id) {
+        return webApiExecutor.handle(request, new MbdId(id), groupTypeSource::deleteById);
     }
 }

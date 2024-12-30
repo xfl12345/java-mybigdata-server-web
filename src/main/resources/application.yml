@@ -15,7 +15,6 @@ spring:
         password: ${spring.application.name}
         url: "jdbc:mysql://localhost:3306/${spring.application.name}?characterEncoding=utf8&characterSetResults=utf8&serverTimezone=${spring.jackson.time-zone}&allowMultiQueries=true&nullCatalogMeansCurrent=true&useInformationSchema=true&remarks=true"
         driver-class-name: com.mysql.cj.jdbc.Driver
-        type: com.alibaba.druid.pool.DruidDataSource
         # druid 其它配置
         druid:
             initialSize: 5
@@ -121,6 +120,19 @@ sa-token:
     token-style: uuid
     # 是否输出操作日志
     is-log: true
+
+
+bee:
+    osql:
+        showSQL: true
+        showSql:
+            showType: true
+            showExecutableSql: true
+            donotPrintCurrentDate: false
+        moreTable:
+            columnListWithStar: false
+        notCatchModifyDuplicateException: true
+
 
 # MyBigData 配置
 app:

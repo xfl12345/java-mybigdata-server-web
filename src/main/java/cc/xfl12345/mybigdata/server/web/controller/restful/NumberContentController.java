@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Slf4j
@@ -25,7 +25,7 @@ public class NumberContentController extends DataControllerBase {
     }
 
     @GetMapping("by-id/{id:^\\w+}")
-    public JsonApiResponseData httpGet(HttpServletResponse response, @PathVariable String id) {
-        return webApiExecutor.handle(response, new MbdId(id), numberTypeSource::selectById);
+    public JsonApiResponseData httpGet(HttpServletRequest request, @PathVariable String id) {
+        return webApiExecutor.handle(request, new MbdId(id), numberTypeSource::selectById);
     }
 }

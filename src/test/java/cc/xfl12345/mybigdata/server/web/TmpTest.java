@@ -7,11 +7,17 @@ import cn.hutool.core.bean.BeanUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class TmpTest {
     public static void main(String[] args) throws Exception {
         String content = "[君の名は。Fans] スパークル (original ver.) -Your name. Music Video edition- [DVDRip x264 N.mp4";
-        System.out.println(StringEscapeUtils.escapeBracketsOnly4URL(content));
+        System.out.println(StringEscapeUtils.escapeURL(
+            content,
+            StringEscapeUtils.getUrlEscapeMapper().get(
+                StandardCharsets.UTF_8.displayName()
+            ).keySet()
+        ));
         // ClassLoader.getSystemResource("META-INF/resources/webjars/");
 
         System.out.println(BeanUtil.getPropertyDescriptorMap(CommonAccount.class, false));

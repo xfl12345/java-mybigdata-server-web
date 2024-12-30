@@ -14,6 +14,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Component
 @Slf4j
 public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
@@ -21,6 +24,15 @@ public class MyBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
         ConfigurableEnvironment configurableEnvironment = configurableListableBeanFactory.getBean(ConfigurableEnvironment.class);
         log.info("Final console charset name is [" + configurableEnvironment.getProperty(EnvConst.LOGGING_CHARSET_CONSOLE) + "]");
+
+        log.debug(
+            "configurableListableBeanFactory.getBeanDefinitionNames(): [\n    " +
+            Arrays.asList(configurableListableBeanFactory.getBeanDefinitionNames())
+                .parallelStream()
+                .collect(Collectors.joining(",\n    "))
+            + "\n]"
+        );
+
         // 优先初始化一些 Bean
         // Something else
 

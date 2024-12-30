@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @Slf4j
@@ -31,7 +31,7 @@ public class ApplicationController {
     public boolean shutdown(HttpServletRequest request, boolean confirm) {
         WebApplicationContext context = service.getWebApplicationContext(request);
         if (confirm && context != null) {
-            // 三秒后执行退出任务
+            // 三秒后执行任务
             Thread thread = new Thread(() -> {
                 try {
                     Thread.sleep(3000);

@@ -2,7 +2,6 @@ package cc.xfl12345.mybigdata.server.web.config;
 
 import cc.xfl12345.mybigdata.server.web.plugin.apache.vfs.SpringBootResourceFileProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
@@ -14,9 +13,7 @@ import org.apache.commons.vfs2.provider.zip.ZipFileSystemConfigBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -79,16 +76,23 @@ public class VFSConfig {
         tmpFileSystemManager.addProvider("ram", new RamFileProvider());
         tmpFileSystemManager.setCacheStrategy(CacheStrategy.ON_RESOLVE);
         tmpFileSystemManager.init();
-        FileObject ramFileObject = tmpFileSystemManager.resolveFile("ram:/" + providersXmlFileRelativePath);
-        InputStream inputStream = confURL.openStream();
-        String xmlContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        inputStream.close();
-        inputStream = IOUtils.toInputStream(xmlContent, StandardCharsets.UTF_8);
-        OutputStream outputStream = ramFileObject.getContent().getOutputStream();
-        outputStream.write(inputStream.readAllBytes());
-        outputStream.close();
-        inputStream.close();
 
+        InputStream inputStream = confURL.openStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+        FileObject ramFileObject = tmpFileSystemManager.resolveFile("ram:/" + providersXmlFileRelativePath);
+        OutputStream outputStream = ramFileObject.getContent().getOutputStream();
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+
+        String tmpStr = bufferedReader.readLine();
+        // try 语句关闭流的顺序是 从右往左
+        try (inputStream; inputStreamReader; bufferedReader; outputStream; outputStreamWriter) {
+            while (tmpStr != null) {
+                outputStreamWriter.write(tmpStr);
+                tmpStr = bufferedReader.readLine();
+            }
+        }
 
         // 正式开始实例化主角
         StandardFileSystemManager fileSystemManager = new StandardFileSystemManager();
