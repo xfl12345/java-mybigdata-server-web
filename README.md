@@ -1,4 +1,6 @@
-# MyBigData_Java17
+# MyBigData JAVA版服务端 Web模块
+
+迁移至 `https://github.com/xfl12345/MyBigData/server/java/server-web`
 
 软件环境：**Java 17**
 使用AGPLv3的开源许可证
